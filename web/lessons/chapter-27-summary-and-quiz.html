@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Chapter review Exception handling provides a mechanism to decouple handling of errors or other exceptional circumstances from the typical control flow of y">
+  <meta name="robots" content="noindex,nofollow">
+  <title>27.x — Chapter 27 summary and quiz · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/chapter-27-summary-and-quiz/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 27 · Exceptions</summary><div class="sidebar-title"><small>Chapter 27</small><strong>Exceptions</strong></div>
+<ol class="sidebar-lessons"><li><a href="the-need-for-exceptions.html"><span class="lesson-number">27.1</span><span>The need for exceptions</span></a></li><li><a href="basic-exception-handling.html"><span class="lesson-number">27.2</span><span>Basic exception handling</span></a></li><li><a href="exceptions-functions-and-stack-unwinding.html"><span class="lesson-number">27.3</span><span>Exceptions, functions, and stack unwinding</span></a></li><li><a href="uncaught-exceptions-catch-all-handlers.html"><span class="lesson-number">27.4</span><span>Uncaught exceptions and catch-all handlers</span></a></li><li><a href="exceptions-classes-and-inheritance.html"><span class="lesson-number">27.5</span><span>Exceptions, classes, and inheritance</span></a></li><li><a href="rethrowing-exceptions.html"><span class="lesson-number">27.6</span><span>Rethrowing exceptions</span></a></li><li><a href="function-try-blocks.html"><span class="lesson-number">27.7</span><span>Function try blocks</span></a></li><li><a href="exception-dangers-and-downsides.html"><span class="lesson-number">27.8</span><span>Exception dangers and downsides</span></a></li><li><a href="exception-specifications-and-noexcept.html"><span class="lesson-number">27.9</span><span>Exception specifications and noexcept</span></a></li><li><a href="stdmove_if_noexcept.html"><span class="lesson-number">27.10</span><span>std::move_if_noexcept</span></a></li><li><a href="chapter-27-summary-and-quiz.html" aria-current="page"><span class="lesson-number">27.x</span><span>Chapter 27 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 27</div>
+        <h1>27.x — Chapter 27 summary and quiz</h1>
+        <div class="article-meta"><span>Updated: 2023-10-07 22:03</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p><strong>Chapter review</strong></p>
+<p>Exception handling provides a mechanism to decouple handling of errors or other exceptional circumstances from the typical control flow of your code. This allows more freedom to handle errors when and how ever is most useful for a given situation, alleviating many (if not all) of the messiness that return codes cause.</p>
+<p>A <strong>throw</strong> statement is used to raise an exception.  <strong>Try blocks</strong> look for exceptions thrown by the code written or called within them.  These exceptions get routed to <strong>catch blocks</strong>, which catch exceptions of particular types (if they match) and handle them.  By default, an exception that is caught is considered handled.</p>
+<p>Exceptions are handled immediately.  If an exception is raised, control jumps to the nearest enclosing try block, looking for catch handlers that can handle the exception.  If a matching try/catch is found, the stack is unwound to the point of the catch block, and control resumes at the top of the matching catch.  If no try block is found or no catch blocks matches, the program calls std::terminate, which will terminate with an unhandled exception error.</p>
+<p>Exceptions of any data type can be thrown, including classes.</p>
+<p>Catch blocks can be configured to catch exceptions of a particular data type, or a catch-all handler can be set up by using the ellipses (…).  A catch block catching a base class reference will also catch exceptions of a derived class.  All of the exceptions thrown by the standard library are derived from the std::exception class (which lives in the exception header), so catching a std::exception by reference will catch all standard library exceptions.  The what() member function can be used to determine what kind of std::exception was thrown.</p>
+<p>Inside a catch block, a new exception may be thrown.  Because this new exception is thrown outside of the try block associated with that catch block, it won’t be caught by the catch block it’s thrown within.  Exceptions may be rethrown from a catch block by using the keyword throw by itself.  Do not rethrow an exception using the exception variable that was caught, otherwise object slicing may result.</p>
+<p>Function try blocks give you a way to catch any exception that occurs within a function or an associated member initialization list.  These are typically only used with derived class constructors.</p>
+<p>You should never throw an exception from a destructor.</p>
+<p>The <strong>noexcept</strong> exception specifier can be used to denote that a function is no-throw/no-fail.</p>
+<p>std::move_if_noexcept will return a movable r-value if the object has a noexcept move constructor, otherwise it will return a copyable l-value. We can use the noexcept specifier in conjunction with std::move_if_noexcept to use move semantics only when a strong exception guarantee exists (and use copy semantics otherwise).</p>
+<p>Finally, exception handling does have a cost.  In most cases, code using exceptions will run slightly slower, and the cost of handling an exception is very high.  You should only use exceptions to handle exceptional circumstances, not for normal error handling cases (e.g. invalid input).</p>
+<p><strong>Chapter quiz</strong></p>
+<ol start="1">
+<li>Write a Fraction class that has a constructor that takes a numerator and a denominator.  If the user passes in a denominator of 0, throw an exception of type std::runtime_error (included in the stdexcept header).  In your main program, ask the user to enter two integers.  If the Fraction is valid, print the fraction.  If the Fraction is invalid, catch a std::exception, and tell the user that they entered an invalid fraction.
+</li>
+</ol>
+<p>Here’s what one run of the program should output:</p>
+<pre>
+Enter the numerator: 5
+Enter the denominator: 0
+Invalid denominator
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt; // for std::runtime_error
+#include &lt;exception&gt; // for std::exception
+
+class Fraction
+{
+private:
+	int m_numerator = 0;
+	int m_denominator = 1;
+
+public:
+	Fraction(int numerator = 0, int denominator = 1)
+		: m_numerator{ numerator }
+		, m_denominator{ denominator }
+	{
+		if (m_denominator == 0)
+			throw std::runtime_error("Invalid denominator");
+	}
+
+	friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Fraction&amp; f1);
+
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Fraction&amp; f1)
+{
+	out &lt;&lt; f1.m_numerator &lt;&lt; '/' &lt;&lt; f1.m_denominator;
+	return out;
+}
+
+int main()
+{
+	std::cout &lt;&lt; "Enter the numerator: ";
+	int numerator{};
+	std::cin &gt;&gt; numerator;
+
+	std::cout &lt;&lt; "Enter the denominator: ";
+	int denominator{};
+	std::cin &gt;&gt; denominator;
+
+	try
+	{
+		Fraction f{ numerator, denominator };
+		std::cout &lt;&lt; "Your fraction is: " &lt;&lt; f &lt;&lt; '\n';
+	}
+	catch (const std::exception&amp; e)
+	{
+		std::cerr &lt;&lt; e.what() &lt;&lt; '\n';
+	}
+
+	return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdmove_if_noexcept.html"><span class="nav-kicker">← Previous lesson</span>27.10 · std::move_if_noexcept</a><a class="next" href="input-and-output-io-streams.html"><span class="nav-kicker">Next lesson →</span>28.1 · Input and output (I/O) streams</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

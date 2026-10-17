@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Constexpr function calls in non-required constant expressions You might expect that a constexpr function would evaluate at compile-time whenever possible, ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>F.2 — Constexpr functions (part 2) · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/constexpr-functions-part-2/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter F · Constexpr functions</summary><div class="sidebar-title"><small>Chapter F</small><strong>Constexpr functions</strong></div>
+<ol class="sidebar-lessons"><li><a href="constexpr-functions.html"><span class="lesson-number">F.1</span><span>Constexpr functions</span></a></li><li><a href="constexpr-functions-part-2.html" aria-current="page"><span class="lesson-number">F.2</span><span>Constexpr functions (part 2)</span></a></li><li><a href="constexpr-functions-part-3-and-consteval.html"><span class="lesson-number">F.3</span><span>Constexpr functions (part 3) and consteval</span></a></li><li><a href="constexpr-functions-part-4.html"><span class="lesson-number">F.4</span><span>Constexpr functions (part 4)</span></a></li><li><a href="chapter-f-summary-and-quiz.html"><span class="lesson-number">F.X</span><span>Chapter F summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter F</div>
+        <h1>F.2 — Constexpr functions (part 2)</h1>
+        <div class="article-meta"><span>Updated: 2024-12-10 00:05</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">Constexpr function calls in non-required constant expressions</p>
+<p>You might expect that a constexpr function would evaluate at compile-time whenever possible, but unfortunately this is not the case.</p>
+<p>In lesson <a href="constant-expressions.html">5.5 -- Constant expressions</a>, we noted that in contexts that do not <em>require</em> a constant expression, the compiler may choose whether to evaluate a constant expression at either compile-time or at runtime.  Accordingly, any constexpr function call that is part of a non-required constant expression may be evaluated at either compile-time or runtime.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+constexpr int getValue(int x)
+{
+    return x;
+}
+
+int main()
+{
+    int x { getValue(5) }; // may evaluate at runtime or compile-time
+    
+    return 0;
+}</code></pre>
+<p>In the above example, because <code>getValue()</code> is constexpr, the call <code>getValue(5)</code> is a constant expression.  However, because variable <code>x</code> is not constexpr, it does not require a constant expression initializer.  So even though we’ve provided a constant expression initializer, the compiler is free to choose whether <code>getValue(5)</code> evaluates at runtime or compile-time.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Compile-time evaluation of constexpr functions is only guaranteed when a constant expression is required.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Diagnosis of constexpr functions in required constant expressions</p>
+<p>The compiler is <em>not</em> required to determine whether a constexpr function is evaluatable at compile-time until it is actually evaluated at compile-time.  It is fairly easy to write a constexpr function that compiles successfully for runtime use, but then fails to compile when evaluated at compile-time.</p>
+<p>As a silly example of this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int getValue(int x)
+{
+    return x;
+}
+
+// This function can be evaluated at runtime
+// When evaluated at compile-time, the function will produce a compilation error
+// because the call to getValue(x) cannot be resolved at compile-time
+constexpr int foo(int x)
+{
+    if (x &lt; 0) return 0; // needed prior to adoption of P2448R1 in C++23 (see note below)
+    return getValue(x);  // call to non-constexpr function here
+}
+
+int main()
+{
+    int x { foo(5) };           // okay: will evaluate at runtime
+    constexpr int y { foo(5) }; // compile error: foo(5) can't evaluate at compile-time
+
+    return 0;
+}</code></pre>
+<p>In the above example, when <code>foo(5)</code> is used as an initializer for non-constexpr variable <code>x</code>, it will be evaluated at runtime.  This works fine, and returns the value <code>5</code>.</p>
+<p>However, when <code>foo(5)</code>, is used as an initializer for constexpr variable <code>y</code>, it must be evaluated at compile-time.  At that point, the compiler will determine that the call to <code>foo(5)</code> can’t be evaluated at compile-time, as <code>getValue()</code> is not a constexpr function.</p>
+<p>Therefore, when writing a constexpr function, always explicitly test that it compiles when evaluated at compile-time (by calling it in a context where a constant expression is required, such as in the initialization of a constexpr variable).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>All constexpr functions should be evaluatable at compile-time, as they will be required to do so in contexts that require a constant expression.</p>
+<p>Always test your constexpr functions in a context that requires a constant expression, as the constexpr function may work when evaluated at runtime but fail when evaluated at compile-time.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Prior to C++23, if no argument values exist that would allow a constexpr function to be evaluated at compile-time, the program is ill-formed (no diagnostic required).  Without the line <code>if (x &lt; 0) return 0</code>, the above example would contain no set of arguments that allow the function to be evaluatable at compile-time, making the program ill-formed.  Given that no diagnostic is required, the compiler may not enforce this.</p>
+<p>This requirement was revoked in C++23 (<a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2448r1.html" target="_blank" rel="noopener noreferrer">P2448R1</a>).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Constexpr/consteval function parameters are not constexpr</p>
+<p>The parameters of a constexpr function are not implicitly constexpr, nor may they be declared as <code>constexpr</code>.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>A constexpr function parameter would imply the function could only be called with a constexpr argument.  But this is not the case -- constexpr functions can be called with non-constexpr arguments when the function is evaluated at runtime.
+</p></div>
+<p>Because such parameters are not constexpr, they cannot be used in constant expressions within the function.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">consteval int goo(int c)    // c is not constexpr, and cannot be used in constant expressions
+{
+    return c;
+}
+
+constexpr int foo(int b)    // b is not constexpr, and cannot be used in constant expressions
+{
+    constexpr int b2 { b }; // compile error: constexpr variable requires constant expression initializer
+
+    return goo(b);          // compile error: consteval function call requires constant expression argument
+}
+
+int main()
+{
+    constexpr int a { 5 };
+
+    std::cout &lt;&lt; foo(a); // okay: constant expression a can be used as argument to constexpr function foo()
+    
+    return 0;
+}</code></pre>
+<p>In the above example, function parameter <code>b</code> is not constexpr (even though argument <code>a</code> is a constant expression).  This means <code>b</code> cannot be used anywhere a constant expression is required, such as the the initializer for a constexpr variable (e.g. <code>b2</code>) or in a call to a consteval function (<code>goo(b)</code>).</p>
+<p>The parameters of constexpr functions may be declared as <code>const</code>, in which case they are treated as runtime constants.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>If you need parameters that are constant expressions, see <a href="non-type-template-parameters.html">11.9 -- Non-type template parameters</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Constexpr functions are implicitly inline</p>
+<p>When a constexpr function is evaluated at compile-time, the compiler must be able to see the full definition of the constexpr function prior to such function calls (so it can perform the evaluation itself).  A forward declaration will not suffice in this case, even if the actual function definition appears later in the same compilation unit.</p>
+<p>This means that a constexpr function called in multiple files needs to have its definition included into each translation unit -- which would normally be a violation of the one-definition rule.  To avoid such problems, constexpr functions are implicitly inline, which makes them exempt from the one-definition rule.</p>
+<p>As a result, constexpr functions are often defined in header files, so they can be #included into any .cpp file that requires the full definition.</p>
+<div class="cpp-note cpp-lightpurplebackground">
+<p class="cpp-note-title cpp-bottomline">Rule</p>
+<p>The compiler must be able to see the full definition of a constexpr (or consteval) function, not just a forward declaration.
+</p></div>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Constexpr/consteval functions used in a single source file (.cpp) should be defined in the source file above where they are used.</p>
+<p>Constexpr/consteval functions used in multiple source files should be defined in a header file so they can be included into each source file.
+</p></div>
+<p>For constexpr function calls that are only evaluated at runtime, a forward declaration is sufficient to satisfy the compiler.  This means you can use a forward declaration to call a constexpr function defined in another translation unit, but only if you invoke it in a context that does not require compile-time evaluation.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Per <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/cwg_active.html#2166" target="_blank" rel="noopener noreferrer">CWG2166</a>, the actual requirement for the forward declaration of constexpr functions that are evaluated at compile-time is that “the constexpr function must be defined prior to the outermost evaluation that eventually results in the invocation”.  Therefore, this is allowed:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+constexpr int foo(int);
+
+constexpr int goo(int c)
+{
+	return foo(c);   // note that foo is not defined yet
+}
+
+constexpr int foo(int b) // okay because foo is still defined before any calls to goo
+{
+	return b;
+}
+
+int main()
+{
+	 constexpr int a{ goo(5) }; // this is the outermost invocation
+
+	return 0;
+}</code></pre>
+<p>The intent here is to allow for mutually recursive constexpr functions (where two constexpr functions call each other), which would not be possible otherwise.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Recap</p>
+<p>Marking a function as <code>constexpr</code> means it can be used in a constant expression.  It does not mean “will evaluate at compile-time”.</p>
+<p>A constant expression (which may contain constexpr function calls) is only required to evaluate at compile-time in contexts where a constant expression is required.</p>
+<p>In contexts that do not require a constant expression, the compiler may choose whether to evaluate a constant expression (which may contain constexpr function calls) at compile-time or at runtime.</p>
+<p>A runtime (non-constant) expression (which may contain constexpr function calls or non-constexpr function calls) will evaluate at runtime.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Another example</p>
+<p>Let’s do another examine to explore how a constexpr function is required or likely to evaluate further:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+constexpr int greater(int x, int y)
+{
+    return (x &gt; y ? x : y);
+}
+
+int main()
+{
+    constexpr int g { greater(5, 6) };              // case 1: always evaluated at compile-time
+    std::cout &lt;&lt; g &lt;&lt; " is greater!\n";
+
+    std::cout &lt;&lt; greater(5, 6) &lt;&lt; " is greater!\n"; // case 2: may be evaluated at either runtime or compile-time
+
+    int x{ 5 }; // not constexpr but value is known at compile-time
+    std::cout &lt;&lt; greater(x, 6) &lt;&lt; " is greater!\n"; // case 3: likely evaluated at runtime
+
+    std::cin &gt;&gt; x;
+    std::cout &lt;&lt; greater(x, 6) &lt;&lt; " is greater!\n"; // case 4: always evaluated at runtime
+
+    return 0;
+}</code></pre>
+<p>In case 1, we’re calling <code>greater()</code> in a context that requires a constant expression.  Thus <code>greater()</code> must be evaluated at compile-time.</p>
+<p>In case 2, the <code>greater()</code> function is being called in a context that does not require a constant expression, as output statements must execute at runtime.  However, since the arguments are constant expressions, the function is eligible to be evaluated at compile-time.  Thus the compiler is free to choose whether this call to <code>greater()</code> will be evaluated at compile-time or runtime.</p>
+<p>In case 3, we’re calling <code>greater()</code> with one argument that is not a constant expression.  So this will typically execute at runtime.</p>
+<p>However, this argument has a value that is known at compile-time.  Under the as-if rule, the compiler could decide to treat the evaluation of <code>x</code> as a constant expression, and evaluate this call to <code>greater()</code> at compile-time.  But more likely, it will evaluate it at runtime.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover the as-if rule in lesson <a href="constant-expressions.html">5.5 -- Constant expressions</a>.</p>
+<p>Note that even non-constexpr functions could be evaluated at compile-time under the as-if rule!
+</p></div>
+<p>In case 4, the value of argument <code>x</code> can’t be known at compile-time, so this call to <code>greater()</code> will always evaluate at runtime.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Put another way, we can categorize the likelihood that a function will actually be evaluated at compile-time as follows:</p>
+<p>Always (required by the standard):</p>
+<ul>
+<li>Constexpr function is called where constant expression is required.
+</li>
+<li>Constexpr function is called from other function being evaluated at compile-time.
+</li>
+</ul>
+<p>Probably (there’s little reason not to):</p>
+<ul>
+<li>Constexpr function is called where constant expression isn’t required, all arguments are constant expressions.
+</li>
+</ul>
+<p>Possibly (if optimized under the as-if rule):</p>
+<ul>
+<li>Constexpr function is called where constant expression isn’t required, some arguments are not constant expressions but their values are known at compile-time.
+</li>
+<li>Non-constexpr function capable of being evaluated at compile-time, all arguments are constant expressions.
+</li>
+</ul>
+<p>Never (not possible):</p>
+<ul>
+<li>Constexpr function is called where constant expression isn’t required, some arguments have values that are not known at compile-time.
+</li>
+</ul>
+</div>
+<p>Note that your compiler’s optimization level setting may have an impact on whether it decides to evaluate a function at compile-time or runtime.  This also means that your compiler may make different choices for debug vs. release builds (as debug builds typically have optimizations turned off).</p>
+<p>For example, both gcc and Clang will not compile-time evaluate a constexpr function called where a constant expression isn’t required unless the compiler told to optimize the code (e.g. using the <code>-O2</code> compiler option).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>The compiler might also choose to inline a function call, or even optimize a function call away entirely.  Both of these can affect when (or if) the content of the function call are evaluated.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="constexpr-functions.html"><span class="nav-kicker">← Previous lesson</span>F.1 · Constexpr functions</a><a class="next" href="constexpr-functions-part-3-and-consteval.html"><span class="nav-kicker">Next lesson →</span>F.3 · Constexpr functions (part 3) and consteval</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

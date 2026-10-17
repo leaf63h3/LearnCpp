@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 16.9 -- Array indexing and length using enumerators, we discussed arrays and enumerations. Now that we have constexpr std::array in our toolkit, ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.6 — std::array and enumerations · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stdarray-and-enumerations/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html" aria-current="page"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.6 — std::array and enumerations</h1>
+        <div class="article-meta"><span>Updated: 2025-02-01 15:01</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="array-indexing-and-length-using-enumerators.html">16.9 -- Array indexing and length using enumerators</a>, we discussed arrays and enumerations.</p>
+<p>Now that we have <code>constexpr std::array</code> in our toolkit, we’re going to continue that discussion and show a few additional tricks.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using static assert to ensure the proper number of array initializers</p>
+<p>When initializing a <code>constexpr std::array</code> using CTAD, the compiler will deduce how long the array should be from the number of initializers.  If less initializers are provided than there should be, the array will be shorter than expected, and indexing it can lead to undefined behavior.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+enum StudentNames
+{
+    kenny, // 0
+    kyle, // 1
+    stan, // 2
+    butters, // 3
+    cartman, // 4
+    max_students // 5
+};
+
+int main()
+{
+    constexpr std::array testScores { 78, 94, 66, 77 }; // oops, only 4 values
+
+    std::cout &lt;&lt; "Cartman got a score of " &lt;&lt; testScores[StudentNames::cartman] &lt;&lt; '\n'; // undefined behavior due to invalid index
+
+    return 0;
+}</code></pre>
+<p>Whenever the number of initializers in a <code>constexpr std::array</code> can be reasonably sanity checked, you can do so using a static assert:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+enum StudentNames
+{
+    kenny, // 0
+    kyle, // 1
+    stan, // 2
+    butters, // 3
+    cartman, // 4
+    max_students // 5
+};
+
+int main()
+{
+    constexpr std::array testScores { 78, 94, 66, 77 };
+
+    // Ensure the number of test scores is the same as the number of students
+    static_assert(std::size(testScores) == max_students); // compile error: static_assert condition failed
+
+    std::cout &lt;&lt; "Cartman got a score of " &lt;&lt; testScores[StudentNames::cartman] &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>That way, if you add a new enumerator later but forget to add a corresponding initializer to <code>testScores</code>, the program will fail to compile.</p>
+<p>You can also use a static assert to ensure two different <code>constexpr std::array</code> have the same length.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using constexpr arrays for better enumeration input and output</p>
+<p>In lesson <a href="introduction-to-overloading-the-i-o-operators.html">13.5 -- Introduction to overloading the I/O operators</a>, we covered a few ways to input and output the names of enumerators.  To assist in this task, we had helper functions that converted an enumerator to a string and vice-versa.  These functions each had their own (duplicate) set of string literals, and we had to specifically code logic to check each:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr std::string_view getPetName(Pet pet)
+{
+    switch (pet)
+    {
+    case cat:   return "cat";
+    case dog:   return "dog";
+    case pig:   return "pig";
+    case whale: return "whale";
+    default:    return "???";
+    }
+}
+
+constexpr std::optional&lt;Pet&gt; getPetFromString(std::string_view sv)
+{
+    if (sv == "cat")   return cat;
+    if (sv == "dog")   return dog;
+    if (sv == "pig")   return pig;
+    if (sv == "whale") return whale;
+
+    return {};
+}</code></pre>
+<p>This means that if we were to add a new enumerator, we’d have to remember to update these functions.</p>
+<p>Let’s improve these functions a bit.  In cases where the value of our enumerators start at 0 and proceed sequentially (which is true for most enumerations), we can use an array to hold the name of each enumerator.  </p>
+<p>This allows us to do two things:</p>
+<ol start="1">
+<li>Index the array using the enumerator’s value to get the name of that enumerator.
+</li>
+<li>Use a loop to iterate through all of the names, and be able to correlate a name back to the enumerator based on index.
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+namespace Color
+{
+    enum Type
+    {
+        black,
+        red,
+        blue,
+        max_colors
+    };
+
+    // use sv suffix so std::array will infer type as std::string_view
+    using namespace std::string_view_literals; // for sv suffix
+    constexpr std::array colorName { "black"sv, "red"sv, "blue"sv };
+
+    // Make sure we've defined strings for all our colors
+    static_assert(std::size(colorName) == max_colors);
+};
+
+constexpr std::string_view getColorName(Color::Type color)
+{
+    // We can index the array using the enumerator to get the name of the enumerator
+    return Color::colorName[static_cast&lt;std::size_t&gt;(color)];
+}
+
+// Teach operator&lt;&lt; how to print a Color
+// std::ostream is the type of std::cout
+// The return type and parameter type are references (to prevent copies from being made)!
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Color::Type color)
+{
+    return out &lt;&lt; getColorName(color);
+}
+
+// Teach operator&gt;&gt; how to input a Color by name
+// We pass color by non-const reference so we can have the function modify its value
+std::istream&amp; operator&gt;&gt; (std::istream&amp; in, Color::Type&amp; color)
+{
+    std::string input {};
+    std::getline(in &gt;&gt; std::ws, input);
+
+    // Iterate through the list of names to see if we can find a matching name
+    for (std::size_t index=0; index &lt; Color::colorName.size(); ++index)
+    {
+        if (input == Color::colorName[index])
+        {
+            // If we found a matching name, we can get the enumerator value based on its index
+            color = static_cast&lt;Color::Type&gt;(index);
+            return in;
+        }
+    }
+
+    // We didn't find a match, so input must have been invalid
+    // so we will set input stream to fail state
+    in.setstate(std::ios_base::failbit);
+
+    // On an extraction failure, operator&gt;&gt; zero-initializes fundamental types
+    // Uncomment the following line to make this operator do the same thing
+    // color = {};
+    return in;
+}
+
+int main()
+{
+    auto shirt{ Color::blue };
+    std::cout &lt;&lt; "Your shirt is " &lt;&lt; shirt &lt;&lt; '\n';
+
+    std::cout &lt;&lt; "Enter a new color: ";
+    std::cin &gt;&gt; shirt;
+    if (!std::cin)
+        std::cout &lt;&lt; "Invalid\n";
+    else
+        std::cout &lt;&lt; "Your shirt is now " &lt;&lt; shirt &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Your shirt is blue
+Enter a new color: red
+Your shirt is now red
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="rangedEnumeration"></a>Range-based for-loops and enumerations <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p>Occasionally we run across situations where it would be useful to iterate through the enumerators of an enumeration.  While we can do this using a for-loop with an integer index, this is likely to require a lot of static casting of the integer index to our enumeration type.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+namespace Color
+{
+    enum Type
+    {
+        black,
+        red,
+        blue,
+        max_colors
+    };
+
+    // use sv suffix so std::array will infer type as std::string_view
+    using namespace std::string_view_literals; // for sv suffix
+    constexpr std::array colorName { "black"sv, "red"sv, "blue"sv };
+
+    // Make sure we've defined strings for all our colors
+    static_assert(std::size(colorName) == max_colors);
+};
+
+constexpr std::string_view getColorName(Color::Type color)
+{
+    return Color::colorName[color];
+}
+
+// Teach operator&lt;&lt; how to print a Color
+// std::ostream is the type of std::cout
+// The return type and parameter type are references (to prevent copies from being made)!
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Color::Type color)
+{
+    return out &lt;&lt; getColorName(color);
+}
+
+int main()
+{
+    // Use a for loop to iterate through all our colors
+    for (int i=0; i &lt; Color::max_colors; ++i )
+        std::cout &lt;&lt; static_cast&lt;Color::Type&gt;(i) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Unfortunately, range-based for-loops won’t allow you to iterate over the enumerators of an enumeration:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+namespace Color
+{
+    enum Type
+    {
+        black,
+        red,
+        blue,
+        max_colors
+    };
+
+    // use sv suffix so std::array will infer type as std::string_view
+    using namespace std::string_view_literals; // for sv suffix
+    constexpr std::array colorName { "black"sv, "red"sv, "blue"sv };
+
+    // Make sure we've defined strings for all our colors
+    static_assert(std::size(colorName) == max_colors);
+};
+
+constexpr std::string_view getColorName(Color::Type color)
+{
+    return Color::colorName[color];
+}
+
+// Teach operator&lt;&lt; how to print a Color
+// std::ostream is the type of std::cout
+// The return type and parameter type are references (to prevent copies from being made)!
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Color::Type color)
+{
+    return out &lt;&lt; getColorName(color);
+}
+
+int main()
+{
+    for (auto c: Color::Type) // compile error: can't traverse enumeration
+        std::cout &lt;&lt; c &lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>There are many creative solutions for this.  Since we can use a range-based for-loop on an array, one of the most straightforward solutions is to create a <code>constexpr std::array</code> containing each of our enumerators, and then iterate over that.  This method only works if the enumerators have unique values.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+namespace Color
+{
+    enum Type
+    {
+        black,     // 0
+        red,       // 1
+        blue,      // 2
+        max_colors // 3
+    };
+
+    using namespace std::string_view_literals; // for sv suffix
+    constexpr std::array colorName { "black"sv, "red"sv, "blue"sv };
+    static_assert(std::size(colorName) == max_colors);
+
+    constexpr std::array types { black, red, blue }; // A std::array containing all our enumerators
+    static_assert(std::size(types) == max_colors);
+};
+
+constexpr std::string_view getColorName(Color::Type color)
+{
+    return Color::colorName[color];
+}
+
+// Teach operator&lt;&lt; how to print a Color
+// std::ostream is the type of std::cout
+// The return type and parameter type are references (to prevent copies from being made)!
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, Color::Type color)
+{
+    return out &lt;&lt; getColorName(color);
+}
+
+int main()
+{
+    for (auto c: Color::types) // ok: we can do a range-based for on a std::array
+        std::cout &lt;&lt; c &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>In the above example, since the element type of <code>Color::types</code> is <code>Color::Type</code>, variable <code>c</code> will be deduced as a <code>Color::Type</code>, which is exactly what we want!</p>
+<p>This prints:</p>
+<pre>
+black
+red
+blue
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p>Define a namespace named <code>Animal</code>.  Inside it, define an enum containing the following animals: chicken, dog, cat, elephant, duck, and snake.  Also create a struct named <code>Data</code> to store each animal’s name, number of legs, and the sound it makes.  Create a <code>std::array</code> of Data and fill out a Data element for each animal.</p>
+<p>Ask the user to enter the name of an animal.  If the name does not match the name of one of our animals, tell them so.  Otherwise, print the data for that animal.  Then print the data for all of the other animals that didn’t match their input.</p>
+<p>For example:</p>
+<pre>
+Enter an animal: dog
+A dog has 4 legs and says woof.
+
+Here is the data for the rest of the animals:
+A chicken has 2 legs and says cluck.
+A cat has 4 legs and says meow.
+A elephant has 4 legs and says pawoo.
+A duck has 2 legs and says quack.
+A snake has 0 legs and says hissss.
+</pre>
+<pre>
+Enter an animal: frog
+That animal couldn't be found.
+
+Here is the data for the rest of the animals:
+A chicken has 2 legs and says cluck.
+A dog has 4 legs and says woof.
+A cat has 4 legs and says meow.
+A elephant has 4 legs and says pawoo.
+A duck has 2 legs and says quack.
+A snake has 0 legs and says hissss.
+</pre>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+namespace Animal
+{
+    enum Type
+    {
+        chicken,
+        dog,
+        cat,
+        elephant,
+        duck,
+        snake,
+        max_animals
+    };
+
+    struct Data
+    {
+        std::string_view name{};
+        int legs{};
+        std::string_view sound{};
+    };
+
+    constexpr std::array types { chicken, dog, cat, elephant, duck, snake };
+    constexpr std::array data {
+        Data{ "chicken",    2, "cluck" },
+        Data{ "dog",        4, "woof" },
+        Data{ "cat",        4, "meow" },
+        Data{ "elephant",   4, "pawoo" },
+        Data{ "duck",       2, "quack" },
+        Data{ "snake",      0, "hissss" },
+    };
+
+    static_assert(std::size(types) == max_animals);
+    static_assert(std::size(data) == max_animals);
+}
+
+// Teach operator&gt;&gt; how to input an Animal by name
+// We pass animal by non-const reference so we can have the function modify its value
+std::istream&amp; operator&gt;&gt; (std::istream&amp; in, Animal::Type&amp; animal)
+{
+    std::string input {};
+    std::getline(in &gt;&gt; std::ws, input);
+
+    // See if we can find a match
+    for (std::size_t index=0; index &lt; Animal::data.size(); ++index)
+    {
+        if (input == Animal::data[index].name)
+        {
+            animal = static_cast&lt;Animal::Type&gt;(index);
+            return in;
+        }
+    }
+
+    // We didn't find a match, so input must have been invalid
+    // so we will set input stream to fail state
+    in.setstate(std::ios_base::failbit);
+    return in;
+}
+
+void printAnimalData(Animal::Type type)
+{
+    const Animal::Data&amp; animal { Animal::data[type] };
+    std::cout &lt;&lt; "A " &lt;&lt; animal.name &lt;&lt; " has " &lt;&lt; animal.legs &lt;&lt; " legs and says " &lt;&lt; animal.sound &lt;&lt; ".\n";    
+}
+
+int main()
+{
+    std::cout &lt;&lt; "Enter an animal: ";
+    Animal::Type type{};
+    std::cin &gt;&gt; type;
+
+    // If users input didn't match
+    if (!std::cin)
+    {
+        std::cin.clear();
+        std::cout &lt;&lt; "That animal couldn't be found.\n";
+        type = Animal::max_animals; // set to invalid option so we don't match below
+    }
+    else
+        printAnimalData(type);
+
+
+    std::cout &lt;&lt; "\nHere is the data for the rest of the animals:\n";
+    for (auto a : Animal::types)
+    {
+        if (a != type)
+            printAnimalData(a);
+    }
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="nav-kicker">← Previous lesson</span>17.5 · Arrays of references via std::reference_wrapper</a><a class="next" href="introduction-to-c-style-arrays.html"><span class="nav-kicker">Next lesson →</span>17.7 · Introduction to C-style arrays</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

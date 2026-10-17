@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 9.4 -- Detecting and handling errors, we discussed cases where a function encounters an error that it cannot reasonably handle itself. For exampl">
+  <meta name="robots" content="noindex,nofollow">
+  <title>12.15 — std::optional · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stdoptional/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 12 · Compound Types: References and Pointers</summary><div class="sidebar-title"><small>Chapter 12</small><strong>Compound Types: References and Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-compound-data-types.html"><span class="lesson-number">12.1</span><span>Introduction to compound data types</span></a></li><li><a href="value-categories-lvalues-and-rvalues.html"><span class="lesson-number">12.2</span><span>Value categories (lvalues and rvalues)</span></a></li><li><a href="lvalue-references.html"><span class="lesson-number">12.3</span><span>Lvalue references</span></a></li><li><a href="lvalue-references-to-const.html"><span class="lesson-number">12.4</span><span>Lvalue references to const</span></a></li><li><a href="pass-by-lvalue-reference.html"><span class="lesson-number">12.5</span><span>Pass by lvalue reference</span></a></li><li><a href="pass-by-const-lvalue-reference.html"><span class="lesson-number">12.6</span><span>Pass by const lvalue reference</span></a></li><li><a href="introduction-to-pointers.html"><span class="lesson-number">12.7</span><span>Introduction to pointers</span></a></li><li><a href="null-pointers.html"><span class="lesson-number">12.8</span><span>Null pointers</span></a></li><li><a href="pointers-and-const.html"><span class="lesson-number">12.9</span><span>Pointers and const</span></a></li><li><a href="pass-by-address.html"><span class="lesson-number">12.10</span><span>Pass by address</span></a></li><li><a href="pass-by-address-part-2.html"><span class="lesson-number">12.11</span><span>Pass by address (part 2)</span></a></li><li><a href="return-by-reference-and-return-by-address.html"><span class="lesson-number">12.12</span><span>Return by reference and return by address</span></a></li><li><a href="in-and-out-parameters.html"><span class="lesson-number">12.13</span><span>In and out parameters</span></a></li><li><a href="type-deduction-with-pointers-references-and-const.html"><span class="lesson-number">12.14</span><span>Type deduction with pointers, references, and const</span></a></li><li><a href="stdoptional.html" aria-current="page"><span class="lesson-number">12.15</span><span>std::optional</span></a></li><li><a href="chapter-12-summary-and-quiz.html"><span class="lesson-number">12.x</span><span>Chapter 12 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 12</div>
+        <h1>12.15 — std::optional</h1>
+        <div class="article-meta"><span>Updated: 2025-02-08 20:44</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="detecting-and-handling-errors.html">9.4 -- Detecting and handling errors</a>, we discussed cases where a function encounters an error that it cannot reasonably handle itself.  For example, consider a function that calculates and returns a value:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int doIntDivision(int x, int y)
+{
+    return x / y;
+}</code></pre>
+<p>If the caller passes in a value that is semantically invalid (such as <code>y</code> = <code>0</code>), this function cannot calculate a value to return (as division by 0 is mathematically undefined).  What do we do in that case?  Because functions that calculate results should have no side effects, this function cannot reasonably resolve the error itself.  In such cases, the typical thing to do is have the function detect the error, but then pass the error back to the caller to deal with in some program-appropriate way.</p>
+<p>In the previously linked lesson, we covered two different ways to have a function return an error back to the caller:</p>
+<ul>
+<li>Have a void-returning function return a bool instead (indicating success or failure).
+</li>
+<li>Have a value-returning function return a sentinel value (a special value that does not occur in the set of possible values the function can otherwise return) to indicate an error.
+</li>
+</ul>
+<p>As an example of the latter, the <code>reciprocal()</code> function that follows returns value <code>0.0</code> (which can never otherwise occur) if the user passes in a semantically invalid argument for <code>x</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// The reciprocal of x is 1/x, returns 0.0 if x=0
+double reciprocal(double x)
+{
+    if (x == 0.0) // if x is semantically invalid
+       return 0.0; // return 0.0 as a sentinel to indicate an error occurred
+
+    return 1.0 / x;
+}
+
+void testReciprocal(double d)
+{
+     double result { reciprocal(d) };
+     std::cout &lt;&lt; "The reciprocal of " &lt;&lt; d &lt;&lt; " is ";
+     if (result != 0.0)
+         std::cout &lt;&lt; result &lt;&lt; '\n';
+     else
+         std::cout &lt;&lt; "undefined\n";
+}
+
+int main()
+{
+    testReciprocal(5.0);
+    testReciprocal(-4.0);
+    testReciprocal(0.0);
+
+    return 0;
+}</code></pre>
+<p>While this is a fairly attractive solution, there are a number of potential downsides:</p>
+<ul>
+<li>The programmer must know which sentinel value the function is using to indicate an error (and this value may differ for each function returning an error using this method).
+</li>
+<li>A different version of the same function may use a different sentinel value.
+</li>
+<li>This method does not work for functions where all possible sentinel values are valid return values.
+</li>
+</ul>
+<p>Consider our <code>doIntDivision()</code> function above.  What value could it return if the user passes in <code>0</code> for <code>y</code>?  We can’t use <code>0</code>, because <code>0</code> divided by anything yields <code>0</code> as a valid result.  In fact, there are no values that we could return that cannot occur naturally.</p>
+<p>So what are we to do?</p>
+<p>First, we could pick some (hopefully) uncommon return value as our sentinel and use it to indicate an error:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;limits&gt; // for std::numeric_limits
+
+// returns std::numeric_limits&lt;int&gt;::lowest() on failure
+int doIntDivision(int x, int y)
+{
+    if (y == 0)
+        return std::numeric_limits&lt;int&gt;::lowest();
+    return x / y;
+}</code></pre>
+<p><code>std::numeric_limits&lt;T&gt;::lowest()</code> is a function that returns the most negative value for type <code>T</code>.  It is the counterpart to the <code>std::numeric_limits&lt;T&gt;::max()</code> function (which returns the largest positive value for type <code>T</code>) that we introduced in lesson <a href="stdcin-and-handling-invalid-input.html">9.5 -- std::cin and handling invalid input</a>.</p>
+<p>In the example above, if <code>doIntDivision()</code> cannot proceed, we return <code>std::numeric_limits&lt;int&gt;::lowest()</code>, which returns the most negative int value back to the caller to indicate that the function failed.</p>
+<p>While this mostly works, it has two downsides:</p>
+<ul>
+<li>Every time we call this function, we need to test the return value for equality with <code>std::numeric_limits&lt;int&gt;::lowest()</code> to see if it failed.  That’s verbose and ugly.
+</li>
+<li>It is an example of a <a href="https://en.wikipedia.org/wiki/Semipredicate_problem" target="_blank" rel="noopener noreferrer">semipredicate problem</a>: if the user calls <code>doIntDivision(std::numeric_limits&lt;int&gt;::lowest(), 1)</code>, the returned result <code>std::numeric_limits&lt;int&gt;::lowest()</code> will be ambiguous as to whether the function succeeded or failed.  That may or may not be a problem depending on how the function is actually used, but it’s another thing we have to worry about and another potential way that errors can creep into our program.
+</li>
+</ul>
+<p>Second, we could abandon using return values to return errors and use some other mechanism (e.g. exceptions).  However, exceptions have their own complications and performance costs, and may not be appropriate or desired.  That’s probably overkill for something like this.</p>
+<p>Third, we could abandon returning a single value and return two values instead: one (of type <code>bool</code>) that indicates whether the function succeeded, and the other (of the desired return type) that holds the actual return value (if the function succeeded) or an indeterminate value (if the function failed).  This is probably the best option of the bunch.</p>
+<p>Prior to C++17, choosing this latter option required you to implement it yourself.  And while C++ provides multiple ways to do so, any roll-your-own approach will inevitably lead to inconsistencies and errors.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Returning a <code>std::optional</code></p>
+<p>C++17 introduces <code>std::optional</code>, which is a class template type that implements an optional value.  That is, a <code>std::optional&lt;T&gt;</code> can either have a value of type <code>T</code>, or not.  We can use this to implement the third option above:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;optional&gt; // for std::optional (C++17)
+
+// Our function now optionally returns an int value
+std::optional&lt;int&gt; doIntDivision(int x, int y)
+{
+    if (y == 0)
+        return {}; // or return std::nullopt
+    return x / y;
+}
+
+int main()
+{
+    std::optional&lt;int&gt; result1 { doIntDivision(20, 5) };
+    if (result1) // if the function returned a value
+        std::cout &lt;&lt; "Result 1: " &lt;&lt; *result1 &lt;&lt; '\n'; // get the value
+    else
+        std::cout &lt;&lt; "Result 1: failed\n";
+
+    std::optional&lt;int&gt; result2 { doIntDivision(5, 0) };
+
+    if (result2)
+        std::cout &lt;&lt; "Result 2: " &lt;&lt; *result2 &lt;&lt; '\n';
+    else
+        std::cout &lt;&lt; "Result 2: failed\n";
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Result 1: 4
+Result 2: failed
+</pre>
+<p>Using <code>std::optional</code> is quite easy.  We can construct a <code>std::optional&lt;T&gt;</code> either with or without a value:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::optional&lt;int&gt; o1 { 5 };            // initialize with a value
+std::optional&lt;int&gt; o2 {};               // initialize with no value
+std::optional&lt;int&gt; o3 { std::nullopt }; // initialize with no value</code></pre>
+<p>To see if a <code>std::optional</code> has a value, we can choose one of the following:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (o1.has_value()) // call has_value() to check if o1 has a value
+if (o2)             // use implicit conversion to bool to check if o2 has a value</code></pre>
+<p>To get the value from a <code>std::optional</code>, we can choose one of the following:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::cout &lt;&lt; *o1;             // dereference to get value stored in o1 (undefined behavior if o1 does not have a value)
+std::cout &lt;&lt; o2.value();      // call value() to get value stored in o2 (throws std::bad_optional_access exception if o2 does not have a value)
+std::cout &lt;&lt; o3.value_or(42); // call value_or() to get value stored in o3 (or value `42` if o3 doesn't have a value)</code></pre>
+<p>Note that <code>std::optional</code> has a usage syntax that is essentially identical to a pointer:</p>
+<div class="cpp-table-wrapper">
+<table class="cpp-table">
+<tr>
+<th> Behavior </th>
+<th> Pointer </th>
+<th> <code>std::optional</code> </th>
+</tr>
+<tr>
+<td> Hold no value </td>
+<td> initialize/assign <code>{}</code> or <code>std::nullptr</code> </td>
+<td> initialize/assign <code>{}</code> or <code>std::nullopt</code> </td>
+</tr>
+<tr>
+<td> Hold a value </td>
+<td> initialize/assign an address </td>
+<td> initialize/assign a value </td>
+</tr>
+<tr>
+<td> Check if has value </td>
+<td> implicit conversion to bool </td>
+<td> implicit conversion to bool or <code>has_value()</code> </td>
+</tr>
+<tr>
+<td> Get value </td>
+<td> dereference </td>
+<td> dereference or <code>value()</code> </td>
+</tr>
+</table>
+</div>
+<p>However, semantically, a pointer and a <code>std::optional</code> are quite different.</p>
+<ul>
+<li>A pointer has reference semantics, meaning it references some other object, and assignment copies the pointer, not the object.  If we return a pointer by address, the pointer is copied back to the caller, not the object being pointed to.  This means we can’t return a local object by address, as we’ll copy that object’s address back to the caller, and then the object will be destroyed, leaving the returned pointer dangling.
+</li>
+<li>A <code>std::optional</code> has value semantics, meaning it actually contains its value, and assignment copies the value.  If we return a <code>std::optional</code> by value, the <code>std::optional</code> (including the contained value) is copied back to the caller.  This means we can return a value from the function back to the caller using <code>std::optional</code>.
+</li>
+</ul>
+<p>With this in mind, let’s look at how our example works.  Our <code>doIntDivision()</code> now returns a <code>std::optional&lt;int&gt;</code> instead of an <code>int</code>.  Inside the function body, if we detect an error, we return <code>{}</code>, which implicitly returns a <code>std::optional</code> containing no value.  If we have a value, we return that value, which implicit returns a <code>std::optional</code> containing that value.</p>
+<p>Within <code>main()</code>, we use an implicit conversion to bool to check if our returned <code>std::optional</code> has a value or not.  If it does, we dereference the <code>std::optional</code> object to get the value.  If it doesn’t, then we execute our error condition.  That’s it!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Pros and cons of returning a <code>std::optional</code></p>
+<p>Returning a <code>std::optional</code> is nice for a number of reasons:</p>
+<ul>
+<li>Using <code>std::optional</code> effectively documents that a function may return a value or not.
+</li>
+<li>We don’t have to remember which value is being returned as a sentinel.
+</li>
+<li>The syntax for using <code>std::optional</code> is convenient and intuitive.
+</li>
+</ul>
+<p>Returning a <code>std::optional</code> does come with a few downsides:</p>
+<ul>
+<li>We have to make sure the <code>std::optional</code> contains a value before getting the value.  If we dereference a <code>std::optional</code> that does not contain a value, we get undefined behavior.
+</li>
+<li><code>std::optional</code> does not provide a way to pass back information about why the function failed.
+</li>
+</ul>
+<p>Unless your function needs to return additional information about why it failed (either to better understand the failure, or to differentiate different kinds of failure), <code>std::optional</code> is an excellent choice for functions that may return a value or fail.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Return a <code>std::optional</code> (instead of a sentinel value) for functions that may fail, unless your function needs to return additional information about why it failed.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p><code>std::expected</code> (introduced in C++23) is designed to handle the case where a function can return either an expected value or an unexpected error code.  See the <a href="https://en.cppreference.com/w/cpp/utility/expected" target="_blank" rel="noopener noreferrer">std::expected reference</a> for more information.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Using <code>std::optional</code> as an optional function parameter</p>
+<p>In lesson <a href="pass-by-address-part-2.html">12.11 -- Pass by address (part 2)</a>, we discussed how pass by address can be used to allow a function to accept an “optional” argument (that is, the caller can either pass in <code>nullptr</code> to represent “no argument” or an object).  However, one downside of this approach is that a non-nullptr argument must be an lvalue (so that its address can be passed to the function).</p>
+<p>Perhaps unsurprisingly (given the name), <code>std::optional</code> is an alternative way for a function to accept an optional argument (that is used as an in-parameter only).  Instead of this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printIDNumber(const int *id=nullptr)
+{
+    if (id)
+        std::cout &lt;&lt; "Your ID number is " &lt;&lt; *id &lt;&lt; ".\n";
+    else
+        std::cout &lt;&lt; "Your ID number is not known.\n";
+}
+
+int main()
+{
+    printIDNumber(); // we don't know the user's ID yet
+
+    int userid { 34 };
+    printIDNumber(&amp;userid); // we know the user's ID now
+
+    return 0;
+}</code></pre>
+<p>You can do this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;optional&gt;
+
+void printIDNumber(std::optional&lt;const int&gt; id = std::nullopt)
+{
+    if (id)
+        std::cout &lt;&lt; "Your ID number is " &lt;&lt; *id &lt;&lt; ".\n";
+    else
+        std::cout &lt;&lt; "Your ID number is not known.\n";
+}
+
+int main()
+{
+    printIDNumber(); // we don't know the user's ID yet
+
+    int userid { 34 };
+    printIDNumber(userid); // we know the user's ID now
+
+    printIDNumber(62); // we can also pass an rvalue
+    
+    return 0;
+}</code></pre>
+<p>There are two advantages to this approach:</p>
+<ol start="1">
+<li>It effectively documents that the parameter is optional.
+</li>
+<li>We can pass in an rvalue (since <code>std::optional</code> will make a copy).
+</li>
+</ol>
+<p>However, because <code>std::optional</code> makes a copy of its argument, this becomes problematic when <code>T</code> is an expensive-to-copy type (like <code>std::string</code>).  With normal function parameters, we worked around this by making the parameter a <code>const lvalue reference</code>, so that a copy would not be made.  Unfortunately, as of C++23 <code>std::optional</code> does not support references.</p>
+<p>Therefore, we recommend using <code>std::optional&lt;T&gt;</code> as an optional parameter only when <code>T</code> would normally be passed by value.  Otherwise, use <code>const T*</code>.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Although <code>std::optional</code> doesn’t support references directly, you can use <code>std::reference_wrapper</code> (which we cover in lesson <a href="arrays-of-references-via-stdreference_wrapper.html">17.5 -- Arrays of references via std::reference_wrapper</a>) to mimic a reference.  Let’s take a look at what the above program looks like using a <code>std::string</code> id and <code>std::reference_wrapper</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;functional&gt;  // for std::reference_wrapper
+#include &lt;iostream&gt;
+#include &lt;optional&gt;
+#include &lt;string&gt;
+
+struct Employee
+{
+    std::string name{}; // expensive to copy
+    int id;
+};
+
+void printEmployeeID(std::optional&lt;std::reference_wrapper&lt;Employee&gt;&gt; e=std::nullopt)
+{
+    if (e)
+        std::cout &lt;&lt; "Your ID number is " &lt;&lt; e-&gt;get().id &lt;&lt; ".\n";
+    else
+        std::cout &lt;&lt; "Your ID number is not known.\n";
+}
+
+int main()
+{
+    printEmployeeID(); // we don't know the Employee yet
+
+    Employee e { "James", 34 };
+    printEmployeeID(e); // we know the Employee's ID now
+
+    return 0;
+}</code></pre>
+<p>And for comparison, the pointer version:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Employee
+{
+    std::string name{}; // expensive to copy
+    int id;
+};
+
+void printEmployeeID(const Employee* e=nullptr)
+{
+    if (e)
+        std::cout &lt;&lt; "Your ID number is " &lt;&lt; e-&gt;id &lt;&lt; ".\n";
+    else
+        std::cout &lt;&lt; "Your ID number is not known.\n";
+}
+
+int main()
+{
+    printEmployeeID(); // we don't know the Employee yet
+
+    Employee e { "James", 34 };
+    printEmployeeID(&amp;e); // we know the Employee's ID now
+
+    return 0;
+}</code></pre>
+<p>These two programs are nearly identical.  We’d argue the former isn’t more readable or maintainable than the latter, and isn’t worth introducing two additional types into your program for.
+</p></div>
+<p>In many cases, function overloading provides a superior solution:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Employee
+{
+    std::string name{}; // expensive to copy
+    int id;
+};
+
+void printEmployeeID()
+{
+    std::cout &lt;&lt; "Your ID number is not known.\n";
+}
+
+void printEmployeeID(const Employee&amp; e)
+{
+    std::cout &lt;&lt; "Your ID number is " &lt;&lt; e.id &lt;&lt; ".\n";
+}
+
+int main()
+{
+    printEmployeeID(); // we don't know the Employee yet
+
+    Employee e { "James", 34 };
+    printEmployeeID(e); // we know the Employee's ID now
+
+    printEmployeeID( { "Dave", 62 } ); // we can even pass rvalues
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer <code>std::optional</code> for optional return types.</p>
+<p>Prefer function overloading for optional function parameters (when possible).  Otherwise, use <code>std::optional&lt;T&gt;</code> for optional arguments when <code>T</code> would normally be passed by value.  Favor <code>const T*</code> when <code>T</code> is expensive to copy.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="type-deduction-with-pointers-references-and-const.html"><span class="nav-kicker">← Previous lesson</span>12.14 · Type deduction with pointers, references, and const</a><a class="next" href="chapter-12-summary-and-quiz.html"><span class="nav-kicker">Next lesson →</span>12.x · Chapter 12 summary and quiz</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="By far the most commonly used functionality of the STL library are the STL container classes. If you need a quick refresher on container classes, check out">
+  <meta name="robots" content="noindex,nofollow">
+  <title>21.2 — STL containers overview · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stl-containers-overview/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Appendix D · Deprecated Articles (will be removed soon)</summary><div class="sidebar-title"><small>Appendix D</small><strong>Deprecated Articles (will be removed soon)</strong></div>
+<ol class="sidebar-lessons"><li><a href="the-standard-library.html"><span class="lesson-number">21.1</span><span>The Standard Library</span></a></li><li><a href="stl-containers-overview.html" aria-current="page"><span class="lesson-number">21.2</span><span>STL containers overview</span></a></li><li><a href="stl-iterators-overview.html"><span class="lesson-number">21.3</span><span>STL iterators overview</span></a></li><li><a href="stl-algorithms-overview.html"><span class="lesson-number">21.4</span><span>STL algorithms overview</span></a></li><li><a href="stdstring-and-stdwstring.html"><span class="lesson-number">22.1</span><span>std::string and std::wstring</span></a></li><li><a href="stdstring-construction-and-destruction.html"><span class="lesson-number">22.2</span><span>std::string construction and destruction</span></a></li><li><a href="stdstring-length-and-capacity.html"><span class="lesson-number">22.3</span><span>std::string length and capacity</span></a></li><li><a href="stdstring-character-access-and-conversion-to-c-style-arrays.html"><span class="lesson-number">22.4</span><span>std::string character access and conversion to C-style arrays</span></a></li><li><a href="stdstring-assignment-and-swapping.html"><span class="lesson-number">22.5</span><span>std::string assignment and swapping</span></a></li><li><a href="stdstring-appending.html"><span class="lesson-number">22.6</span><span>std::string appending</span></a></li><li><a href="stdstring-inserting.html"><span class="lesson-number">22.7</span><span>std::string inserting</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Appendix D</div>
+        <h1>21.2 — STL containers overview</h1>
+        <div class="article-meta"><span>Updated: 2021-09-19 10:15</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>By far the most commonly used functionality of the STL library are the STL container classes.  If you need a quick refresher on container classes, check out lesson <a href="container-classes.html">23.6 -- Container classes</a>.</p>
+<p>The STL contains many different container classes that can be used in different situations.  Generally speaking, the container classes fall into three basic categories: Sequence containers, Associative containers, and Container adapters.  We’ll just do a quick overview of the containers here.</p>
+<p><strong>Sequence Containers</strong></p>
+<p>Sequence containers are container classes that maintain the ordering of elements in the container.  A defining characteristic of sequence containers is that you can choose where to insert your element by position.  The most common example of a sequence container is the array: if you insert four elements into an array, the elements will be in the exact order you inserted them.</p>
+<p>As of C++11, the STL contains 6 sequence containers: std::vector, std::deque, std::array, std::list, std::forward_list, and std::basic_string.</p>
+<ul>
+<li>If you’ve ever taken physics, you probably are thinking of a vector as an entity with both magnitude and direction.  The unfortunately named <strong>vector</strong> class in the STL is a dynamic array capable of growing as needed to contain its elements.  The vector class allows random access to its elements via operator[], and inserting and removing elements from the end of the vector is generally fast.
+<p>The following program inserts 6 numbers into a vector and uses the overloaded [] operator to access them in order to print them.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+
+    std::vector&lt;int&gt; vect;
+    for (int count=0; count &lt; 6; ++count)
+        vect.push_back(10 - count); // insert at end of array
+
+    for (int index=0; index &lt; vect.size(); ++index)
+        std::cout &lt;&lt; vect[index] &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+}</code></pre>
+<p>This program produces the result:<br>
+10 9 8 7 6 5</p>
+</li><li>The <strong>deque</strong> class (pronounced “deck”) is a double-ended queue class, implemented as a dynamic array that can grow from both ends.
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;deque&gt;
+
+int main()
+{
+    std::deque&lt;int&gt; deq;
+    for (int count=0; count &lt; 3; ++count)
+    {
+        deq.push_back(count); // insert at end of array
+        deq.push_front(10 - count); // insert at front of array
+    }
+
+    for (int index=0; index &lt; deq.size(); ++index)
+        std::cout &lt;&lt; deq[index] &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+}</code></pre>
+<p>This program produces the result:</p>
+<p>8 9 10 0 1 2</p>
+</li><li>A <strong>list</strong> is a special type of sequence container called a doubly linked list where each element in the container contains pointers that point at the next and previous elements in the list.  Lists only provide access to the start and end of the list -- there is no random access provided.  If you want to find a value in the middle, you have to start at one end and “walk the list” until you reach the element you want to find.  The advantage of lists is that inserting elements into a list is very fast if you already know where you want to insert them.  Generally iterators are used to walk through the list.
+<p>We’ll talk more about both linked lists and iterators in future lessons.</p>
+</li><li>Although the STL <strong>string</strong> (and wstring) class aren’t generally included as a type of sequence container, they essentially are, as they can be thought of as a vector with data elements of type char (or wchar).
+</li></ul>
+<p><strong>Associative Containers</strong></p>
+<p>Associative containers are containers that automatically sort their inputs when those inputs are inserted into the container.  By default, associative containers compare elements using operator&lt;.</p>
+<ul>
+<li>A <strong>set</strong> is a container that stores unique elements, with duplicate elements disallowed.  The elements are sorted according to their values.
+</li><li>A <strong>multiset</strong> is a set where duplicate elements are allowed.
+</li><li>A <strong>map</strong> (also called an associative array) is a set where each element is a pair, called a key/value pair.  The key is used for sorting and indexing the data, and must be unique.  The value is the actual data.
+</li><li>A <strong>multimap</strong> (also called a dictionary) is a map that allows duplicate keys.  Real-life dictionaries are multimaps: the key is the word, and the value is the meaning of the word.  All the keys are sorted in ascending order, and you can look up the value by key.  Some words can have multiple meanings, which is why the dictionary is a multimap rather than a map.
+</li></ul>
+<p><strong>Container Adapters</strong></p>
+<p>Container adapters are special predefined containers that are adapted to specific uses.  The interesting part about container adapters is that you can choose which sequence container you want them to use.</p>
+<ul>
+<li>A <strong>stack</strong> is a container where elements operate in a LIFO (Last In, First Out) context, where elements are inserted (pushed) and removed (popped) from the end of the container.  Stacks default to using deque as their default sequence container (which seems odd, since vector seems like a more natural fit), but can use vector or list as well.
+</li><li>A <strong>queue</strong> is a container where elements operate in a FIFO (First In, First Out) context, where elements are inserted (pushed) to the back of the container and removed (popped) from the front.  Queues default to using deque, but can also use list.
+</li><li>A <strong>priority queue</strong> is a type of queue where the elements are kept sorted (via operator&lt;).  When elements are pushed, the element is sorted in the queue.  Removing an element from the front returns the highest priority item in the priority queue.
+</li></ul>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="the-standard-library.html"><span class="nav-kicker">← Previous lesson</span>21.1 · The Standard Library</a><a class="next" href="stl-iterators-overview.html"><span class="nav-kicker">Next lesson →</span>21.3 · STL iterators overview</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

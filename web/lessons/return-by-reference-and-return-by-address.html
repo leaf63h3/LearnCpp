@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In previous lessons, we discussed that when passing an argument by value, a copy of the argument is made into the function parameter. For fundamental types">
+  <meta name="robots" content="noindex,nofollow">
+  <title>12.12 — Return by reference and return by address · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/return-by-reference-and-return-by-address/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 12 · Compound Types: References and Pointers</summary><div class="sidebar-title"><small>Chapter 12</small><strong>Compound Types: References and Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-compound-data-types.html"><span class="lesson-number">12.1</span><span>Introduction to compound data types</span></a></li><li><a href="value-categories-lvalues-and-rvalues.html"><span class="lesson-number">12.2</span><span>Value categories (lvalues and rvalues)</span></a></li><li><a href="lvalue-references.html"><span class="lesson-number">12.3</span><span>Lvalue references</span></a></li><li><a href="lvalue-references-to-const.html"><span class="lesson-number">12.4</span><span>Lvalue references to const</span></a></li><li><a href="pass-by-lvalue-reference.html"><span class="lesson-number">12.5</span><span>Pass by lvalue reference</span></a></li><li><a href="pass-by-const-lvalue-reference.html"><span class="lesson-number">12.6</span><span>Pass by const lvalue reference</span></a></li><li><a href="introduction-to-pointers.html"><span class="lesson-number">12.7</span><span>Introduction to pointers</span></a></li><li><a href="null-pointers.html"><span class="lesson-number">12.8</span><span>Null pointers</span></a></li><li><a href="pointers-and-const.html"><span class="lesson-number">12.9</span><span>Pointers and const</span></a></li><li><a href="pass-by-address.html"><span class="lesson-number">12.10</span><span>Pass by address</span></a></li><li><a href="pass-by-address-part-2.html"><span class="lesson-number">12.11</span><span>Pass by address (part 2)</span></a></li><li><a href="return-by-reference-and-return-by-address.html" aria-current="page"><span class="lesson-number">12.12</span><span>Return by reference and return by address</span></a></li><li><a href="in-and-out-parameters.html"><span class="lesson-number">12.13</span><span>In and out parameters</span></a></li><li><a href="type-deduction-with-pointers-references-and-const.html"><span class="lesson-number">12.14</span><span>Type deduction with pointers, references, and const</span></a></li><li><a href="stdoptional.html"><span class="lesson-number">12.15</span><span>std::optional</span></a></li><li><a href="chapter-12-summary-and-quiz.html"><span class="lesson-number">12.x</span><span>Chapter 12 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 12</div>
+        <h1>12.12 — Return by reference and return by address</h1>
+        <div class="article-meta"><span>Updated: 2025-01-03 16:20</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In previous lessons, we discussed that when passing an argument by value, a copy of the argument is made into the function parameter.  For fundamental types (which are cheap to copy), this is fine.  But copying is typically expensive for class types (such as <code>std::string</code>).  We can avoid making an expensive copy by utilizing passing by (const) reference (or pass by address) instead.</p>
+<p>We encounter a similar situation when returning by value: a copy of the return value is passed back to the caller.  If the return type of the function is a class type, this can be expensive.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string returnByValue(); // returns a copy of a std::string (expensive)</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Return by reference</p>
+<p>In cases where we’re passing a class type back to the caller, we may (or may not) want to return by reference instead.  <strong>Return by reference</strong> returns a reference that is bound to the object being returned, which avoids making a copy of the return value.  To return by reference, we simply define the return value of the function to be a reference type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string&amp;       returnByReference(); // returns a reference to an existing std::string (cheap)
+const std::string&amp; returnByReferenceToConst(); // returns a const reference to an existing std::string (cheap)</code></pre>
+<p>Here is an academic program to demonstrate the mechanics of return by reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+const std::string&amp; getProgramName() // returns a const reference
+{
+    static const std::string s_programName { "Calculator" }; // has static duration, destroyed at end of program
+
+    return s_programName;
+}
+
+int main()
+{
+    std::cout &lt;&lt; "This program is named " &lt;&lt; getProgramName();
+
+    return 0;
+}</code></pre>
+<p>This program prints:</p>
+<pre>
+This program is named Calculator
+</pre>
+<p>Because <code>getProgramName()</code> returns a const reference, when the line <code>return s_programName</code> is executed, <code>getProgramName()</code> will return a const reference to <code>s_programName</code> (thus avoiding making a copy).  That const reference can then be used by the caller to access the value of <code>s_programName</code>, which is printed.</p>
+<p class="cpp-section cpp-topline" style="clear: both">The object being returned by reference must exist after the function returns</p>
+<p>Using return by reference has one major caveat: the programmer <em>must</em> be sure that the object being referenced outlives the function returning the reference.  Otherwise, the reference being returned will be left dangling (referencing an object that has been destroyed), and use of that reference will result in undefined behavior.</p>
+<p>In the program above, because <code>s_programName</code> has static duration, <code>s_programName</code> will exist until the end of the program.  When <code>main()</code> accesses the returned reference, it is actually accessing <code>s_programName</code>, which is fine, because <code>s_programName</code> won’t be destroyed until later.</p>
+<p>Now let’s modify the above program to show what happens in the case where our function returns a dangling reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+const std::string&amp; getProgramName()
+{
+    const std::string programName { "Calculator" }; // now a non-static local variable, destroyed when function ends
+
+    return programName;
+}
+
+int main()
+{
+    std::cout &lt;&lt; "This program is named " &lt;&lt; getProgramName(); // undefined behavior
+
+    return 0;
+}</code></pre>
+<p>The result of this program is undefined.  When <code>getProgramName()</code> returns, a reference bound to local variable <code>programName</code> is returned.  Then, because <code>programName</code> is a local variable with automatic duration, <code>programName</code> is destroyed at the end of the function.  That means the returned reference is now dangling, and use of <code>programName</code> in the <code>main()</code> function results in undefined behavior.</p>
+<p>Modern compilers will produce a warning or error if you try to return a local variable by reference (so the above program may not even compile), but compilers sometimes have trouble detecting more complicated cases.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Objects returned by reference must live beyond the scope of the function returning the reference, or a dangling reference will result.  Never return a (non-static) local variable or temporary by reference.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Lifetime extension doesn’t work across function boundaries</p>
+<p>Let’s take a look at an example where we return a temporary by reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+const int&amp; returnByConstReference()
+{
+    return 5; // returns const reference to temporary object
+}
+
+int main()
+{
+    const int&amp; ref { returnByConstReference() };
+
+    std::cout &lt;&lt; ref; // undefined behavior
+
+    return 0;
+}</code></pre>
+<p>In the above program, <code>returnByConstReference()</code> is returning an integer literal, but the return type of the function is <code>const int&amp;</code>.  This results in the creation and return of a temporary reference bound to a temporary object holding value 5.  This returned reference is copied into a temporary reference in the scope of the caller.  The temporary object then goes out of scope, leaving the temporary reference in the scope of the caller dangling.</p>
+<p>By the time the temporary reference in the scope of the caller is bound to const reference variable <code>ref</code> (in <code>main()</code>), it is too late to extend the lifetime of the temporary object -- as it has already been destroyed.  Thus <code>ref</code> is a dangling reference, and use of the value of <code>ref</code> will result in undefined behavior.</p>
+<p>Here’s a less obvious example that similarly doesn’t work:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+const int&amp; returnByConstReference(const int&amp; ref)
+{
+    return ref;
+}
+
+int main()
+{
+    // case 1: direct binding
+    const int&amp; ref1 { 5 }; // extends lifetime
+    std::cout &lt;&lt; ref1 &lt;&lt; '\n'; // okay
+
+    // case 2: indirect binding
+    const int&amp; ref2 { returnByConstReference(5) }; // binds to dangling reference
+    std::cout &lt;&lt; ref2 &lt;&lt; '\n'; // undefined behavior
+
+    return 0;
+}</code></pre>
+<p>In case 2, a temporary object is created to hold value <code>5</code>, which function parameter <code>ref</code> binds to.  The function just returns this reference back to the caller, which then uses the reference to initialize <code>ref2</code>.  Because this is not a direct binding to the temporary object (as the refrence was bounced through a function), lifetime extension doesn’t apply.  This leaves <code>ref2</code> dangling, and its subsequent use is undefined behavior.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Reference lifetime extension does not work across function boundaries.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Don’t return non-const static local variables by reference</p>
+<p>In the original example above, we returned a const static local variable by reference to illustrate the mechanics of return by reference in a simple way.  However, returning non-const static local variables by reference is fairly non-idiomatic, and should generally be avoided.  Here’s a simplified example that illustrates one such problem that can occur:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+const int&amp; getNextId()
+{
+    static int s_x{ 0 }; // note: variable is non-const
+    ++s_x; // generate the next id
+    return s_x; // and return a reference to it
+}
+
+int main()
+{
+    const int&amp; id1 { getNextId() }; // id1 is a reference
+    const int&amp; id2 { getNextId() }; // id2 is a reference
+
+    std::cout &lt;&lt; id1 &lt;&lt; id2 &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This program prints:</p>
+<pre>
+22
+</pre>
+<p>This happens because <code>id1</code> and <code>id2</code> are referencing the same object (the static variable <code>s_x</code>), so when anything (e.g. <code>getNextId()</code>) modifies that value, all references are now accessing the modified value.</p>
+<p>This above example can be fixed by making <code>id1</code> and <code>id2</code> normal variables (rather than references) so they save a copy of the return value rather than a reference to <code>s_x</code>.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Here’s another example with a less obvious version of the same problem:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+std::string&amp; getName()
+{
+    static std::string s_name{};
+    std::cout &lt;&lt; "Enter a name: ";
+    std::cin &gt;&gt; s_name;
+    return s_name;
+}
+
+void printFirstAlphabetical(const std::string&amp; s1, const std::string&amp; s2)
+{
+    if (s1 &lt; s2)
+        std::cout &lt;&lt; s1 &lt;&lt; " comes before " &lt;&lt; s2 &lt;&lt; '\n';
+    else
+        std::cout &lt;&lt; s2 &lt;&lt; " comes before " &lt;&lt; s1 &lt;&lt; '\n';
+}
+
+int main()
+{
+    printFirstAlphabetical(getName(), getName());
+    
+    return 0;
+}</code></pre>
+<p>Here’s the result from one run of this program:</p>
+<pre>
+Enter a name: Dave
+Enter a name: Stan
+Stan comes before Stan
+</pre>
+<p>In this example, <code>getName()</code> returns a reference to static local <code>s_name</code>.  Initializing a <code>const std::string&amp;</code> with a reference to <code>s_name</code> causes that <code>std::string&amp;</code> to bind to <code>s_name</code> (not make a copy of it).  </p>
+<p>Thus, both <code>s1</code> and <code>s2</code> end up viewing <code>s_name</code> (which was assigned the last name we entered).</p>
+<p>Note that if we use <code>std::string_view</code> parameters instead, the first <code>std::string_view</code> parameter will be invalidated when the underlying <code>std::string</code> is changed.
+</p></div>
+<p>Another issue that commonly occurs with programs that return a non-const static local by reference is that there is no standardized way to reset <code>s_x</code> back to the default state.  Such programs must either use a non-conventional solution (e.g. a reset function parameter), or can only be reset by quitting and restarting the program.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Avoid returning references to non-const local static variables.
+</p></div>
+<p>Returning a const reference to a <em>const</em> local static variable is sometimes done if the local variable being returned by reference is expensive to create and/or initialize (so we don’t have to recreate the variable every function call).  But this is rare.</p>
+<p>Returning a const reference to a <em>const</em> global variable is also sometimes done as a way to encapsulate access to a global variable.  We discuss this in lesson <a href="why-non-const-global-variables-are-evil.html">7.8 -- Why (non-const) global variables are evil</a>.  When used intentionally and carefully, this is also okay.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Assigning/initializing a normal variable with a returned reference makes a copy</p>
+<p>If a function returns a reference, and that reference is used to initialize or assign to a non-reference variable, the return value will be copied (as if it had been returned by value).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+const int&amp; getNextId()
+{
+    static int s_x{ 0 };
+    ++s_x;
+    return s_x;
+}
+
+int main()
+{
+    const int id1 { getNextId() }; // id1 is a normal variable now and receives a copy of the value returned by reference from getNextId()
+    const int id2 { getNextId() }; // id2 is a normal variable now and receives a copy of the value returned by reference from getNextId()
+
+    std::cout &lt;&lt; id1 &lt;&lt; id2 &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>In the above example, <code>getNextId()</code> is returning a reference, but <code>id1</code> and <code>id2</code> are non-reference variables.  In such a case, the value of the returned reference is copied into the normal variable.  Thus, this program prints:</p>
+<pre>
+12
+</pre>
+<p>Also note that if a program returns a dangling reference, the reference is left dangling before the copy is made, which will lead to undefined behavior:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+const std::string&amp; getProgramName() // will return a const reference
+{
+    const std::string programName{ "Calculator" };
+
+    return programName;
+}
+
+int main()
+{
+    std::string name { getProgramName() }; // makes a copy of a dangling reference
+    std::cout &lt;&lt; "This program is named " &lt;&lt; name &lt;&lt; '\n'; // undefined behavior
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">It’s okay to return reference parameters by reference</p>
+<p>There are quite a few cases where returning objects by reference makes sense, and we’ll encounter many of those in future lessons.  However, there is one useful example that we can show now.</p>
+<p>If a parameter is passed into a function by reference, it’s safe to return that parameter by reference.  This makes sense: in order to pass an argument to a function, the argument must exist in the scope of the caller.  When the called function returns, that object must still exist in the scope of the caller.</p>
+<p>Here is a simple example of such a function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// Takes two std::string objects, returns the one that comes first alphabetically
+const std::string&amp; firstAlphabetical(const std::string&amp; a, const std::string&amp; b)
+{
+	return (a &lt; b) ? a : b; // We can use operator&lt; on std::string to determine which comes first alphabetically
+}
+
+int main()
+{
+	std::string hello { "Hello" };
+	std::string world { "World" };
+
+	std::cout &lt;&lt; firstAlphabetical(hello, world) &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Hello
+</pre>
+<p>In the above function, the caller passes in two std::string objects by const reference, and whichever of these strings comes first alphabetically is passed back by const reference.  If we had used pass by value and return by value, we would have made up to 3 copies of std::string (one for each parameter, one for the return value).  By using pass by reference/return by reference, we can avoid those copies.</p>
+<p class="cpp-section cpp-topline" style="clear: both">It’s okay for an rvalue passed by const reference to be returned by const reference</p>
+<p>When an argument for a const reference parameter is an rvalue, it’s still okay to return that parameter by const reference.</p>
+<p>This is because rvalues are not destroyed until the end of the full expression in which they are created.</p>
+<p>First, let’s look at this example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+std::string getHello()
+{
+    return "Hello"; // implicit conversion to std::string
+}
+
+int main()
+{
+    const std::string s{ getHello() };
+
+    std::cout &lt;&lt; s;
+    
+    return 0;
+}</code></pre>
+<p>In this case, <code>getHello()</code> returns a <code>std::string</code> by value, which is an rvalue.  This rvalue is then used to initialize <code>s</code>.  After the initialization of <code>s</code>, the expression in which the rvalue was created has finished evaluating, and the rvalue is destroyed.</p>
+<p>Now let’s take a look at this similar example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+const std::string&amp; foo(const std::string&amp; s)
+{
+    return s;
+}
+
+std::string getHello()
+{
+    return "Hello"; // implicit conversion to std::string
+}
+
+int main()
+{
+    const std::string s{ foo(getHello()) };
+
+    std::cout &lt;&lt; s;
+    
+    return 0;
+}</code></pre>
+<p>The only difference in this case is that the rvalue is passed by const reference to <code>foo()</code> and then returned by const reference back to the caller before it is used to initialize <code>s</code>.  Everything else works identically.</p>
+<p>We discuss a similar case in lesson <a href="access-functions.html">14.6 -- Access functions</a>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">The caller can modify values through the reference</p>
+<p>When an argument is passed to a function by non-const reference, the function can use the reference to modify the value of the argument.</p>
+<p>Similarly, when a non-const reference is returned from a function, the caller can use the reference to modify the value being returned.</p>
+<p>Here’s an illustrative example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// takes two integers by non-const reference, and returns the greater by reference
+int&amp; max(int&amp; x, int&amp; y)
+{
+    return (x &gt; y) ? x : y;
+}
+
+int main()
+{
+    int a{ 5 };
+    int b{ 6 };
+
+    max(a, b) = 7; // sets the greater of a or b to 7
+
+    std::cout &lt;&lt; a &lt;&lt; b &lt;&lt; '\n';
+        
+    return 0;
+}</code></pre>
+<p>In the above program, <code>max(a, b)</code> calls the <code>max()</code> function with <code>a</code> and <code>b</code> as arguments.  Reference parameter <code>x</code> binds to argument <code>a</code>, and reference parameter <code>y</code> binds to argument <code>b</code>.  The function then determines which of <code>x</code> (<code>5</code>) and <code>y</code> (<code>6</code>) is greater.  In this case, that’s <code>y</code>, so the function returns <code>y</code> (which is still bound to <code>b</code>) back to the caller.  The caller then assigns the value <code>7</code> to this returned reference.</p>
+<p>Therefore, the expression <code>max(a, b) = 7</code> effectively resolves to <code>b = 7</code>.  </p>
+<p>This prints:</p>
+<pre>
+57
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Return by address</p>
+<p><strong>Return by address</strong> works almost identically to return by reference, except a pointer to an object is returned instead of a reference to an object.  Return by address has the same primary caveat as return by reference -- the object being returned by address must outlive the scope of the function returning the address, otherwise the caller will receive a dangling pointer.</p>
+<p>The major advantage of return by address over return by reference is that we can have the function return <code>nullptr</code> if there is no valid object to return.  For example, let’s say we have a list of students that we want to search.  If we find the student we are looking for in the list, we can return a pointer to the object representing the matching student.  If we don’t find any students matching, we can return <code>nullptr</code> to indicate a matching student object was not found.</p>
+<p>The major disadvantage of return by address is that the caller has to remember to do a <code>nullptr</code> check before dereferencing the return value, otherwise a null pointer dereference may occur and undefined behavior will result.  Because of this danger, return by reference should be preferred over return by address unless the ability to return “no object” is needed.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer return by reference over return by address unless the ability to return “no object” (using <code>nullptr</code>) is important.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>If you need the ability to return “no object” or a value (rather than an object) <a href="stdoptional.html">12.15 -- std::optional</a> describes a good alternative.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>See <a href="stdstring_view-part-2.html#stringvsstringview">5.9 -- std::string_view (part 2)</a> for a quick guide on when to return <code>std::string_view</code> vs <code>const std::string&amp;</code> .
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="pass-by-address-part-2.html"><span class="nav-kicker">← Previous lesson</span>12.11 · Pass by address (part 2)</a><a class="next" href="in-and-out-parameters.html"><span class="nav-kicker">Next lesson →</span>12.13 · In and out parameters</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

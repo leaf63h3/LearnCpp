@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In chapter 12, we introduced the concept of value categories (12.2 -- Value categories (lvalues and rvalues)), which is a property of expressions that help">
+  <meta name="robots" content="noindex,nofollow">
+  <title>22.2 — R-value references · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/rvalue-references/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 22 · Move Semantics and Smart Pointers</summary><div class="sidebar-title"><small>Chapter 22</small><strong>Move Semantics and Smart Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-smart-pointers-move-semantics.html"><span class="lesson-number">22.1</span><span>Introduction to smart pointers and move semantics</span></a></li><li><a href="rvalue-references.html" aria-current="page"><span class="lesson-number">22.2</span><span>R-value references</span></a></li><li><a href="move-constructors-and-move-assignment.html"><span class="lesson-number">22.3</span><span>Move constructors and move assignment</span></a></li><li><a href="stdmove.html"><span class="lesson-number">22.4</span><span>std::move</span></a></li><li><a href="stdunique_ptr.html"><span class="lesson-number">22.5</span><span>std::unique_ptr</span></a></li><li><a href="stdshared_ptr.html"><span class="lesson-number">22.6</span><span>std::shared_ptr</span></a></li><li><a href="circular-dependency-issues-with-stdshared_ptr-and-stdweak_ptr.html"><span class="lesson-number">22.7</span><span>Circular dependency issues with std::shared_ptr, and std::weak_ptr</span></a></li><li><a href="chapter-22-summary-and-quiz.html"><span class="lesson-number">22.x</span><span>Chapter 22 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 22</div>
+        <h1>22.2 — R-value references</h1>
+        <div class="article-meta"><span>Updated: 2024-05-15 14:32</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In chapter 12, we introduced the concept of value categories (<a href="value-categories-lvalues-and-rvalues.html">12.2 -- Value categories (lvalues and rvalues)</a>), which is a property of expressions that helps determine whether an expression resolves to a value, function, or object.  We also introduced l-values and r-values so that we could discuss l-value references.</p>
+<p>If you’re hazy on l-values and r-values, now would be a good time to refresh on that topic since we’ll be talking a lot about them in this chapter.</p>
+<p class="cpp-section cpp-topline" style="clear: both">L-value references recap</p>
+<p>Prior to C++11, only one type of reference existed in C++, and so it was just called a “reference”.  However, in C++11, it’s called an l-value reference.  L-value references can only be initialized with modifiable l-values.</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>L-value reference</th>
+<th>Can be initialized with</th>
+<th>Can modify</th>
+</tr>
+<tr>
+<td>Modifiable l-values</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Non-modifiable l-values</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>R-values</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<p></p></table></div>
+<p>L-value references to const objects can be initialized with modifiable and non-modifiable l-values and r-values alike.  However, those values can’t be modified.</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>L-value reference to const</th>
+<th>Can be initialized with</th>
+<th>Can modify</th>
+</tr>
+<tr>
+<td>Modifiable l-values</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Non-modifiable l-values</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>R-values</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<p></p></table></div>
+<p>L-value references to const objects are particularly useful because they allow us to pass any type of argument (l-value or r-value) into a function without making a copy of the argument.</p>
+<p class="cpp-section cpp-topline" style="clear: both">R-value references</p>
+<p>C++11 adds a new type of reference called an r-value reference.  An r-value reference is a reference that is designed to be initialized with an r-value (only).  While an l-value reference is created using a single ampersand, an r-value reference is created using a double ampersand:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int x{ 5 };
+int&amp; lref{ x }; // l-value reference initialized with l-value x
+int&amp;&amp; rref{ 5 }; // r-value reference initialized with r-value 5</code></pre>
+<p>R-values references cannot be initialized with l-values.</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>R-value reference</th>
+<th>Can be initialized with</th>
+<th>Can modify</th>
+</tr>
+<tr>
+<td>Modifiable l-values</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Non-modifiable l-values</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>R-values</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<p></p></table></div>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>R-value reference to const</th>
+<th>Can be initialized with</th>
+<th>Can modify</th>
+</tr>
+<tr>
+<td>Modifiable l-values</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Non-modifiable l-values</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>R-values</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<p></p></table></div>
+<p>R-value references have two properties that are useful.  First, r-value references extend the lifespan of the object they are initialized with to the lifespan of the r-value reference (l-value references to const objects can do this too).  Second, non-const r-value references allow you to modify the r-value!</p>
+<p>Let’s take a look at some examples:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+ 
+class Fraction
+{
+private:
+	int m_numerator { 0 };
+	int m_denominator { 1 };
+ 
+public:
+	Fraction(int numerator = 0, int denominator = 1) :
+		m_numerator{ numerator }, m_denominator{ denominator }
+	{
+	}
+ 
+	friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Fraction&amp; f1)
+	{
+		out &lt;&lt; f1.m_numerator &lt;&lt; '/' &lt;&lt; f1.m_denominator;
+		return out;
+	}
+};
+ 
+int main()
+{
+	auto&amp;&amp; rref{ Fraction{ 3, 5 } }; // r-value reference to temporary Fraction
+	
+	// f1 of operator&lt;&lt; binds to the temporary, no copies are created.
+	std::cout &lt;&lt; rref &lt;&lt; '\n';
+ 
+	return 0;
+} // rref (and the temporary Fraction) goes out of scope here</code></pre>
+<p>This program prints:</p>
+<pre>
+3/5
+</pre>
+<p>As an anonymous object, Fraction(3, 5) would normally go out of scope at the end of the expression in which it is defined.  However, since we’re initializing an r-value reference with it, its duration is extended until the end of the block.  We can then use that r-value reference to print the Fraction’s value.</p>
+<p>Now let’s take a look at a less intuitive example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int&amp;&amp; rref{ 5 }; // because we're initializing an r-value reference with a literal, a temporary with value 5 is created here
+    rref = 10;
+    std::cout &lt;&lt; rref &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This program prints:</p>
+<pre>
+10
+</pre>
+<p>While it may seem weird to initialize an r-value reference with a literal value and then be able to change that value, when initializing an r-value reference with a literal, a temporary object is constructed from the literal so that the reference is referencing a temporary object, not a literal value.</p>
+<p>R-value references are not very often used in either of the manners illustrated above.</p>
+<p class="cpp-section cpp-topline" style="clear: both">R-value references as function parameters</p>
+<p>R-value references are more often used as function parameters.  This is most useful for function overloads when you want to have different behavior for l-value and r-value arguments.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void fun(const int&amp; lref) // l-value arguments will select this function
+{
+	std::cout &lt;&lt; "l-value reference to const: " &lt;&lt; lref &lt;&lt; '\n';
+}
+
+void fun(int&amp;&amp; rref) // r-value arguments will select this function
+{
+	std::cout &lt;&lt; "r-value reference: " &lt;&lt; rref &lt;&lt; '\n';
+}
+
+int main()
+{
+	int x{ 5 };
+	fun(x); // l-value argument calls l-value version of function
+	fun(5); // r-value argument calls r-value version of function
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+l-value reference to const: 5
+r-value reference: 5
+</pre>
+<p>As you can see, when passed an l-value, the overloaded function resolved to the version with the l-value reference.  When passed an r-value, the overloaded function resolved to the version with the r-value reference (this is considered a better match than an l-value reference to const).</p>
+<p>Why would you ever want to do this?  We’ll discuss this in more detail in the next lesson.  Needless to say, it’s an important part of move semantics.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Rvalue reference variables are lvalues</p>
+<p>Consider the following snippet:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">	int&amp;&amp; ref{ 5 };
+	fun(ref);</code></pre>
+<p>Which version of <code>fun</code> would you expect the above to call: <code>fun(const int&amp;)</code> or <code>fun(int&amp;&amp;)</code>?</p>
+<p>The answer might surprise you.  This calls <code>fun(const int&amp;)</code>.</p>
+<p>Although variable <code>ref</code> has type <code>int&amp;&amp;</code>, when used in an expression it is an lvalue (as are all named variables).  The type of an object and its value category are independent.</p>
+<p>You already know that literal <code>5</code> is an rvalue of type <code>int</code>, and <code>int x</code> is an lvalue of type <code>int</code>.  Similarly, <code>int&amp;&amp; ref</code> is an lvalue of type <code>int&amp;&amp;</code>.</p>
+<p>So not only does <code>fun(ref)</code> call <code>fun(const int&amp;)</code>, it does not even match <code>fun(int&amp;&amp;)</code>, as rvalue references can’t bind to lvalues.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Returning an r-value reference</p>
+<p>You should almost never return an r-value reference, for the same reason you should almost never return an l-value reference.  In most cases, you’ll end up returning a hanging reference when the referenced object goes out of scope at the end of the function.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>State which of the following lettered statements will not compile:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+	int x{};
+
+	// l-value references
+	int&amp; ref1{ x }; // A
+	int&amp; ref2{ 5 }; // B
+
+	const int&amp; ref3{ x }; // C
+	const int&amp; ref4{ 5 }; // D
+
+	// r-value references
+	int&amp;&amp; ref5{ x }; // E
+	int&amp;&amp; ref6{ 5 }; // F
+
+	const int&amp;&amp; ref7{ x }; // G
+	const int&amp;&amp; ref8{ 5 }; // H
+	
+	return 0;
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p>B, E, and G won’t compile.</p>
+<p>Recapping the binding combinations:</p>
+<ul>
+<li>Non-const l-value references can only bind to non-const l-values.
+</li>
+<li>Const l-value references can bind to non-const l-values, const l-values, and r-values.
+</li>
+<li>R-value references can only bind to r-values.
+</li>
+</ul>
+<p><code>x</code> is a non-const l-value, so we can bind a non-const l-value reference (A) and a const l-value reference (C) to it.  We cannot bind a non-const l-value reference to an r-value (B).<br>
+<code>5</code> is an rvalue, so we can bind a const l-value reference (D) and r-value reference (F &amp; H) to it.  We cannot bind an rvalue reference to an l-value (E &amp; G).</p>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-smart-pointers-move-semantics.html"><span class="nav-kicker">← Previous lesson</span>22.1 · Introduction to smart pointers and move semantics</a><a class="next" href="move-constructors-and-move-assignment.html"><span class="nav-kicker">Next lesson →</span>22.3 · Move constructors and move assignment</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

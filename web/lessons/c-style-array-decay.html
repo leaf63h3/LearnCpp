@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The C-style array passing challenge The designers of the C language had a problem. Consider the following simple program: #include &lt;iostream&gt; void print(in">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.8 — C-style array decay · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/c-style-array-decay/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html" aria-current="page"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.8 — C-style array decay</h1>
+        <div class="article-meta"><span>Updated: 2025-01-17 22:29</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">The C-style array passing challenge</p>
+<p>The designers of the C language had a problem.  Consider the following simple program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void print(int val)
+{
+    std::cout &lt;&lt; val;
+}
+
+int main()
+{
+    int x { 5 };
+    print(x);
+
+    return 0;
+}</code></pre>
+<p>When <code>print(x)</code> is called, the value of argument <code>x</code> (<code>5</code>) is copied into parameter <code>val</code>.  Within the body of the function, the value of <code>val</code> (<code>5</code>) is printed to the console.  Because <code>x</code> is cheap to copy, there’s no problem here.</p>
+<p>Now consider the following similar program, which uses a 1000 element C-style int array instead of a single int:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printElementZero(int arr[1000])
+{
+    std::cout &lt;&lt; arr[0]; // print the value of the first element
+}
+
+int main()
+{
+    int x[1000] { 5 };   // define an array with 1000 elements, x[0] is initialized to 5
+    printElementZero(x);
+
+    return 0;
+}</code></pre>
+<p>This program also compiles and prints the expected value (<code>5</code>) to the console.</p>
+<p>While the code in this example is similar to the code in the prior example, mechanically it works a bit different than you might expect (we’ll explain this below).  And that is due to the solution that the C designers came up to solve for two major challenges.</p>
+<p>First, copying a 1000 element array every time a function is called is expensive (and even more so if the elements are an expensive-to-copy type), so we want to avoid that.  But how?  C doesn’t have references, so using pass by reference to avoid making a copy of function arguments wasn’t an option.</p>
+<p>Second, we want to be able to write a single function that can accept array arguments of different lengths.  Ideally, our <code>printElementZero()</code> function in the example above should be callable with arrays arguments of any length (since element 0 is guaranteed to exist).  We don’t want to have to write a different function for every possible array length that we want to use as an argument.  But how?  C has no syntax to specify “any length” arrays, nor does it support templates, nor can arrays of one length be converted to arrays of another length (presumably because doing so would involve making an expensive copy).</p>
+<p>The designers of the C language came up with a clever solution (inherited by C++ for compatibility reasons) that solves for both of these issues:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printElementZero(int arr[1000]) // doesn't make a copy
+{
+    std::cout &lt;&lt; arr[0]; // print the value of the first element
+}
+
+int main()
+{
+    int x[7] { 5 };      // define an array with 7 elements
+    printElementZero(x); // somehow works!
+
+    return 0;
+}</code></pre>
+<p>Somehow, the above example passes a 7 element array to a function expecting a 1000 element array, without any copies being made.  In this lesson, we’ll explore how this works.</p>
+<p>We’ll also take a look at why the solution the C designers picked is dangerous, and not well suited for use in modern C++.</p>
+<p>But first, we need to cover two subtopics.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Array to pointer conversions (array decay)</p>
+<p>In most cases, when a C-style array is used in an expression, the array will be implicitly converted into a pointer to the element type, initialized with the address of the first element (with index 0).  Colloquially, this is called <strong>array decay</strong> (or just <strong>decay</strong> for short).</p>
+<p>You can see this in the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iomanip&gt; // for std::boolalpha
+#include &lt;iostream&gt;
+
+int main()
+{
+    int arr[5]{ 9, 7, 5, 3, 1 }; // our array has elements of type int
+
+    // First, let's prove that arr decays into an int* pointer
+
+    auto ptr{ arr }; // evaluation causes arr to decay, type deduction should deduce type int*
+    std::cout &lt;&lt; std::boolalpha &lt;&lt; (typeid(ptr) == typeid(int*)) &lt;&lt; '\n'; // Prints true if the type of ptr is int*
+
+    // Now let's prove that the pointer holds the address of the first element of the array
+
+    std::cout &lt;&lt; std::boolalpha &lt;&lt; (&amp;arr[0] == ptr) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this printed:</p>
+<pre>
+true
+true
+</pre>
+<p>There is nothing special about the pointer that an array decays into.  It is a normal pointer that holds the address of the first element.</p>
+<p>Similarly, a const array (e.g. <code>const int arr[5]</code>) decays into a pointer-to-const (<code>const int*</code>).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>In C++, there are a few common cases where an C-style array doesn’t decay:</p>
+<ol start="1">
+<li>When used as an argument to <code>sizeof()</code> or <code>typeid()</code>.
+</li>
+<li>When taking the address of the array using <code>operator&amp;</code>.
+</li>
+<li>When passed as a member of a class type.
+</li>
+<li>When passed by reference.
+</li>
+</ol>
+</div>
+<p>Because C-style arrays decay into a pointer in most cases, it’s a common fallacy to believe arrays <em>are</em> pointers.  This is not the case.  An array object is a sequence of elements, whereas a pointer object just holds an address.</p>
+<p>The type information of an array and a decayed array is different.  In the example above, the array <code>arr</code> has type <code>int[5]</code>, whereas the decayed array has type <code>int*</code>.  Notably, the array type <code>int[5]</code> contains length information, whereas the decayed array pointer type <code>int*</code> does not.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>A decayed array pointer does not know how long the array it is pointing to is.  The term “decay” indicates this loss of length type information.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Subscripting a C-style array actually applies <code>operator[]</code> to the decayed pointer</p>
+<p>Because a C-style arrays decays to a pointer when evaluated, when a C-style array is subscripted, the subscript is actually operating on the decayed array pointer:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 9, 7, 5, 3, 1 };
+    std::cout &lt;&lt; arr[2]; // subscript decayed array to get element 2, prints 5
+
+    return 0;
+}</code></pre>
+<p>We can also use <code>operator[]</code> directly on a pointer.  If that pointer is holding the address of the first element, the result will be identical:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 9, 7, 5, 3, 1 };
+    
+    const int* ptr{ arr };  // arr decays into a pointer
+    std::cout &lt;&lt; ptr[2];    // subscript ptr to get element 2, prints 5
+
+    return 0;
+}</code></pre>
+<p>We’ll see where this is convenient in a moment, and take a deeper look at how this actually works (as well as what happens when the pointer is holding something other than the address of the first element) in the next lesson <a href="pointer-arithmetic-and-subscripting.html">17.9 -- Pointer arithmetic and subscripting</a>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Array decay solves our C-style array passing issue</p>
+<p>Array decay solves both challenges we encountered at the top of the lesson.</p>
+<p>When passing a C-style array as an argument, the array decays into a pointer, and the pointer holding the address of the first element of the array is what gets passed to the function.  So although it looks like we’re passing the C-style array by value, we’re actually passing it by address!  This is how making a copy of the C-style array argument is avoided.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>C-style arrays are passed by address, even when it looks like they are passed by value.
+</p></div>
+<p>Now consider two different arrays of the same element type but different lengths (e.g. <code>int[5]</code> and <code>int[7]</code>).  These are distinct types, incompatible with each other.  However, they will both decay into the same pointer type (e.g. <code>int*</code>).  Their decayed versions are interchangable!  Dropping the length information from the type allows us to pass arrays of different lengths without a type mismatch.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Two C-style arrays with the same element type but different lengths will decay into the same pointer type.
+</p></div>
+<p>In the following example, we’ll illustrate two things:</p>
+<ul>
+<li>That we can pass arrays of different lengths to a single function (because both decay to the same pointer type).
+</li>
+<li>That our function parameter receiving the array can be a (const) pointer of the array’s element type.
+</li>
+</ul>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printElementZero(const int* arr) // pass by const address
+{
+    std::cout &lt;&lt; arr[0];
+}
+
+int main()
+{
+    const int prime[] { 2, 3, 5, 7, 11 };
+    const int squares[] { 1, 4, 9, 25, 36, 49, 64, 81 };
+
+    printElementZero(prime);   // prime decays to an const int* pointer
+    printElementZero(squares); // squares decays to an const int* pointer
+
+    return 0;
+}</code></pre>
+<p>This example works just fine, and prints:</p>
+<pre>
+2
+1
+</pre>
+<p>Within <code>main()</code>, when we call <code>printElementZero(prime)</code>, the <code>prime</code> array decays from an array of type <code>const int[5]</code> to a pointer of type <code>const int*</code> that is holding the address of the first element of <code>prime</code>.  Similarly, when we call <code>printElementZero(squares)</code>, <code>squares</code> decays from an array of type <code>const int[8]</code> to a pointer of type <code>const int*</code> that is holding the address of the first element of <code>squares</code>.  These pointers of type <code>const int*</code> are what are actually passed to the function as an argument.</p>
+<p>Since we’re passing pointers of type <code>const int*</code>, our <code>printElementZero()</code> function needs to have a parameter of the same pointer type (<code>const int*</code>).</p>
+<p>Within this function, we’re subscripting the pointer to access the selected array element.</p>
+<p>Because a C-style array is passed by address, the function has direct access to the array passed in (not a copy) and can modify its elements.  For this reason, it’s a good idea to make sure your function parameter is const if your function does not intend to modify the array elements.</p>
+<p class="cpp-section cpp-topline" style="clear: both">C-style array function parameter syntax</p>
+<p>One problem with declaring the function parameter as <code>int* arr</code> is that it’s not obvious that <code>arr</code> is supposed to be a pointer to an array of values rather than a pointer to a single integer.  For this reason, when passing a C-style array, its preferable to use the alternate declaration form <code>int arr[]</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printElementZero(const int arr[]) // treated the same as const int*
+{
+    std::cout &lt;&lt; arr[0];
+}
+
+int main()
+{
+    const int prime[] { 2, 3, 5, 7, 11 };
+    const int squares[] { 1, 4, 9, 25, 36, 49, 64, 81 };
+
+    printElementZero(prime);  // prime decays to a pointer
+    printElementZero(squares); // squares decays to a pointer
+
+    return 0;
+}</code></pre>
+<p>This program behaves identically to the prior one, as the compiler will interpret function parameter <code>const int arr[]</code> the same as <code>const int*</code>.  However, this has the advantage of communicating to the caller that <code>arr</code> is expected to be a decayed C-style array, not a pointer to a single value.  Note that no length information is required between the square brackets (since it is not used anyway).  If a length is provided, it will be ignored.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>A function parameter expecting a C-style array type should use the array syntax (e.g. <code>int arr[]</code>) rather than pointer syntax (e.g. <code>int *arr</code>).
+</p></div>
+<p>The downside of using this syntax is that it makes it less obvious that <code>arr</code> has decayed (whereas it’s quite clear with the pointer syntax), so you’ll need to take extra care not to do anything that doesn’t work as expected with a decayed array (we’ll cover some of these in a moment).</p>
+<p class="cpp-section cpp-topline" style="clear: both">The problems with array decay</p>
+<p>Although array decay was a clever solution to ensure C-style arrays of different lengths could be passed to a function without making expensive copies, the loss of array length information makes it easy for several types of mistakes to be made.</p>
+<p>First, <code>sizeof()</code> will return different values for arrays and decayed arrays:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printArraySize(int arr[])
+{
+    std::cout &lt;&lt; sizeof(arr) &lt;&lt; '\n'; // prints 4 (assuming 32-bit addresses)
+}
+
+int main()
+{
+    int arr[]{ 3, 2, 1 };
+
+    std::cout &lt;&lt; sizeof(arr) &lt;&lt; '\n'; // prints 12 (assuming 4 byte ints)
+
+    printArraySize(arr);
+
+    return 0;
+}</code></pre>
+<p>This means using <code>sizeof()</code> on a C-style array is potentially dangerous, as you have to ensure you are using it only when you can access the actual array object, not the decayed array or pointer.</p>
+<p>In the prior lesson (<a href="introduction-to-c-style-arrays.html">17.7 -- Introduction to C-style arrays</a>), we mentioned that <code>sizeof(arr)/sizeof(*arr)</code> was historically used as a hack to get the size of a C-style array.  This hack is dangerous because if <code>arr</code> has decayed, <code>sizeof(arr)</code> will return the size of a pointer rather than the size of the array, producing the wrong array length as a result, likely causing the program to malfunction.</p>
+<p>Fortunately, C++17’s better replacement <code>std::size()</code> (and C++20’s <code>std::ssize()</code>) will fail to compile if passed a pointer value:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int printArrayLength(int arr[])
+{
+    std::cout &lt;&lt; std::size(arr) &lt;&lt; '\n'; // compile error: std::size() won't work on a pointer
+}
+
+int main()
+{
+    int arr[]{ 3, 2, 1 };
+
+    std::cout &lt;&lt; std::size(arr) &lt;&lt; '\n'; // prints 3
+
+    printArrayLength(arr);
+
+    return 0;
+}</code></pre>
+<p>Second, and perhaps most importantly, array decay can make refactoring (breaking long functions into shorter, more modular functions) difficult.  Code that works as expected with a non-decayed array may not compile (or worse, may silently malfunction) when the same code is using a decayed array.</p>
+<p>Third, not having length information creates several programmatic challenges.  Without length information, it is difficult to sanity check the length of the array.  Users can easily pass in arrays that are shorter than expected (or even pointers to a single value), which will then cause undefined behavior when they are subscripted with an invalid index.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printElement2(int arr[])
+{
+    // How do we ensure that arr has at least three elements?
+    std::cout &lt;&lt; arr[2] &lt;&lt; '\n';
+}
+
+int main()
+{
+    int a[]{ 3, 2, 1 };
+    printElement2(a);  // ok
+
+    int b[]{ 7, 6 };
+    printElement2(b);  // compiles but produces undefined behavior
+
+    int c{ 9 };
+    printElement2(&amp;c); // compiles but produces undefined behavior
+
+    return 0;
+}</code></pre>
+<p>Not having the array length also create challenges when traversing the array -- how do we know when we’ve reached the end?</p>
+<p>There are solutions to these issues, but these solutions add both complexity and fragility to a program.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Working around array length issues</p>
+<p>Historically, programmers have worked around the lack of array length information via one of two methods.</p>
+<p>First, we can pass in both the array and the array length as separate arguments:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+
+void printElement2(const int arr[], int length)
+{
+    assert(length &gt; 2 &amp;&amp; "printElement2: Array too short"); // can't static_assert on length
+
+    std::cout &lt;&lt; arr[2] &lt;&lt; '\n';
+}
+
+int main()
+{
+    constexpr int a[]{ 3, 2, 1 };
+    printElement2(a, static_cast&lt;int&gt;(std::size(a)));  // ok
+
+    constexpr int b[]{ 7, 6 };
+    printElement2(b, static_cast&lt;int&gt;(std::size(b)));  // will trigger assert
+
+    return 0;
+}</code></pre>
+<p>However, this still has a number of issues:</p>
+<ul>
+<li>The caller needs to make sure that the array and the array length are paired -- if the wrong value for length is passed in, the function will still malfunction.
+</li>
+<li>There are potential sign conversion issues if you’re using <code>std::size()</code> or a function that returns a length as <code>std::size_t</code>.
+</li>
+<li>Runtime asserts only trigger when encountered at runtime.  If our testing path doesn’t cover all calls to the function, there’s a risk of shipping a program to the customer that will assert when they do something we didn’t explicitly test for.  In modern C++, we’d want to use <code>static_assert</code> for compile-time validation of the array length of constexpr arrays, but there’s no easy way to do this (as function parameters can’t be constexpr, even in constexpr or consteval functions!).
+</li>
+<li>This method only works if we’re making an explicit function call.  If the function call is implicit (e.g. we’re calling an operator with the array as an operand), then there’s no opportunity to pass in the length.
+</li>
+</ul>
+<p>Second, if there is an element value that is not semantically valid (e.g. a test score of <code>-1</code>), we can instead mark the end of the array using an element of that value.  That way, the length of the array can be calculated by counting how many elements exist between the start of the array and this terminating element.  The array can also be traversed by iterating from the start until we hit the terminating element.  The nice thing about this method is that it works even with implicit function calls.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>C-style strings (which are C-style arrays) use a null-terminator to mark the end of the string, so that they can be traversed even if they have decayed.
+</p></div>
+<p>But this method also has a number of issues:</p>
+<ul>
+<li>If the terminating element does not exist, traversal will walk right off the end of the array, causing undefined behavior.
+</li>
+<li>Functions that traverse the array need special handling for the terminating element (e.g. a C-style string print function needs to know not to print the terminating element).
+</li>
+<li>There is a mismatch between the actual array length and the number of semantically valid elements.  If the wrong length is used, the semantically invalid terminating element may be “processed”.
+</li>
+<li>This approach only works if a semantically invalid value exists, which is often not the case.
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">C-style arrays should be avoided in most cases</p>
+<p>Because of the non-standard passing semantics (pass by address is used instead of pass by value) and risks associated with decayed arrays losing their length information, C-style arrays have generally fallen out of favor.  We recommend avoiding them as much as possible.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Avoid C-style arrays whenever practical.</p>
+<ul>
+<li>Prefer <code>std::string_view</code> for read-only strings (string literal symbolic constants and string parameters).
+</li>
+<li>Prefer <code>std::string</code> for modifiable strings.
+</li>
+<li>Prefer <code>std::array</code> for non-global constexpr arrays.
+</li>
+<li>Prefer <code>std::vector</code> for non-constexpr arrays.
+</li>
+</ul>
+<p>It is okay to use C-style arrays for global constexpr arrays.  We’ll discuss this in a moment.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>In C++, arrays can be passed by reference, in which case the array argument won’t decay when passed to a function (but the reference to the array will still decay when evaluated).  However, it’s easy to forget to apply this consistently, and one missed reference will lead to decaying arguments.  Also, array reference parameters must have a fixed length, meaning the function can only handle arrays of one particular length.  If we want a function that can handle arrays of different lengths, then we also have to use function templates.  But if you’re going to do both of those things to “fix” C-style arrays, then you might as well just use <code>std::array</code>!
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">So when are C-style arrays used in modern C++?</p>
+<p>In modern C++, C-style arrays are typically used in two cases:</p>
+<ol start="1">
+<li>To store constexpr global (or constexpr static local) program data.  Because such arrays can be accessed directly from anywhere in the program, we do not need to pass the array, which avoids decay-related issues.  The syntax for defining C-style arrays can be a little less wonky than <code>std::array</code>.  More importantly, indexing such arrays does not have sign conversion issues like the standard library container classes do.
+</li>
+<li>As parameters to functions or classes that want to handle non-constexpr C-style string arguments directly (rather than requiring a conversion to <code>std::string_view</code>).  There are two possible reasons for this: First, converting a non-constexpr C-style string to a <code>std::string_view</code> requires traversing the C-style string to determine its length.  If the function is in a performance critical section of code and the length isn’t needed (e.g. because the function is going to traverse the string anyway) then avoiding the conversion may be useful.  Second, if the function (or class) calls other functions that expect C-style strings, converting to a <code>std::string_view</code> just to convert back may be suboptimal (unless you have other reasons for wanting a <code>std::string_view</code>).
+</li>
+</ol>
+<p></p><p class="cpp-section cpp-topline" style="clear: both">Quiz time</p><p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>What is array decay, and why is it a problem?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p>When a C-style array is evaluated, in most contexts it will be implicitly converted to a pointer to the array’s element type.</p>
+<p>Decayed arrays lose their length information, which makes it easier for length-related bugs to be introduced into the program.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Why do C-style strings (which are C-style arrays) use a null terminator?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<p>When a C-style array is passed to a function, it decays and loses its length information.  If the C-style string didn’t have a null terminator, the function would not be able to determine how long the string was.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>Extra credit: Why do C-style strings use a null-terminator instead of requiring both the decayed C-style string and explicit length information to be passed to a function?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<p>There are probably many answers to this question, but here are some:</p>
+<ul>
+<li>The ergonomics would be horrible, as we’d have extra parameters and magic numbers everywhere (e.g. <code>printString("Hello", 5)</code>).
+</li>
+<li>It would be very easy for the string and the provided string length to not match properly.  The string length is essentially an invariant of the string itself.  Relying on the user to maintain this invariant will invariably lead to errors (e.g. <code>printString("Hello", 6)</code>).
+</li>
+</ul>
+</div>
+<p>Extra Credit #2: Even if C++ wanted to implement having to pass explicit length information, why wouldn’t it work?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_hint_id_0" data-show-label="Show Hint" data-hide-label="Hide Hint" aria-expanded="false">Show Hint</button></p>
+<div class="wphint" id="cpp_hint_id_0" style="margin-bottom: 1em" hidden="hidden">Hint: Consider the case where we are printing a string using <code>std::cout</code>.</div>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<p>Passing both the C-style string and explicit length information is only possible if a function is called explicitly.  If a function is called implicitly, there is no way to pass along the length information.</p>
+<p>Consider a statement like <code>std::cout &lt;&lt; cstr</code>.  Binary <code>operator&lt;&lt;</code> can only take two operands: <code>std::cout</code> and <code>cstr</code>.  There is no way to pass another argument representing the length information.  The null-terminator approach doesn’t have this issue.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-c-style-arrays.html"><span class="nav-kicker">← Previous lesson</span>17.7 · Introduction to C-style arrays</a><a class="next" href="pointer-arithmetic-and-subscripting.html"><span class="nav-kicker">Next lesson →</span>17.9 · Pointer arithmetic and subscripting</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

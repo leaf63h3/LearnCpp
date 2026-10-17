@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Appending Appending strings to the end of an existing string is easy using either operator+=, append(), or push_back(). string&amp; string::operator+= (const s">
+  <meta name="robots" content="noindex,nofollow">
+  <title>22.6 — std::string appending · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stdstring-appending/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Appendix D · Deprecated Articles (will be removed soon)</summary><div class="sidebar-title"><small>Appendix D</small><strong>Deprecated Articles (will be removed soon)</strong></div>
+<ol class="sidebar-lessons"><li><a href="the-standard-library.html"><span class="lesson-number">21.1</span><span>The Standard Library</span></a></li><li><a href="stl-containers-overview.html"><span class="lesson-number">21.2</span><span>STL containers overview</span></a></li><li><a href="stl-iterators-overview.html"><span class="lesson-number">21.3</span><span>STL iterators overview</span></a></li><li><a href="stl-algorithms-overview.html"><span class="lesson-number">21.4</span><span>STL algorithms overview</span></a></li><li><a href="stdstring-and-stdwstring.html"><span class="lesson-number">22.1</span><span>std::string and std::wstring</span></a></li><li><a href="stdstring-construction-and-destruction.html"><span class="lesson-number">22.2</span><span>std::string construction and destruction</span></a></li><li><a href="stdstring-length-and-capacity.html"><span class="lesson-number">22.3</span><span>std::string length and capacity</span></a></li><li><a href="stdstring-character-access-and-conversion-to-c-style-arrays.html"><span class="lesson-number">22.4</span><span>std::string character access and conversion to C-style arrays</span></a></li><li><a href="stdstring-assignment-and-swapping.html"><span class="lesson-number">22.5</span><span>std::string assignment and swapping</span></a></li><li><a href="stdstring-appending.html" aria-current="page"><span class="lesson-number">22.6</span><span>std::string appending</span></a></li><li><a href="stdstring-inserting.html"><span class="lesson-number">22.7</span><span>std::string inserting</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Appendix D</div>
+        <h1>22.6 — std::string appending</h1>
+        <div class="article-meta"><span>Updated: 2022-08-24 22:58</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p><strong>Appending</strong></p>
+<p>Appending strings to the end of an existing string is easy using either operator+=, append(), or push_back().</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::operator+= (const string&amp; str)</b><br>
+<b>string&amp; string::append (const string&amp; str)</b><br>
+
+<ul>
+<li>Both functions append the characters of str to the string.
+</li><li>Both functions return *this so they can be “chained”.
+</li><li>Both functions throw a length_error exception if the result exceeds the maximum number of characters.
+</li></ul>
+<p>Sample code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string sString{"one"};
+
+sString += std::string{" two"};
+
+std::string sThree{" three"};
+sString.append(sThree);
+
+std::cout &lt;&lt; sString &lt;&lt; '\n';</code></pre>
+<p>Output:</p>
+<pre>
+one two three
+</pre>
+</td>
+</tr>
+<p></p></table></div>
+<p>There’s also a flavor of append() that can append a substring:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::append (const string&amp; str, size_type index, size_type num)</b>
+<ul>
+<li>This function appends num characters from str, starting at index, to the string.
+</li><li>Returns *this so it can be “chained”.
+</li><li>Throws an out_of_range if index is out of bounds
+</li><li>Throws a length_error exception if the result exceeds the maximum number of characters.
+</li></ul>
+<p>Sample code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string sString{"one "};
+
+const std::string sTemp{"twothreefour"};
+sString.append(sTemp, 3, 5); // append substring of sTemp starting at index 3 of length 5
+std::cout &lt;&lt; sString &lt;&lt; '\n';</code></pre>
+<p>Output:</p>
+<pre>
+one three
+</pre>
+</td>
+</tr>
+<p></p></table></div>
+<p>Operator+= and append() also have versions that work on C-style strings:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::operator+= (const char* str)</b><br>
+<b>string&amp; string::append (const char* str)</b><br>
+
+<ul>
+<li>Both functions append the characters of str to the string.
+</li><li>Both functions return *this so they can be “chained”.
+</li><li>Both functions throw a length_error exception if the result exceeds the maximum number of characters.
+</li><li>str should not be NULL.
+</li></ul>
+<p>Sample code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string sString{"one"};
+
+sString += " two";
+sString.append(" three");
+std::cout &lt;&lt; sString &lt;&lt; '\n';</code></pre>
+<p>Output:</p>
+<pre>
+one two three
+</pre>
+</td>
+</tr>
+<p></p></table></div>
+<p>There is an additional flavor of append() that works on C-style strings:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::append (const char* str, size_type len)</b><br>
+
+<ul>
+<li>Appends the first len characters of str to the string.
+</li><li>Returns *this so they can be “chained”.
+</li><li>Throw a length_error exception if the result exceeds the maximum number of characters.
+</li><li>Ignores special characters (including ”)
+</li></ul>
+<p>Sample code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string sString{"one "};
+
+sString.append("threefour", 5);
+std::cout &lt;&lt; sString &lt;&lt; '\n';</code></pre>
+<p>Output:</p>
+<pre>
+one three
+</pre>
+<p>This function is dangerous and its use is not recommended.</p>
+</td>
+</tr>
+<p></p></table></div>
+<p>There is also a set of functions that append characters.  Note that the name of the non-operator function to append a character is push_back(), not append()!</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::operator+= (char c)</b><br>
+<b>void string::push_back (char c)</b><br>
+
+<ul>
+<li>Both functions append the character c to the string.
+</li><li>Operator += returns *this so it can be “chained”.
+</li><li>Both functions throw a length_error exception if the result exceeds the maximum number of characters.
+</li></ul>
+<p>Sample code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string sString{"one"};
+
+sString += ' ';
+sString.push_back('2');
+std::cout &lt;&lt; sString &lt;&lt; '\n';</code></pre>
+<p>Output:</p>
+<pre>
+one 2
+</pre>
+</td>
+</tr>
+<p></p></table></div>
+<p>Now you might be wondering why the name of the function is push_back() and not append().  This follows a naming convention used for stacks, where push_back() is the function that adds a single item to the end of the stack.  If you envision a string as a stack of characters, using push_back() to add a single character to the end makes sense.  However, the lack of an append() function is inconsistent in my view!</p>
+<p>It turns out there is an append() function for characters, that looks like this:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::append (size_type num, char c)</b><br>
+
+<ul>
+<li>Adds num occurrences of the character c to the string
+</li><li>Returns *this so it can be “chained”.
+</li><li>Throws a length_error exception if the result exceeds the maximum number of characters.
+</li></ul>
+<p>Sample code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::string sString{"aaa"};
+
+sString.append(4, 'b');
+std::cout &lt;&lt; sString &lt;&lt; '\n';</code></pre>
+<p>Output:</p>
+<pre>
+aaabbbb
+</pre>
+</td>
+</tr>
+<p></p></table></div>
+<p>There’s one final flavor of append() that works with iterators:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<td>
+<b>string&amp; string::append (InputIterator start, InputIterator end)</b><br>
+
+<ul>
+<li>Appends all characters from the range [start, end) (including start up to but not including end)
+</li><li>Returns *this so it can be “chained”.
+</li><li>Throws a length_error exception if the result exceeds the maximum number of characters.
+</li></ul>
+</td>
+</tr>
+<p></p></table></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdstring-assignment-and-swapping.html"><span class="nav-kicker">← Previous lesson</span>22.5 · std::string assignment and swapping</a><a class="next" href="stdstring-inserting.html"><span class="nav-kicker">Next lesson →</span>22.7 · std::string inserting</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="When we need to pass a std::vector to a function, we pass it by (const) reference so that we do not make an expensive copy of the array data. Therefore, yo">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.5 — Returning std::vector, and an introduction to move semantics · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/returning-stdvector-and-an-introduction-to-move-semantics/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html" aria-current="page"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.5 — Returning std::vector, and an introduction to move semantics</h1>
+        <div class="article-meta"><span>Updated: 2024-12-16 12:27</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>When we need to pass a <code>std::vector</code> to a function, we pass it by (const) reference so that we do not make an expensive copy of the array data.</p>
+<p>Therefore, you will probably be surprised to find that it is okay to return a <code>std::vector</code> by value.</p>
+<p>Say whaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat?</p>
+<p class="cpp-section cpp-topline" style="clear: both">Copy semantics</p>
+<p>Consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector arr1 { 1, 2, 3, 4, 5 }; // copies { 1, 2, 3, 4, 5 } into arr1
+    std::vector arr2 { arr1 };          // copies arr1 into arr2
+
+    arr1[0] = 6; // We can continue to use arr1
+    arr2[0] = 7; // and we can continue to use arr2
+
+    std::cout &lt;&lt; arr1[0] &lt;&lt; arr2[0] &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>When <code>arr2</code> is initialized with <code>arr1</code>, the copy constructor of <code>std::vector</code> is called, which copies <code>arr1</code> into <code>arr2</code>.</p>
+<p>Making a copy is the only reasonable thing to do in this case, as we need both <code>arr1</code> and <code>arr2</code> to live on independently.  This example ends up making two copies, one for each initialization.</p>
+<p>The term <strong>copy semantics</strong> refers to the rules that determine how copies of objects are made.  When we say a type supports copy semantics, we mean that objects of that type are copyable, because the rules for making such copies have been defined.  When we say copy semantics are being invoked, that means we’ve done something that will make a copy of an object.</p>
+<p>For class types, copy semantics are typically implemented via the copy constructor (and copy assignment operator), which defines how objects of that type are copied.  Typically this results in each data member of the class type being copied.  In the prior example, the statement <code>std::vector arr2 { arr1 };</code> invokes copy semantics, resulting in a call to the copy constructor of <code>std::vector</code>, which then makes a copy of each data member of <code>arr1</code> into <code>arr2</code>.  The end result is that <code>arr1</code> is equivalent to (but independent from) <code>arr2</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">When copy semantics is not optimal</p>
+<p>Now consider this related example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+std::vector&lt;int&gt; generate() // return by value
+{
+    // We're intentionally using a named object here so mandatory copy elision doesn't apply
+    std::vector arr1 { 1, 2, 3, 4, 5 }; // copies { 1, 2, 3, 4, 5 } into arr1
+    return arr1;
+}
+
+int main()
+{
+    std::vector arr2 { generate() }; // the return value of generate() dies at the end of the expression
+
+    // There is no way to use the return value of generate() here
+    arr2[0] = 7; // we only have access to arr2
+
+    std::cout &lt;&lt; arr2[0] &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>When <code>arr2</code> is initialized this time, it is being initialized using a temporary object returned from function <code>generate()</code>.  Unlike the prior case, where the initializer was an lvalue that could be used in future statements, in this case, the temporary object is an rvalue will be destroyed at the end of the initialization expression.  The temporary object can’t be used beyond that point.  Because the temporary (and its data) will be destroyed at the end of the expression, we need some way to get the data out of the temporary and into <code>arr2</code>.</p>
+<p>The usual thing to do here is the same as in the previous example: use copy semantics and make a potentially expensive copy.  That way <code>arr2</code> gets its own copy of the data that can be used even after the temporary (and its data) is destroyed.</p>
+<p>However, what makes this case different than the previous example is that the temporary is going to be destroyed anyway.  After initialization is complete, the temporary doesn’t need its data any more (which is why we can destroy it).  We don’t need two sets of data to exist simultaneously.  In such cases, making a potentially expensive copy and then destroying the original data is suboptimal.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Introduction to move semantics</p>
+<p>Instead, what if there was a way for <code>arr2</code> to “steal” the temporary’s data instead of copying it?  <code>arr2</code> would then be the new owner of the data, and no copy of the data would need to be made.  When ownership of data is transferred from one object to another, we say that data has been <strong>moved</strong>.  The cost of such a move is typically trivial (usually just two or three pointer assignments, which is way faster than copying an array of data!).</p>
+<p>As an added benefit, when the temporary was then destroyed at the end of the expression, it would no longer have any data to destroy, so we wouldn’t have to pay that cost either.</p>
+<p>This is the essence of <strong>move semantics</strong>, which refers to the rules that determine how the data from one object is moved to another object.  When move semantics is invoked, any data member that can be moved is moved, and any data member that can’t be moved is copied.  The ability to move data instead of copying it can make move semantics more efficient than copy semantics, especially when we can replace an expensive copy with an inexpensive move.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Move semantics is an optimization that allows us, under certain circumstances, to inexpensively transfer ownership of some data members from one object to another object (rather than making a more expensive copy).</p>
+<p>Data members that can’t be moved are copied instead.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">How move semantics is invoked</p>
+<p>Normally, when an object is being initialized with (or assigned) an object of the same type, copy semantics will be used (assuming the copy isn’t elided).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We covered copy elision in lesson <a href="class-initialization-and-copy-elision.html">14.15 -- Class initialization and copy elision</a>.
+</p></div>
+<p>However, when all of the following are true, move semantics will be invoked instead:</p>
+<ul>
+<li>The type of the object supports move semantics.
+</li>
+<li>The object is being initialized with (or assigned) an rvalue (temporary) object of the same type.
+</li>
+<li>The move isn’t elided.
+</li>
+</ul>
+<p>Here’s the sad news: not that many types support move semantics.  However, <code>std::vector</code> and <code>std::string</code> both do!</p>
+<p>We’ll dig into how move semantics works in more detail in <a href="../index.html">chapter 22</a>.  For now, it’s enough to know what move semantics is, and which types are move-capable.</p>
+<p class="cpp-section cpp-topline" style="clear: both">We can return move-capable types like <code>std::vector</code> by value</p>
+<p>Because return by value returns an rvalue, if the returned type supports move semantics, then the returned value can be moved instead of copied into the destination object.  This makes return by value extremely inexpensive for these types!</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>We can return move-capable types (like <code>std::vector</code> and <code>std::string</code>) by value.  Such types will inexpensively move their values instead of making an expensive copy.</p>
+<p>Such types should still be passed by const reference.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Wait, wait, wait.  Expensive-to-copy types shouldn’t be passed by value, but if they are move-capable they can be returned by value?</p>
+<p>Correct.</p>
+<p>This following discussion is optional, but may help you understand why this is the case.</p>
+<p>One of the most common things we do in C++ is pass a value to some function, and get a different value back.  When the passed values are class types, that process involves 4 steps:</p>
+<ol start="1">
+<li>Construct the value to be passed.
+</li>
+<li>Actually pass the value to the function.
+</li>
+<li>Construct the value to be returned.
+</li>
+<li>Actually pass the return value back to the caller.
+</li>
+</ol>
+<p>Here’s an example of the above process using <code>std::vector</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+std::vector&lt;int&gt; doSomething(std::vector&lt;int&gt; v2)
+{
+    std::vector v3 { v2[0] + v2[0] }; // 3 -- construct value to be returned to caller
+    return v3; // 4 -- actually return value
+}
+
+int main()
+{
+    std::vector v1 { 5 }; // 1 -- construct value to be passed to function
+    std::cout &lt;&lt; doSomething(v1)[0] &lt;&lt; '\n'; // 2 -- actually pass value
+
+    std::cout &lt;&lt; v1[0] &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>First, let’s assume <code>std::vector</code> is not move-capable.  In that case, the above program makes 4 copies:</p>
+<ol start="1">
+<li>Constructing the value to be passed copies the initializer list into <code>v1</code>
+</li>
+<li>Actually passing the value to the function copies argument <code>v1</code> into function parameter <code>v2</code>.
+</li>
+<li>Constructing the value to be returned copies the initializer into <code>v3</code>
+</li>
+<li>Actually returning the value to the caller copies <code>v3</code> back to the caller.
+</li>
+</ol>
+<p>Now let’s talk about how we might optimize the above.  We have many tools at our disposal here: pass by reference or address, elision, move semantics, and out parameters.</p>
+<p>We can’t optimize copies 1 and 3 at all.  We need a <code>std::vector</code> to pass to the function, and we need a <code>std::vector</code> to return -- these objects have to be constructed.  <code>std::vector</code> is an owner of its data, so it necessarily makes a copy of its initializer.</p>
+<p>What we can affect is copies 2 and 4.</p>
+<p>Copy 2 is made because we’re passing by value from the caller to the called function.  What other options do we have?</p>
+<ul>
+<li>Can we pass by reference or address?  Yes.  We are guaranteed that the argument will exist for the entire function call -- the caller does not have to worry about the passed object unexpectedly going out of scope.
+</li>
+<li>Can this copy be elided?  No.  Elision only works when we’re making a redundant copy or move.  There’s no redundant copy or move here.
+</li>
+<li>Can we use an out parameter here?  No.   We’re passing a value to the function, not getting a value back.
+</li>
+<li>Can we use move semantics here?  No.  The argument is an lvalue.  If we moved data from <code>v1</code> to <code>v2</code>, <code>v1</code> would become an empty vector, and subsequently printing <code>v1[0]</code> would lead to undefined behavior.
+</li>
+</ul>
+<p>Clearly pass by const reference is our best option here, as it avoids the copy, avoids null pointer issues, and works with both lvalue and rvalue arguments.</p>
+<p>Copy 4 is made because we’re passing by value from the called function back to the caller.  What other options do we have here?</p>
+<ul>
+<li>Can we return by reference or address?  No.  The object we’re returning is created as a local variable inside the function, and will be destroyed when the function returns.  Returning a reference or pointer will result in the caller receiving a dangling pointer or reference.
+</li>
+<li>Can this copy be elided?  Yes, possibly.  If the compiler is smart, it will realize that we’re constructing an object in the scope of the called function and returning it.  By rewriting the code (under the as-if rule) so that <code>v3</code> is constructed in the scope of the caller instead, we can avoid the copy that would otherwise be made when returning.  However, we are reliant upon the compiler realizing it can do this, so it is not guaranteed.
+</li>
+<li>Can we use an out parameter here?  Yes.  Instead of constructing <code>v3</code> as a local variable, we can construct an empty <code>std::vector</code> object in the scope of the caller, and pass it to the function by non-const reference.  The function can then fill this parameter with data.  When the function returns, this object will still exist.  This avoids the copy, but also has some significant downsides and constraints: ugly calling semantics, doesn’t work with objects that don’t support assignment, and it is challenging to write such functions that can work with both lvalue and rvalue arguments.
+</li>
+<li>Can we use move semantics here?  Yes.  <code>v3</code> is going to be destroyed when the function returns, so instead of copying <code>v3</code> back to the caller, we can use move semantics to move its data to the caller, avoiding the copy.
+</li>
+</ul>
+<p>Elision is the best option here, but whether it happens is out of our control.  The next best option for move-capable types is move semantics, which can be used in cases where the compiler doesn’t elide the copy.  And for move-capable types, move semantics is invoked automatically when returning by value.</p>
+<p>To summarize, for move-capable types, we prefer to pass by const reference, and return by value.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="passing-stdvector.html"><span class="nav-kicker">← Previous lesson</span>16.4 · Passing std::vector</a><a class="next" href="arrays-and-loops.html"><span class="nav-kicker">Next lesson →</span>16.6 · Arrays and loops</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

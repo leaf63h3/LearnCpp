@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 12.12 -- Return by reference and return by address, we covered return by reference. In particular, we noted, “The object being returned by refere">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.7 — Member functions returning references to data members · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/member-functions-returning-references-to-data-members/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html" aria-current="page"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.7 — Member functions returning references to data members</h1>
+        <div class="article-meta"><span>Updated: 2024-03-29 16:50</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="return-by-reference-and-return-by-address.html">12.12 -- Return by reference and return by address</a>, we covered return by reference.  In particular, we noted, “The object being returned by reference must exist after the function returns”.  This means we should not return local variables by reference, as the reference will be left dangling after the local variable is destroyed.  However, it is generally okay to return by reference either function parameters passed by reference, or variables with static duration (either static local variables or global variables), as they will generally not be destroyed after the function returns.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// Takes two std::string objects, returns the one that comes first alphabetically
+const std::string&amp; firstAlphabetical(const std::string&amp; a, const std::string&amp; b)
+{
+	return (a &lt; b) ? a : b; // We can use operator&lt; on std::string to determine which comes first alphabetically
+}
+
+int main()
+{
+	std::string hello { "Hello" };
+	std::string world { "World" };
+
+	std::cout &lt;&lt; firstAlphabetical(hello, world); // either hello or world will be returned by reference
+
+	return 0;
+}</code></pre>
+<p>Member functions can also return by reference, and they follow the same rules for when it is safe to return by reference as non-member functions.  However, member functions have one additional case we need to discuss: member functions that return data members by reference.</p>
+<p>This is most commonly seen with getter access functions, so we’ll illustrate this topic using getter member functions.  But note that this topic applies to any member function returning a reference to a data member.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Returning data members by value can be expensive</p>
+<p>Consider the following example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Employee
+{
+	std::string m_name{};
+
+public:
+	void setName(std::string_view name) { m_name = name; }
+	std::string getName() const { return m_name; } //  getter returns by value
+};
+
+int main()
+{
+	Employee joe{};
+	joe.setName("Joe");
+	std::cout &lt;&lt; joe.getName();
+
+	return 0;
+}</code></pre>
+<p>In this example, the <code>getName()</code> access function returns <code>std::string m_name</code> by value.</p>
+<p>While this is the safest thing to do, it also means that an expensive copy of <code>m_name</code> will be made every time <code>getName()</code> is called.  Since access functions tend to be called a lot, this is generally not the best choice.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Returning data members by lvalue reference</p>
+<p>Member functions can also return data members by (const) lvalue reference.</p>
+<p>Data members have the same lifetime as the object containing them.  Since member functions are always called on an object, and that object must exist in the scope of the caller, it is generally safe for a member function to return a data member by (const) lvalue reference (as the member being returned by reference will still exist in the scope of the caller when the function returns).</p>
+<p>Let’s update the example above so that <code>getName()</code> returns <code>m_name</code> by const lvalue reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Employee
+{
+	std::string m_name{};
+
+public:
+	void setName(std::string_view name) { m_name = name; }
+	const std::string&amp; getName() const { return m_name; } //  getter returns by const reference
+};
+
+int main()
+{
+	Employee joe{}; // joe exists until end of function
+	joe.setName("Joe");
+
+	std::cout &lt;&lt; joe.getName(); // returns joe.m_name by reference
+
+	return 0;
+}</code></pre>
+<p>Now when <code>joe.getName()</code> is invoked, <code>joe.m_name</code> is returned by reference to the caller, avoiding having to make a copy.  The caller then uses this reference to print <code>joe.m_name</code> to the console.</p>
+<p>Because <code>joe</code> exists in the scope of the caller until the end of the <code>main()</code> function, the reference to <code>joe.m_name</code> is also valid for the same duration.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>It is okay to return a (const) lvalue reference to a data member.  The implicit object (containing the data member) still exists in the scope of the caller after the function returns, so any returned references will be valid.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">The return type of a member function returning a reference to a data member should match the data member’s type</p>
+<p>In general, the return type of a member function returning by reference should match the type of the data member being returned.  In the above example, <code>m_name</code> is of type <code>std::string</code>, so <code>getName()</code> returns <code>const std::string&amp;</code>.</p>
+<p>Returning a <code>std::string_view</code> would require a temporary <code>std::string_view</code> to be created and returned every time the function was called.  That’s needlessly inefficient.  If the caller wants a <code>std::string_view</code>, they can do the conversion themselves.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>A member function returning a reference should return a reference of the same type as the data member being returned, to avoid unnecessary conversions.
+</p></div>
+<p>For getters, using <code>auto</code> to have the compiler deduce the return type from the member being returned is a useful way to ensure that no conversions occur:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Employee
+{
+	std::string m_name{};
+
+public:
+	void setName(std::string_view name) { m_name = name; }
+	const auto&amp; getName() const { return m_name; } // uses `auto` to deduce return type from m_name
+};
+
+int main()
+{
+	Employee joe{}; // joe exists until end of function
+	joe.setName("Joe");
+
+	std::cout &lt;&lt; joe.getName(); // returns joe.m_name by reference
+
+	return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover <code>auto</code> return types in lesson <a href="type-deduction-for-functions.html">10.9 -- Type deduction for functions</a>.
+</p></div>
+<p>However, using an <code>auto</code> return type obscures the return type of the getter from a documentation perspective.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">	const auto&amp; getName() const { return m_name; } // uses `auto` to deduce return type from m_name</code></pre>
+<p>It’s unclear what kind of string this function actually returns (it could be a <code>std::string</code>, <code>std::string_view</code>, <code>C-style string</code>, or something else entirely!).</p>
+<p>For this reason, we’ll generally prefer explicit return types.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Rvalue implicit objects and return by reference</p>
+<p>There’s one case we need to be a little careful with.  In the above example, <code>joe</code> is an lvalue object that exists until the end of the function.  Therefore, the reference returned by <code>joe.getName()</code> will also be valid until the end of the function.</p>
+<p>But what if our implicit object is an rvalue instead (such as the return value of some function that returns by value)?  Rvalue objects are destroyed at the end of the full expression in which they are created.  When an rvalue object is destroyed, any references to members of that rvalue will be invalidated and left dangling, and use of such references will produce undefined behavior.</p>
+<p>Therefore, a reference to a member of an rvalue object can only be safely used within the full expression where the rvalue object is created.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>We covered what a full expression is in lesson <a href="introduction-to-expressions.html">1.10 -- Introduction to expressions</a>.
+</p></div>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>An rvalue object is destroyed at the end of the full expression in which it is created.  Any references to members of the rvalue object are left dangling at that point.</p>
+<p>A reference to a member of an rvalue object can only be safely used within the full expression where the rvalue object is created.
+</p></div>
+<p>Let’s explore some cases related to this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+class Employee
+{
+	std::string m_name{};
+
+public:
+	void setName(std::string_view name) { m_name = name; }
+	const std::string&amp; getName() const { return m_name; } //  getter returns by const reference
+};
+
+// createEmployee() returns an Employee by value (which means the returned value is an rvalue)
+Employee createEmployee(std::string_view name)
+{
+	Employee e;
+	e.setName(name);
+	return e;
+}
+
+int main()
+{
+	// Case 1: okay: use returned reference to member of rvalue class object in same expression
+	std::cout &lt;&lt; createEmployee("Frank").getName();
+
+	// Case 2: bad: save returned reference to member of rvalue class object for use later
+	const std::string&amp; ref { createEmployee("Garbo").getName() }; // reference becomes dangling when return value of createEmployee() is destroyed
+	std::cout &lt;&lt; ref; // undefined behavior
+
+	// Case 3: okay: copy referenced value to local variable for use later
+	std::string val { createEmployee("Hans").getName() }; // makes copy of referenced member
+	std::cout &lt;&lt; val; // okay: val is independent of referenced member
+
+	return 0;
+}</code></pre>
+<p>When <code>createEmployee()</code> is called, it will return an <code>Employee</code> object by value.  This returned <code>Employee</code> object is an rvalue that will exist until the end of the full expression containing the call to <code>createEmployee()</code>.  When that rvalue object is destroyed, any references to members of that object will become dangling.</p>
+<p>In case 1, we call <code>createEmployee("Frank")</code>, which returns an rvalue <code>Employee</code> object.  We then call <code>getName()</code> on this rvalue object, which returns a reference to <code>m_name</code>.  This reference is then used immediately to print the name to the console.  At this point, the full expression containing the call to <code>createEmployee("Frank")</code> ends, and the rvalue object and its members are destroyed.  Since neither the rvalue object or its members are used beyond this point, this case is fine.</p>
+<p>In case 2, we run into problems.  First, <code>createEmployee("Garbo")</code> returns an rvalue object.  We then call <code>getName()</code> to get a reference to the <code>m_name</code> member of this rvalue.  This <code>m_name</code> member is then used to initialize <code>ref</code>.  At this point, the full expression containing the call to <code>createEmployee("Garbo")</code> ends, and the rvalue object and its members are destroyed.  This leaves <code>ref</code> dangling.  Thus, when we use <code>ref</code> in the subsequent statement, we’re accessing a dangling reference, and undefined behavior results.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>The evaluation of a full expression ends <em>after</em> any uses of that full expression as an initializer.  This allows objects to be initialized with an rvalue of the same type (as the rvalue won’t be destroyed until after initialization occurs).
+</p></div>
+<p>But what if we want to save a value from a function that returns a member by reference for use later?  Instead of using the returned reference to initialize a local reference variable, we can instead use the returned reference to initialize a non-reference local variable.</p>
+<p>In case 3, we’re using the returned reference to initialize non-reference local variable <code>val</code>.  This will cause the member being referenced to be copied into <code>val</code>.  After initialization, <code>val</code> exists independently of the reference.  So when the rvalue object is subsequently destroyed, <code>val</code> is not impacted by this.  Thus <code>val</code> can be output in future statements without issue.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using member functions that return by reference safely</p>
+<p>Despite the potential danger with rvalue implicit objects, it is conventional for getters to return types that are expensive to copy by const reference, not by value.</p>
+<p>Given that, let’s talk about how we can use the return values from such functions safely.  The three cases in the example above illustrate the three key points:</p>
+<ul>
+<li>Prefer to use the return value of a member function that returns by reference immediately (illustrated in case 1).  Since this works with both lvalue and rvalue objects, if you always do this, you will avoid trouble.
+</li>
+<li>Do not “save” a returned reference to use later (illustrated in case 2), unless you are sure the implicit object is an lvalue.  If you do this with an rvalue implicit object, undefined behavior will result when you use the now-dangling reference.
+</li>
+<li>If you do need to persist a returned reference for use later and aren’t sure that the implicit object is an lvalue, using the returned reference as the initializer for a non-reference local variable, which will make a copy of the member being referenced into the local variable (illustrated in case 3).
+</li>
+</ul>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer to use the return value of a member function that returns by reference immediately, to avoid issues with dangling references when the implicit object is an rvalue.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Do not return non-const references to private data members</p>
+<p>Because a reference acts just like the object being referenced, a member function that returns a non-const reference provides direct access to that member (even if the member is private).</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Foo
+{
+private:
+    int m_value{ 4 }; // private member
+
+public:
+    int&amp; value() { return m_value; } // returns a non-const reference (don't do this)
+};
+
+int main()
+{
+    Foo f{};                // f.m_value is initialized to default value 4
+    f.value() = 5;          // The equivalent of m_value = 5
+    std::cout &lt;&lt; f.value(); // prints 5
+
+    return 0;
+}</code></pre>
+<p>Because <code>value()</code> returns a non-const reference to <code>m_value</code>, the caller is able to use that reference to directly access (and change the value of) <code>m_value</code>.</p>
+<p>This allows the caller to subvert the access control system.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Const member functions can’t return non-const references to data members</p>
+<p>A const member function is not allowed to return a non-const reference to members.  This makes sense -- a const member function is not allowed to modify the state of the object, nor is it allowed to call functions that would modify the state of the object.  It should not be doing anything that might lead to the modification of the object.</p>
+<p>If a const member function was allowed to return a non-const reference to a member, it would be handing the caller a way to directly modify that member.  This violates the intent of a const member function.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="access-functions.html"><span class="nav-kicker">← Previous lesson</span>14.6 · Access functions</a><a class="next" href="the-benefits-of-data-hiding-encapsulation.html"><span class="nav-kicker">Next lesson →</span>14.8 · The benefits of data hiding (encapsulation)</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

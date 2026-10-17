@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In some applications, certain symbolic constants may need to be used throughout your code (not just in one location). These can include physics or mathemat">
+  <meta name="robots" content="noindex,nofollow">
+  <title>7.10 — Sharing global constants across multiple files (using inline variables) · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/sharing-global-constants-across-multiple-files-using-inline-variables/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 7 · Scope, Duration, and Linkage</summary><div class="sidebar-title"><small>Chapter 7</small><strong>Scope, Duration, and Linkage</strong></div>
+<ol class="sidebar-lessons"><li><a href="compound-statements-blocks.html"><span class="lesson-number">7.1</span><span>Compound statements (blocks)</span></a></li><li><a href="user-defined-namespaces-and-the-scope-resolution-operator.html"><span class="lesson-number">7.2</span><span>User-defined namespaces and the scope resolution operator</span></a></li><li><a href="local-variables.html"><span class="lesson-number">7.3</span><span>Local variables</span></a></li><li><a href="introduction-to-global-variables.html"><span class="lesson-number">7.4</span><span>Introduction to global variables</span></a></li><li><a href="variable-shadowing-name-hiding.html"><span class="lesson-number">7.5</span><span>Variable shadowing (name hiding)</span></a></li><li><a href="internal-linkage.html"><span class="lesson-number">7.6</span><span>Internal linkage</span></a></li><li><a href="external-linkage-and-variable-forward-declarations.html"><span class="lesson-number">7.7</span><span>External linkage and variable forward declarations</span></a></li><li><a href="why-non-const-global-variables-are-evil.html"><span class="lesson-number">7.8</span><span>Why (non-const) global variables are evil</span></a></li><li><a href="inline-functions-and-variables.html"><span class="lesson-number">7.9</span><span>Inline functions and variables</span></a></li><li><a href="sharing-global-constants-across-multiple-files-using-inline-variables.html" aria-current="page"><span class="lesson-number">7.10</span><span>Sharing global constants across multiple files (using inline variables)</span></a></li><li><a href="static-local-variables.html"><span class="lesson-number">7.11</span><span>Static local variables</span></a></li><li><a href="scope-duration-and-linkage-summary.html"><span class="lesson-number">7.12</span><span>Scope, duration, and linkage summary</span></a></li><li><a href="using-declarations-and-using-directives.html"><span class="lesson-number">7.13</span><span>Using declarations and using directives</span></a></li><li><a href="unnamed-and-inline-namespaces.html"><span class="lesson-number">7.14</span><span>Unnamed and inline namespaces</span></a></li><li><a href="chapter-7-summary-and-quiz.html"><span class="lesson-number">7.x</span><span>Chapter 7 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 7</div>
+        <h1>7.10 — Sharing global constants across multiple files (using inline variables)</h1>
+        <div class="article-meta"><span>Updated: 2024-12-14 16:02</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In some applications, certain symbolic constants may need to be used throughout your code (not just in one location).  These can include physics or mathematical constants that don’t change (e.g. pi or Avogadro’s number), or application-specific “tuning” values (e.g. friction or gravity coefficients).  Instead of redefining these constants in every file that needs them (a violation of the “Don’t Repeat Yourself” rule), it’s better to declare them once in a central location and use them wherever needed.  That way, if you ever need to change them, you only need to change them in one place, and those changes can be propagated out.</p>
+<p>This lesson discusses the most common ways to do this.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Global constants as internal variables</p>
+<p>Prior to C++17, the following is the easiest and most common solution:</p>
+<ol start="1">
+<li>Create a header file to hold these constants
+</li>
+<li>Inside this header file, define a namespace (discussed in lesson <a href="user-defined-namespaces-and-the-scope-resolution-operator.html">7.2 -- User-defined namespaces and the scope resolution operator</a>)
+</li>
+<li>Add all your constants inside the namespace (make sure they’re <em>constexpr</em>)
+</li>
+<li>#include the header file wherever you need it
+</li>
+</ol>
+<p>For example:</p>
+<p>constants.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+// Define your own namespace to hold constants
+namespace constants
+{
+    // Global constants have internal linkage by default
+    constexpr double pi { 3.14159 };
+    constexpr double avogadro { 6.0221413e23 };
+    constexpr double myGravity { 9.2 }; // m/s^2 -- gravity is light on this planet
+    // ... other related constants
+}
+#endif</code></pre>
+<p>Then use the scope resolution operator (::) with the namespace name to the left, and your variable name to the right in order to access your constants in .cpp files:</p>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "constants.h" // include a copy of each constant in this file
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a radius: ";
+    double radius{};
+    std::cin &gt;&gt; radius;
+
+    std::cout &lt;&lt; "The circumference is: " &lt;&lt; 2 * radius * constants::pi &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>When this header gets #included into a .cpp file, each of these variables defined in the header will be copied into that code file at the point of inclusion.  Because these variables live outside of a function, they’re treated as global variables within the file they are included into, which is why you can use them anywhere in that file.</p>
+<p>Because const globals have internal linkage, each .cpp file gets an independent version of the global variable that the linker can’t see.  In most cases, because these are constexpr, the compiler will simply optimize the variables away.</p>
+<p>While this is simple (and fine for smaller programs), every time <em>constants.h</em> gets #included into a different code file, each of these variables is copied into the including code file.  Therefore, if constants.h gets included into 20 different code files, each of these variables is duplicated 20 times.  Header guards won’t stop this from happening, as they only prevent a header from being included more than once into a single including file, not from being included one time into multiple different code files.  This introduces two challenges:</p>
+<ol start="1">
+<li>Changing a single constant value would require recompiling every file that includes the constants header, which can lead to lengthy rebuild times for larger projects.
+</li>
+<li>If the constants are large in size and can’t be optimized away, this can use a lot of memory.
+</li>
+</ol>
+<p>Advantages:</p>
+<ul>
+<li>Works prior to C++17.
+</li>
+<li>Can be used in constant expressions in any translation unit that includes them.
+</li>
+</ul>
+<p>Downsides:</p>
+<ul>
+<li>Changing anything in the header file requires recompiling files including the header.
+</li>
+<li>Each translation unit including the header gets its own copy of the variable.
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">Global constants as external variables</p>
+<p>If you’re actively changing values or adding new constants, the prior solution might be problematic, at least until things settle.</p>
+<p>One way to avoid these problems is by turning these constants into external variables, since we can then have a single variable (initialized once) that is shared across all files.  In this method, we’ll define the constants in a .cpp file (to ensure the definitions only exist in one place), and put forward declarations in the header (which will be included by other files).</p>
+<p>constants.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "constants.h"
+
+namespace constants
+{
+    // We use extern to ensure these have external linkage
+    extern constexpr double pi { 3.14159 };
+    extern constexpr double avogadro { 6.0221413e23 };
+    extern constexpr double myGravity { 9.2 }; // m/s^2 -- gravity is light on this planet
+}</code></pre>
+<p>constants.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+namespace constants
+{
+    // Since the actual variables are inside a namespace, the forward declarations need to be inside a namespace as well
+    // We can't forward declare variables as constexpr, but we can forward declare them as (runtime) const
+    extern const double pi;
+    extern const double avogadro;
+    extern const double myGravity;
+}
+
+#endif</code></pre>
+<p>Use in the code file stays the same:</p>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "constants.h" // include all the forward declarations
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a radius: ";
+    double radius{};
+    std::cin &gt;&gt; radius;
+
+    std::cout &lt;&lt; "The circumference is: " &lt;&lt; 2 * radius * constants::pi &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Now the symbolic constants will get instantiated only once (in <em>constants.cpp</em>) instead of in each code file where <em>constants.h</em> is #included, and all uses of these constants will be linked to the version instantiated in <em>constants.cpp</em>.  Any changes made to <em>constants.cpp</em> will require recompiling only <em>constants.cpp</em>.</p>
+<p>However, there are a couple of downsides to this method.  First, because only the variable definitions are constexpr (the forward declarations aren’t, and can’t be), these constants are constant expressions only within the file they are actually defined in (<em>constants.cpp</em>).  In other files, the compiler will only see the forward declaration, which doesn’t define a constexpr value (and must be resolved by the linker).  This means outside of the file where they are defined, these variables can’t be used in a constant expression.  Second, because constant expressions can typically be optimized more than runtime expressions, the compiler may not be able to optimize these as much.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>In order for variables to be usable in compile-time contexts, such as array sizes, the compiler has to see the variable’s definition (not just a forward declaration).
+</p></div>
+<p>Because the compiler compiles each source file individually, it can only see variable definitions that appear in the source file being compiled (which includes any included headers). For example, variable definitions in <em>constants.cpp</em> are not visible when the compiler compiles <em>main.cpp</em>. For this reason, constexpr variables cannot be separated into header and source file, they have to be defined in the header file.</p>
+<p>Given the above downsides, prefer defining your constants in a header file (either per the prior section, or per the next section).  If you find that the values for your constants are changing a lot (e.g. because you are tuning the program) and this is leading to long compilation times, you can temporarily move just the offending constants into a .cpp file (using this method) as needed.</p>
+<p>Advantages:</p>
+<ul>
+<li>Works prior to C++17.
+</li>
+<li>Only one copy of each variable is required.
+</li>
+<li>Only requires recompilation of one file if the value of a constant changes.
+</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Forward declarations and variable definitions are in separate files, and must be kept in sync.
+</li>
+<li>Variables not usable in constant expressions outside of the file in which they are defined.
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">Global constants as inline variables <span class="cpp-section-pill cpp-section-standard">C++17</span></p>
+<p>In lesson <a href="inline-functions-and-variables.html">7.9 -- Inline functions and variables</a>, we covered inline variables, which are variables that can have more than one definition, so long as those definitions are identical.  By making our constexpr variables inline, we can define them in a header file and then #include them into any .cpp file that requires them.  This avoids both ODR violations and the downside of duplicated variables.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>Constexpr functions are implicitly inline, but constexpr variables are not implicitly inline.  If you want an inline constexpr variable, you must explicitly mark it as <code>inline</code>.
+</p></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Inline variables have external linkage by default, so that they are visible to the linker.  This is necessary so the linker can de-duplicate the definitions.</p>
+<p>Non-inline constexpr variables have internal linkage.  If included into multiple translation units, each translation unit will get its own copy of the variable.  This is not an ODR violation because they are not exposed to the linker.
+</p></div>
+<p>constants.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+// define your own namespace to hold constants
+namespace constants
+{
+    inline constexpr double pi { 3.14159 }; // note: now inline constexpr
+    inline constexpr double avogadro { 6.0221413e23 };
+    inline constexpr double myGravity { 9.2 }; // m/s^2 -- gravity is light on this planet
+    // ... other related constants
+}
+#endif</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "constants.h"
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a radius: ";
+    double radius{};
+    std::cin &gt;&gt; radius;
+
+    std::cout &lt;&lt; "The circumference is: " &lt;&lt; 2 * radius * constants::pi &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>We can include <code>constants.h</code> into as many code files as we want, but these variables will only be instantiated once and shared across all code files.</p>
+<p>This method does retain the downside of requiring every file that includes the constants header be recompiled if any constant value is changed.</p>
+<p>Advantages:</p>
+<ul>
+<li>Can be used in constant expressions in any translation unit that includes them.
+</li>
+<li>Only one copy of each variable is required.
+</li>
+</ul>
+<p>Downsides:</p>
+<ul>
+<li>Only works in C++17 onward.
+</li>
+<li>Changing anything in the header file requires recompiling files including the header.
+</li>
+</ul>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>If you need global constants and your compiler is C++17 capable, prefer defining inline constexpr global variables in a header file.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>Use <code>std::string_view</code> for <code>constexpr</code> strings.  We cover this in lesson <a href="introduction-to-stdstring_view.html">5.8 -- Introduction to std::string_view</a>.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We summarize the scope, duration, and linkage of various kinds of variables in lesson <a href="scope-duration-and-linkage-summary.html">7.12 -- Scope, duration, and linkage summary</a>.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="inline-functions-and-variables.html"><span class="nav-kicker">← Previous lesson</span>7.9 · Inline functions and variables</a><a class="next" href="static-local-variables.html"><span class="nav-kicker">Next lesson →</span>7.11 · Static local variables</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

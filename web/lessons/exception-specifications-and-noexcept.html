@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="(h/t to reader Koe for providing the first draft of this lesson!) Looking at a typical function declaration, it is not possible to determine whether a func">
+  <meta name="robots" content="noindex,nofollow">
+  <title>27.9 — Exception specifications and noexcept · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/exception-specifications-and-noexcept/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 27 · Exceptions</summary><div class="sidebar-title"><small>Chapter 27</small><strong>Exceptions</strong></div>
+<ol class="sidebar-lessons"><li><a href="the-need-for-exceptions.html"><span class="lesson-number">27.1</span><span>The need for exceptions</span></a></li><li><a href="basic-exception-handling.html"><span class="lesson-number">27.2</span><span>Basic exception handling</span></a></li><li><a href="exceptions-functions-and-stack-unwinding.html"><span class="lesson-number">27.3</span><span>Exceptions, functions, and stack unwinding</span></a></li><li><a href="uncaught-exceptions-catch-all-handlers.html"><span class="lesson-number">27.4</span><span>Uncaught exceptions and catch-all handlers</span></a></li><li><a href="exceptions-classes-and-inheritance.html"><span class="lesson-number">27.5</span><span>Exceptions, classes, and inheritance</span></a></li><li><a href="rethrowing-exceptions.html"><span class="lesson-number">27.6</span><span>Rethrowing exceptions</span></a></li><li><a href="function-try-blocks.html"><span class="lesson-number">27.7</span><span>Function try blocks</span></a></li><li><a href="exception-dangers-and-downsides.html"><span class="lesson-number">27.8</span><span>Exception dangers and downsides</span></a></li><li><a href="exception-specifications-and-noexcept.html" aria-current="page"><span class="lesson-number">27.9</span><span>Exception specifications and noexcept</span></a></li><li><a href="stdmove_if_noexcept.html"><span class="lesson-number">27.10</span><span>std::move_if_noexcept</span></a></li><li><a href="chapter-27-summary-and-quiz.html"><span class="lesson-number">27.x</span><span>Chapter 27 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 27</div>
+        <h1>27.9 — Exception specifications and noexcept</h1>
+        <div class="article-meta"><span>Updated: 2024-10-31 15:05</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>(h/t to reader Koe for providing the first draft of this lesson!)</p>
+<p>Looking at a typical function declaration, it is not possible to determine whether a function might throw an exception or not:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int doSomething(); // can this function throw an exception or not?</code></pre>
+<p>In the above example, can <code>doSomething()</code> throw an exception?  It’s not clear.  But the answer is important in some contexts.  In lesson <a href="exception-dangers-and-downsides.html">27.8 -- Exception dangers and downsides</a>, we described how an exception that is thrown out of a destructor during stack unwinding will cause the program to halt.  If <code>doSomething()</code> can throw an exception, then calling it from a destructor (or any other place where a thrown exception is undesirable) is risky.  Although we could have the destructor handle exceptions thrown by <code>doSomething()</code> (so those exceptions don’t propagate out of the destructor), we have to remember to do this, and we have to ensure we cover all the different types of exceptions that may be thrown.</p>
+<p>While comments may help enumerate whether a function throws exceptions or not (and if so, what kind of exceptions), documentation can grow stale and there is no compiler enforcement for comments.</p>
+<p><strong>Exception specifications</strong> are a language mechanism that was originally designed to document what kind of exceptions a function might throw as part of a function specification.  While most of the exception specifications have now been deprecated or removed, one useful exception specification was added as a replacement, which we’ll cover in this lesson.</p>
+<p class="cpp-section cpp-topline" style="clear: both">The noexcept specifier</p>
+<p>In C++, all functions are classified as either <em>non-throwing</em> or <em>potentially throwing</em>.  A <strong>non-throwing function</strong> is one that promises not to throw exceptions that are visible to the caller.  A <strong>potentially throwing function</strong> may throw exceptions that are visible to the caller.</p>
+<p>To define a function as non-throwing, we can use the <strong>noexcept specifier</strong>.  To do so, we use the <code>noexcept</code> keyword in the function declaration, placed to the right of the function parameter list:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void doSomething() noexcept; // this function is specified as non-throwing</code></pre>
+<p>Note that <code>noexcept</code> doesn’t actually prevent the function from throwing exceptions or calling other functions that are potentially throwing.  This is allowed so long as the noexcept function catches and handles those exceptions internally, and those exceptions do not exit the noexcept function.</p>
+<p>If an unhandled exception would exit a noexcept function, <code>std::terminate</code> will be called (even if there is an exception handler that would otherwise handle such an exception somewhere up the stack).  And if <code>std::terminate</code> is called from inside a noexcept function, stack unwinding may or may not occur (depending on implementation and optimizations), which means your objects may or may not be destructed properly prior to termination.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>The promise that a noexcept function makes to not throw exceptions that are visible to the caller is a contractual promise, not a promise enforced by the compiler.  So while calling a noexcept function should be safe, any exception handling bugs in the noexcept function that cause the contract to be broken will result in termination of the program!  This shouldn’t happen, but neither should bugs.</p>
+<p>For this reason, it’s best that noexcept functions don’t mess with exceptions at all, or call potentially throwing functions that could raise an exception.  A noexcept function can’t have an exception handling bug if no exceptions can possibly be raised in the first place!
+</p></div>
+<p>Much like functions that differ only in their return values can not be overloaded, functions differing only in their exception specification can not be overloaded.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Illustrating the behavior of noexcept functions and exceptions</p>
+<p>The following program illustrates the behavior of noexcept functions and exceptions in various cases:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// h/t to reader yellowEmu for the first draft of this program
+#include &lt;iostream&gt;
+
+class Doomed
+{
+public:
+    ~Doomed()
+    {
+        std::cout &lt;&lt; "Doomed destructed\n";
+    }
+};
+
+void thrower()
+{
+    std::cout &lt;&lt; "Throwing exception\n";
+    throw 1;
+}
+
+void pt()
+{
+    std::cout &lt;&lt; "pt (potentally throwing) called\n";
+    //This object will be destroyed during stack unwinding (if it occurs)
+    Doomed doomed{};
+    thrower();
+    std::cout &lt;&lt; "This never prints\n";
+}
+
+void nt() noexcept
+{
+    std::cout &lt;&lt; "nt (noexcept) called\n";
+    //This object will be destroyed during stack unwinding (if it occurs)
+    Doomed doomed{};
+    thrower();
+    std::cout &lt;&lt; "this never prints\n";
+}
+
+void tester(int c) noexcept
+{
+    std::cout &lt;&lt; "tester (noexcept) case " &lt;&lt; c &lt;&lt; " called\n";
+    try
+    {
+        (c == 1) ? pt() : nt();
+    }
+    catch (...)
+    {
+        std::cout &lt;&lt; "tester caught exception\n";
+    }
+}
+
+int main()
+{
+    std::cout &lt;&lt; std::unitbuf; // flush buffer after each insertion
+    std::cout &lt;&lt; std::boolalpha; // print boolean as true/false
+    tester(1);
+    std::cout &lt;&lt; "Test successful\n\n";
+    tester(2);
+    std::cout &lt;&lt; "Test successful\n";
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this program printed:</p>
+<pre>
+tester (noexcept) case 1 called
+pt (potentially throwing) called
+Throwing exception
+Doomed destructed
+tester caught exception
+Test successful
+
+tester (noexcept) case 2 called
+nt (noexcept) called
+throwing exception
+terminate called after throwing an instance of 'int'
+</pre>
+<p>and then the program aborted.</p>
+<p>Let’s explore what’s happening here in more detail.  Note that <code>tester</code> is a noexcept function, and thus promises not to expose any exception to the caller (<code>main</code>).</p>
+<p>The first case illustrates that noexcept functions can call potentially throwing functions and even handle any exceptions those functions throw.  First, <code>tester(1)</code> is called, which calls potentially throwing function <code>pt</code> , which calls <code>thrower</code>, which throws an exception.  The first handler for this exception is in <code>tester</code>, so the exception unwinds the stack (destroying local variable <code>doomed</code> in the process), and the exception is caught and handled within <code>tester</code>.  Because <code>tester</code> does not expose this exception to the caller (<code>main</code>),  there is no violation of noexcept here, and control returns to <code>main</code>.</p>
+<p>The second case illustrates what happens when a noexcept function tries to pass an exception back to its caller.  First, <code>tester(2)</code> is called, which calls non-throwing function <code>nt</code>, which calls <code>thrower</code>, which throws an exception.  The first handler for this exception is in <code>tester</code>.  However, <code>nt</code> is noexcept, and to get to the handler in <code>tester</code>, the exception would have to propagate to the caller of <code>nt</code>.  That is a violation of the noexcept of <code>nt</code>, and so <code>std::terminate</code> is called, and our program is aborted immediately.  On the author’s machine, the stack was not unwound (as illustrated by <code>doomed</code> not being destroyed).</p>
+<p class="cpp-section cpp-topline" style="clear: both">The noexcept specifier with a Boolean parameter</p>
+<p>The <code>noexcept</code> specifier has an optional Boolean parameter.  <code>noexcept(true)</code> is equivalent to <code>noexcept</code>, meaning the function is non-throwing.  <code>noexcept(false)</code> means the function is potentially throwing.  These parameters are typically only used in template functions, so that a template function can be dynamically created as non-throwing or potentially throwing based on some parameterized value.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Which functions are non-throwing and potentially-throwing</p>
+<p>Functions that are implicitly non-throwing:</p>
+<ul>
+<li>Destructors
+</li>
+</ul>
+<p>Functions that are non-throwing by default for implicitly-declared or defaulted functions:</p>
+<ul>
+<li>Constructors: default, copy, move
+</li>
+<li>Assignments: copy, move
+</li>
+<li>Comparison operators (as of C++20)
+</li>
+</ul>
+<p>However, if any of these functions call (explicitly or implicitly) another function which is potentially throwing, then the listed function will be treated as potentially throwing as well.  For example, if a class has a data member with a potentially throwing constructor, then the class’s constructors will be treated as potentially throwing as well.  As another example, if a copy assignment operator calls a potentially throwing assignment operator, then the copy assignment will be potentially throwing as well.  </p>
+<p>Functions that are potentially throwing (if not implicitly-declared or defaulted):</p>
+<ul>
+<li>Normal functions
+</li>
+<li>User-defined constructors
+</li>
+<li>User-defined operators
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">The noexcept operator</p>
+<p>The noexcept operator can also be used inside expressions.  It takes an expression as an argument, and returns <code>true</code> or <code>false</code> if the compiler thinks it will throw an exception or not. The noexcept operator is checked statically at compile-time, and doesn’t actually evaluate the input expression.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void foo() {throw -1;}
+void boo() {};
+void goo() noexcept {};
+struct S{};
+
+constexpr bool b1{ noexcept(5 + 3) }; // true; ints are non-throwing
+constexpr bool b2{ noexcept(foo()) }; // false; foo() throws an exception
+constexpr bool b3{ noexcept(boo()) }; // false; boo() is implicitly noexcept(false)
+constexpr bool b4{ noexcept(goo()) }; // true; goo() is explicitly noexcept(true)
+constexpr bool b5{ noexcept(S{}) };   // true; a struct's default constructor is noexcept by default</code></pre>
+<p>The noexcept operator can be used to conditionally execute code depending on whether it is potentially throwing or not. This is required to fulfill certain <strong>exception safety guarantees</strong>, which we’ll talk about in the next section.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Exception safety guarantees</p>
+<p>An <strong>exception safety guarantee</strong> is a contractual guideline about how functions or classes will behave in the event an exception occurs.  There are four levels of exception safety guarantees:</p>
+<ul>
+<li>No guarantee -- There are no guarantees about what will happen if an exception is thrown (e.g. a class may be left in an unusable state)</li>
+<li>Basic guarantee -- If an exception is thrown, no memory will be leaked and the object is still usable, but the program may be left in a modified state.</li>
+<li>Strong guarantee -- If an exception is thrown, no memory will be leaked and the program state will not be changed.  This means the function must either completely succeed or have no side effects if it fails.  This is easy if the failure happens before anything is modified in the first place, but can also be achieved by rolling back any changes so the program is returned to the pre-failure state.</li>
+<li>No throw / No fail guarantee -- The function will always succeed (no-fail) or fail without throwing an exception that is exposed to the caller (no-throw).  Exceptions may be thrown internally if not exposed.  The <code>noexcept</code> specifier maps to this level of exception safety guarantee.</li>
+</ul>
+<p>Let’s look at the no-throw/no-fail guarantees in more detail:</p>
+<p>The no-throw guarantee: if a function fails, then it won’t throw an exception. Instead, it will return an error code or ignore the problem. No-throw guarantees are required during stack unwinding when an exception is already being handled; for example, all destructors should have a no-throw guarantee (as should any functions those destructors call).  Examples of code that should be no-throw:</p>
+<ul>
+<li>destructors and memory deallocation/cleanup functions</li>
+<li>functions that higher-level no-throw functions need to call</li>
+</ul>
+<p>The no-fail guarantee: a function will always succeed in what it tries to do (and thus never has a need to throw an exception, thus, no-fail is a slightly stronger form of no-throw). Examples of code that should be no-fail:</p>
+<ul>
+<li>move constructors and move assignment (move semantics, covered in <a href="../index.html">chapter 22</a>)
+</li><li>swap functions</li>
+<li>clear/erase/reset functions on containers</li>
+<li>operations on std::unique_ptr (also covered in <a href="../index.html">chapter 22</a>)</li>
+<li>functions that higher-level no-fail functions need to call</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">When to use noexcept</p>
+<p>Just because your code doesn’t explicitly throw any exceptions doesn’t mean you should start sprinkling <code>noexcept</code> around your code.  By default, most functions are potentially throwing, so if your function calls other functions, there is a good chance it calls a function that is potentially throwing, and thus is potentially throwing too.</p>
+<p>There are a few good reasons to mark functions a non-throwing:</p>
+<ul>
+<li>Non-throwing functions can be safely called from functions that are not exception-safe, such as destructors
+</li>
+<li>Functions that are noexcept can enable the compiler to perform some optimizations that would not otherwise be available.  Because a noexcept function cannot throw an exception outside the function, the compiler doesn’t have to worry about keeping the runtime stack in an unwindable state, which can allow it to produce faster code.
+</li>
+<li>There are significant cases where knowing a function is noexcept allows us to produce more efficient implementations in our own code: the standard library containers (such as <code>std::vector</code>) are noexcept aware and will use the noexcept operator to determine whether to use <code>move semantics</code> (faster) or <code>copy semantics</code> (slower) in some places.   We cover move semantics in <a href="../index.html">chapter 22</a>, and this optimization in lesson <a href="stdmove_if_noexcept.html">27.10 -- std::move_if_noexcept</a>.
+</li>
+</ul>
+<p>The standard library’s policy is to use <code>noexcept</code> only on functions that <em>must not</em> throw or fail.  Functions that are potentially throwing but do not actually throw exceptions (due to implementation) typically are not marked as <code>noexcept</code>.</p>
+<p>For your own code, always mark the following as <code>noexcept</code>:</p>
+<ul>
+<li>Move constructors
+</li>
+<li>Move assignment operators
+</li>
+<li>Swap functions
+</li>
+</ul>
+<p>For your code, consider marking the following as <code>noexcept</code>:</p>
+<ul>
+<li>Functions for which you want to express a no-throw or no-fail guarantee (e.g. to document that they can be safely called from destructors or other noexcept functions)
+</li>
+<li>Copy constructors and copy assignment operators that are no-throw (to take advantage of optimizations).
+</li>
+<li>Destructors.  Destructors are implicitly noexcept so long as all members have noexcept destructors
+</li>
+</ul>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Always make move constructors, move assignment, and swap functions <code>noexcept</code>.</p>
+<p>Make copy constructors and copy assignment operators <code>noexcept</code> when you can.</p>
+<p>Use <code>noexcept</code> on other functions to express a no-fail or no-throw guarantee.
+</p></div>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>If you are uncertain whether a function should have a no-fail/no-throw guarantee, err on the side of caution and do not mark it with <code>noexcept</code>. Reversing a decision to use noexcept violates an interface commitment to the user about the behavior of the function, and may break existing code.  Making guarantees stronger by later adding noexcept to a function that was not originally noexcept is considered safe.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Dynamic exception specifications</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Optional reading</p>
+<p>Before C++11, and until C++17, <em>dynamic exception specifications</em> were used in place of <code>noexcept</code>. The <strong>dynamic exception specifications</strong> syntax uses the <code>throw</code> keyword to list which exception types a function might directly or indirectly throw:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int doSomething() throw(); // does not throw exceptions
+int doSomething() throw(std::out_of_range, int*); // may throw either std::out_of_range or a pointer to an integer
+int doSomething() throw(...); // may throw anything</code></pre>
+<p>Due to factors such as incomplete compiler implementations, some incompatibility with template functions, common misunderstandings about how they worked, and the fact that the standard library mostly didn’t use them, the dynamic exception specifications were deprecated in C++11 and removed from the language in C++17 and C++20.  See <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0003r0.html#2.0" target="_blank" rel="noopener noreferrer">this paper</a> for more context.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="exception-dangers-and-downsides.html"><span class="nav-kicker">← Previous lesson</span>27.8 · Exception dangers and downsides</a><a class="next" href="stdmove_if_noexcept.html"><span class="nav-kicker">Next lesson →</span>27.10 · std::move_if_noexcept</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

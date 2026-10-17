@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Type aliases In C++, using is a keyword that creates an alias for an existing data type. To create such a type alias, we use the using keyword, followed by">
+  <meta name="robots" content="noindex,nofollow">
+  <title>10.7 — Typedefs and type aliases · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/typedefs-and-type-aliases/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 10 · Type Conversion, Type Aliases, and Type Deduction</summary><div class="sidebar-title"><small>Chapter 10</small><strong>Type Conversion, Type Aliases, and Type Deduction</strong></div>
+<ol class="sidebar-lessons"><li><a href="implicit-type-conversion.html"><span class="lesson-number">10.1</span><span>Implicit type conversion</span></a></li><li><a href="floating-point-and-integral-promotion.html"><span class="lesson-number">10.2</span><span>Floating-point and integral promotion</span></a></li><li><a href="numeric-conversions.html"><span class="lesson-number">10.3</span><span>Numeric conversions</span></a></li><li><a href="narrowing-conversions-list-initialization-and-constexpr-initializers.html"><span class="lesson-number">10.4</span><span>Narrowing conversions, list initialization, and constexpr initializers</span></a></li><li><a href="arithmetic-conversions.html"><span class="lesson-number">10.5</span><span>Arithmetic conversions</span></a></li><li><a href="explicit-type-conversion-casting-and-static-cast.html"><span class="lesson-number">10.6</span><span>Explicit type conversion (casting) and static_cast</span></a></li><li><a href="typedefs-and-type-aliases.html" aria-current="page"><span class="lesson-number">10.7</span><span>Typedefs and type aliases</span></a></li><li><a href="type-deduction-for-objects-using-the-auto-keyword.html"><span class="lesson-number">10.8</span><span>Type deduction for objects using the auto keyword</span></a></li><li><a href="type-deduction-for-functions.html"><span class="lesson-number">10.9</span><span>Type deduction for functions</span></a></li><li><a href="chapter-10-summary-and-quiz.html"><span class="lesson-number">10.x</span><span>Chapter 10 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 10</div>
+        <h1>10.7 — Typedefs and type aliases</h1>
+        <div class="article-meta"><span>Updated: 2024-02-11 23:33</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">Type aliases</p>
+<p>In C++, <strong>using</strong> is a keyword that creates an alias for an existing data type.  To create such a type alias, we use the <code>using</code> keyword, followed by a name for the type alias, followed by an equals sign and an existing data type.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">using Distance = double; // define Distance as an alias for type double</code></pre>
+<p>Once defined, a type alias can be used anywhere a type is needed.  For example, we can create a variable with the type alias name as the type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">Distance milesToDestination{ 3.4 }; // defines a variable of type double</code></pre>
+<p>When the compiler encounters a type alias name, it will substitute in the aliased type.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    using Distance = double; // define Distance as an alias for type double
+
+    Distance milesToDestination{ 3.4 }; // defines a variable of type double
+
+    std::cout &lt;&lt; milesToDestination &lt;&lt; '\n'; // prints a double value
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+3.4
+</pre>
+<p>In the above program, we first define <code>Distance</code> as an alias for type <code>double</code>.</p>
+<p>Next, we define a variable named <code>milesToDestination</code> of type alias <code>Distance</code>.  Because the compiler knows <code>Distance</code> is a type alias, it will use the aliased type, which is <code>double</code>.  Thus, variable <code>milesToDestination</code> is actually compiled to be a variable of type <code>double</code>, and it will behave as a <code>double</code> in all regards.</p>
+<p>Finally, we print the value of <code>milesToDestination</code>, which prints as a <code>double</code> value.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Type aliases can also be templated.  We cover this in lesson <a href="class-template-argument-deduction-ctad-and-deduction-guides.html">13.14 -- Class template argument deduction (CTAD) and deduction guides</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Naming type aliases</p>
+<p>Historically, there hasn’t been a lot of consistency in how type aliases have been named.  There are three common naming conventions (and you will run across all of them):</p>
+<ul>
+<li>Type aliases that end in a “_t” suffix (the “_t” is short for “type”).  This convention is often used by the standard library for globally scoped type names (like <code>size_t</code> and <code>nullptr_t</code>).
+</li>
+</ul>
+<p>This convention was inherited from C, and used to be the most popular when defining your own type aliases (and sometimes other types), but has fallen out of favor in modern C++.  Note that <a href="https://en.wikipedia.org/wiki/POSIX" target="_blank" rel="noopener noreferrer">POSIX</a> reserves the “_t” suffix for globally scoped type names, so using this convention may cause type naming conflicts on POSIX systems.</p>
+<ul>
+<li>Type aliases that end in a “_type” suffix.  This convention is used by some standard library types (like <code>std::string</code>) to name nested type aliases (e.g. <code>std::string::size_type</code>).
+</li>
+</ul>
+<p>But many such nested type aliases do not use a suffix at all (e.g. <code>std::string::iterator</code>), so this usage is inconsistent at best.</p>
+<ul>
+<li>Type aliases that use no suffix.
+</li>
+</ul>
+<p>In modern C++, the convention is to name type aliases (or any other type) that you define yourself starting with a capital letter, and using no suffix.  The capital letter helps differentiate the names of types from the names of variables and functions (which start with a lower case letter), and prevents naming collisions between them.</p>
+<p>When using this naming convention, it is common to see this usage:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void printDistance(Distance distance); // Distance is some defined type</code></pre>
+<p>In this case, <code>Distance</code> is the type, and <code>distance</code> is the parameter name.  C++ is case-sensitive, so this is fine.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Name your type aliases starting with a capital letter and do not use a suffix (unless you have a specific reason to do otherwise).
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Some future lessons in this tutorial series still use the “_t” or “_type” suffix.  Please feel free to leave a comment on those lessons so we can make them consistent with best practices.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Type aliases are not distinct types</p>
+<p>An alias does not actually define a new, distinct type (one that is considered separate from other types) -- it just introduces a new identifier for an existing type.  A type alias is completely interchangeable with the aliased type.</p>
+<p>This allows us to do things that are syntactically valid but semantically meaningless.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    using Miles = long; // define Miles as an alias for type long
+    using Speed = long; // define Speed as an alias for type long
+
+    Miles distance { 5 }; // distance is actually just a long
+    Speed mhz  { 3200 };  // mhz is actually just a long
+
+    // The following is syntactically valid (but semantically meaningless)
+    distance = mhz;
+
+    return 0;
+}</code></pre>
+<p>Although conceptually we intend <code>Miles</code> and <code>Speed</code> to have distinct meanings, both are just aliases for type <code>long</code>.  This effectively means <code>Miles</code>, <code>Speed</code>, and <code>long</code> can all be used interchangeably.  And indeed, when we assign a value of type <code>Speed</code> to a variable of type <code>Miles</code>, the compiler only sees that we’re assigning a value of type <code>long</code> to a variable of type <code>long</code>, and it will not complain.</p>
+<p>Because the compiler does not prevent these kinds of semantic errors for type aliases, we say that aliases are not <strong>type safe</strong>.  In spite of that, they are still useful.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Care must be taken not to mix values of aliases that are intended to be semantically distinct.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>Some languages support the concept of a <strong>strong typedef</strong> (or strong type alias).  A strong typedef actually creates a new type that has all the original properties of the original type, but the compiler will throw an error if you try to mix values of the aliased type and the strong typedef.  As of C++20, C++ does not directly support strong typedefs (though enum classes, covered in lesson <a href="scoped-enumerations-enum-classes.html">13.6 -- Scoped enumerations (enum classes)</a>, are similar), but there are quite a few 3rd party C++ libraries that implement strong typedef-like behavior.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">The scope of a type alias</p>
+<p>Because scope is a property of an identifier, type alias identifiers follow the same scoping rules as variable identifiers: a type alias defined inside a block has block scope and is usable only within that block, whereas a type alias defined in the global namespace has global scope and is usable to the end of the file.  In the above example, <code>Miles</code> and <code>Speed</code> are only usable in the <code>main()</code> function.</p>
+<p>If you need to use one or more type aliases across multiple files, they can be defined in a header file and #included into any code files that needs to use the definition:</p>
+<p>mytypes.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef MYTYPES_H
+#define MYTYPES_H
+
+    using Miles = long;
+    using Speed = long;
+
+#endif</code></pre>
+<p>Type aliases #included this way will be imported into the global namespace and thus have global scope.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Typedefs</p>
+<p>A <strong>typedef</strong> (which is short for “type definition”) is an older way of creating an alias for a type.  To create a typedef alias, we use the <code>typedef</code> keyword:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// The following aliases are identical
+typedef long Miles;
+using Miles = long;</code></pre>
+<p>Typedefs are still in C++ for backwards compatibility reasons, but they have been largely replaced by type aliases in modern C++.</p>
+<p>Typedefs have a few syntactical issues.  First, it’s easy to forget whether the name of the typedef or the name of the type to alias comes first.  Which is correct?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">typedef Distance double; // incorrect (typedef name first)
+typedef double Distance; // correct (aliased type name first)</code></pre>
+<p>It’s easy to get backwards.  Fortunately, in such cases, the compiler will complain.</p>
+<p>Second, the syntax for typedefs can get ugly with more complex types.  For example, here is a hard-to-read typedef, along with an equivalent (and slightly easier to read) type alias:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">typedef int (*FcnType)(double, char); // FcnType hard to find
+using FcnType = int(*)(double, char); // FcnType easier to find</code></pre>
+<p>In the above typedef definition, the name of the new type (<code>FcnType</code>) is buried in the middle of the definition, whereas in the type alias, the name of the new type and the rest of the definition are separated by an equals sign.</p>
+<p>Third, the name “typedef” suggests that a new type is being defined, but that’s not true.  A typedef is just an alias.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer type aliases over typedefs.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Nomenclature</p>
+<p>The C++ standard uses the term “typedef names” for the names of both typedefs and type aliases.</p>
+<p>In conventional language, the term “typedef” is often used to mean “either a typedef or a type alias” since they effectively do the same thing.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">When should we use type aliases?</p>
+<p>Now that we’ve covered what type aliases are, let’s talk about what they are useful for.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using type aliases for platform independent coding</p>
+<p>One of the primary uses for type aliases is to hide platform specific details.  On some platforms, an <code>int</code> is 2 bytes, and on others, it is 4 bytes.  Thus, using <code>int</code> to store more than 2 bytes of information can be potentially dangerous when writing platform independent code.</p>
+<p>Because <code>char</code>, <code>short</code>, <code>int</code>, and <code>long</code> give no indication of their size, it is fairly common for cross-platform programs to use type aliases to define aliases that include the type’s size in bits.  For example, <code>int8_t</code> would be an 8-bit signed integer, <code>int16_t</code> a 16-bit signed integer, and <code>int32_t</code> a 32-bit signed integer.  Using type aliases in this manner helps prevent mistakes and makes it more clear about what kind of assumptions have been made about the size of the variable.</p>
+<p>In order to make sure each aliased type resolves to a type of the right size, type aliases of this kind are typically used in conjunction with preprocessor directives:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifdef INT_2_BYTES
+using int8_t = char;
+using int16_t = int;
+using int32_t = long;
+#else
+using int8_t = char;
+using int16_t = short;
+using int32_t = int;
+#endif</code></pre>
+<p>On machines where integers are only 2 bytes, <code>INT_2_BYTES</code> can be #defined (as a compiler/preprocessor setting), and the program will be compiled with the top set of type aliases.  On machines where integers are 4 bytes, leaving <code>INT_2_BYTES</code> undefined will cause the bottom set of type aliases to be used.  In this way, as long as <code>INT_2_BYTES</code> is #defined correctly, <code>int8_t</code> will resolve to a 1 byte integer, <code>int16_t</code> will resolve to a 2 bytes integer, and <code>int32_t</code> will resolve to a 4 byte integer (using the combination of <code>char</code>, <code>short</code>, <code>int</code>, and <code>long</code> that is appropriate for the machine the program is being compiled on).</p>
+<p>The fixed-width integer types (such as <code>std::int16_t</code> and <code>std::uint32_t</code>) and the <code>size_t</code> type (both covered in lesson <a href="fixed-width-integers-and-size-t.html">4.6 -- Fixed-width integers and size_t</a>) are actually just type aliases to various fundamental types.</p>
+<p>This is also why when you print an 8-bit fixed-width integer using <code>std::cout</code>, you’re likely to get a character value.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstdint&gt; // for fixed-width integers
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::int8_t x{ 97 }; // int8_t is usually a typedef for signed char
+    std::cout &lt;&lt; x &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This program prints:</p>
+<pre>
+a
+</pre>
+<p>Because <code>std::int8_t</code> is typically a typedef for <code>signed char</code>, variable <code>x</code> will likely be defined as a <code>signed char</code>.  And char types print their values as ASCII characters rather than as integer values.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using type aliases to make complex types easier to read</p>
+<p>Although we have only dealt with simple data types so far, in advanced C++, types can be complicated and lengthy to manually enter on your keyboard.  For example, you might see a function and variable defined like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt; // for std::string
+#include &lt;vector&gt; // for std::vector
+#include &lt;utility&gt; // for std::pair
+
+bool hasDuplicates(std::vector&lt;std::pair&lt;std::string, int&gt;&gt; pairlist)
+{
+    // some code here
+    return false;
+}
+
+int main()
+{
+     std::vector&lt;std::pair&lt;std::string, int&gt;&gt; pairlist;
+
+     return 0;
+}</code></pre>
+<p>Typing <code>std::vector&lt;std::pair&lt;std::string, int&gt;&gt;</code> everywhere you need to use that type is cumbersome, and it is easy to make a typing mistake.  It’s much easier to use a type alias:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt; // for std::string
+#include &lt;vector&gt; // for std::vector
+#include &lt;utility&gt; // for std::pair
+
+using VectPairSI = std::vector&lt;std::pair&lt;std::string, int&gt;&gt;; // make VectPairSI an alias for this crazy type
+
+bool hasDuplicates(VectPairSI pairlist) // use VectPairSI in a function parameter
+{
+    // some code here
+    return false;
+}
+
+int main()
+{
+     VectPairSI pairlist; // instantiate a VectPairSI variable
+
+     return 0;
+}</code></pre>
+<p>Much better!  Now we only have to type <code>VectPairSI</code> instead of <code>std::vector&lt;std::pair&lt;std::string, int&gt;&gt;</code>.</p>
+<p>Don’t worry if you don’t know what <code>std::vector</code>, <code>std::pair</code>, or all these crazy angle brackets are yet.  The only thing you really need to understand here is that type aliases allow you to take complex types and give them a simpler name, which makes your code easier to read and saves typing.</p>
+<p>This is probably the best use for type aliases.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using type aliases to document the meaning of a value</p>
+<p>Type aliases can also help with code documentation and comprehension.</p>
+<p>With variables, we have the variable’s identifier to help document the purpose of the variable.  But consider the case of a function’s return value.  Data types such as <code>char</code>, <code>int</code>, <code>long</code>, <code>double</code>, and <code>bool</code> describe what <em>type</em> of value a function returns, but more often we want to know what the <em>meaning</em> of a return value is.</p>
+<p>For example, given the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int gradeTest();</code></pre>
+<p>We can see that the return value is an integer, but what does the integer mean?  A letter grade?  The number of questions missed?  The student’s ID number?  An error code?  Who knows!  The return type of <code>int</code> does not tell us much.  If we’re lucky, documentation for the function exists somewhere that we can reference.  If we’re unlucky, we have to read the code and infer the purpose.</p>
+<p>Now let’s do an equivalent version using a type alias:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">using TestScore = int;
+TestScore gradeTest();</code></pre>
+<p>The return type of <code>TestScore</code> makes it a little more obvious that the function is returning a type that represents a test score.</p>
+<p>In our experience, creating a type alias just to document the return type of a single function isn’t worth it (use a comment instead).  But if you have multiple functions passing or returning such a type, creating a type alias might be worthwhile.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using type aliases for easier code maintenance</p>
+<p>Type aliases also allow you to change the underlying type of an object without having to update lots of hardcoded types.  For example, if you were using a <code>short</code> to hold a student’s ID number, but then later decided you needed a <code>long</code> instead, you’d have to comb through lots of code and replace <code>short</code> with <code>long</code>.  It would probably be difficult to figure out which objects of type <code>short</code> were being used to hold ID numbers and which were being used for other purposes.</p>
+<p>However, if you use type aliases, then changing types becomes as simple as updating the type alias (e.g. from <code>using StudentId = short;</code> to <code>using StudentId = long;</code>).</p>
+<p>While this seems like a nice benefit, caution is necessary whenever a type is changed, as the behavior of the program may also change.  This is especially true when changing the type of a type alias to a type in a different type family (e.g. an integer to a floating point value, or a signed to unsigned value)!  The new type may have comparison or integer/floating point division issues, or other issues that the old type did not.  If you change an existing type to some other type, your code should be thoroughly retested.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Downsides and conclusion</p>
+<p>While type aliases offer some benefits, they also introduce yet another identifier into your code that needs to be understood.  If this isn’t offset by some benefit to readability or comprehension, then the type alias is doing more harm than good.</p>
+<p>A poorly utilized type alias can take a familiar type (such as <code>std::string</code>) and hide it behind a custom name that needs to be looked up.  In some cases (such as with smart pointers, which we’ll cover in a future chapter), obscuring the type information can also be harmful to understanding how the type should be expected to work.</p>
+<p>For this reason, type aliases should be used primarily in cases where there is a clear benefit to code readability or code maintenance.  This is as much of an art as a science.  Type aliases are most useful when they can be used in many places throughout your code, rather than in fewer places.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use type aliases judiciously, when they provide a clear benefit to code readability or code maintenance.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Given the following function prototype:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int printData();</code></pre>
+<p>Convert the <code>int</code> return value to a type alias named <code>PrintError</code>.  Include both the type alias statement and the updated function prototype.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">using PrintError = int;
+
+PrintError printData();</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="explicit-type-conversion-casting-and-static-cast.html"><span class="nav-kicker">← Previous lesson</span>10.6 · Explicit type conversion (casting) and static_cast</a><a class="next" href="type-deduction-for-objects-using-the-auto-keyword.html"><span class="nav-kicker">Next lesson →</span>10.8 · Type deduction for objects using the auto keyword</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

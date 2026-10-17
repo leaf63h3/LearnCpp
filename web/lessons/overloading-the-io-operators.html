@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="For classes that have multiple member variables, printing each of the individual variables on the screen can get tiresome fast. For example, consider the f">
+  <meta name="robots" content="noindex,nofollow">
+  <title>21.4 — Overloading the I/O operators · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/overloading-the-io-operators/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 21 · Operator Overloading</summary><div class="sidebar-title"><small>Chapter 21</small><strong>Operator Overloading</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-operator-overloading.html"><span class="lesson-number">21.1</span><span>Introduction to operator overloading</span></a></li><li><a href="overloading-the-arithmetic-operators-using-friend-functions.html"><span class="lesson-number">21.2</span><span>Overloading the arithmetic operators using friend functions</span></a></li><li><a href="overloading-operators-using-normal-functions.html"><span class="lesson-number">21.3</span><span>Overloading operators using normal functions</span></a></li><li><a href="overloading-the-io-operators.html" aria-current="page"><span class="lesson-number">21.4</span><span>Overloading the I/O operators</span></a></li><li><a href="overloading-operators-using-member-functions.html"><span class="lesson-number">21.5</span><span>Overloading operators using member functions</span></a></li><li><a href="overloading-unary-operators.html"><span class="lesson-number">21.6</span><span>Overloading unary operators +, -, and !</span></a></li><li><a href="overloading-the-comparison-operators.html"><span class="lesson-number">21.7</span><span>Overloading the comparison operators</span></a></li><li><a href="overloading-the-increment-and-decrement-operators.html"><span class="lesson-number">21.8</span><span>Overloading the increment and decrement operators</span></a></li><li><a href="overloading-the-subscript-operator.html"><span class="lesson-number">21.9</span><span>Overloading the subscript operator</span></a></li><li><a href="overloading-the-parenthesis-operator.html"><span class="lesson-number">21.10</span><span>Overloading the parenthesis operator</span></a></li><li><a href="overloading-typecasts.html"><span class="lesson-number">21.11</span><span>Overloading typecasts</span></a></li><li><a href="overloading-the-assignment-operator.html"><span class="lesson-number">21.12</span><span>Overloading the assignment operator</span></a></li><li><a href="shallow-vs-deep-copying.html"><span class="lesson-number">21.13</span><span>Shallow vs. deep copying</span></a></li><li><a href="overloading-operators-and-function-templates.html"><span class="lesson-number">21.14</span><span>Overloading operators and function templates</span></a></li><li><a href="chapter-21-summary-and-quiz.html"><span class="lesson-number">21.x</span><span>Chapter 21 summary and quiz</span></a></li><li><a href="chapter-21-project.html"><span class="lesson-number">21.y</span><span>Chapter 21 project</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 21</div>
+        <h1>21.4 — Overloading the I/O operators</h1>
+        <div class="article-meta"><span>Updated: 2025-01-29 14:55</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>For classes that have multiple member variables, printing each of the individual variables on the screen can get tiresome fast.  For example, consider the following class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Point
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+
+public:
+    Point(double x=0.0, double y=0.0, double z=0.0)
+      : m_x{x}, m_y{y}, m_z{z}
+    {
+    }
+
+    double getX() const { return m_x; }
+    double getY() const { return m_y; }
+    double getZ() const { return m_z; }
+};</code></pre>
+<p>If you wanted to print an instance of this class to the screen, you’d have to do something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">Point point { 5.0, 6.0, 7.0 };
+
+std::cout &lt;&lt; "Point(" &lt;&lt; point.getX() &lt;&lt; ", " &lt;&lt;
+    point.getY() &lt;&lt; ", " &lt;&lt;
+    point.getZ() &lt;&lt; ')';</code></pre>
+<p>Of course, it makes more sense to do this as a reusable function.  And in previous examples, you’ve seen us create <code>print()</code> functions that work like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Point
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+
+public:
+    Point(double x=0.0, double y=0.0, double z=0.0)
+      : m_x{x}, m_y{y}, m_z{z}
+    {
+    }
+
+    double getX() const { return m_x; }
+    double getY() const { return m_y; }
+    double getZ() const { return m_z; }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Point(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ", " &lt;&lt; m_z &lt;&lt; ')';
+    }
+};</code></pre>
+<p>While this is much better, it still has some downsides.  Because <code>print()</code> returns <code>void</code>, it can’t be called in the middle of an output statement.  Instead, you have to do this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    const Point point { 5.0, 6.0, 7.0 };
+
+    std::cout &lt;&lt; "My point is: ";
+    point.print();
+    std::cout &lt;&lt; " in Cartesian space.\n";
+}</code></pre>
+<p>It would be much easier if you could simply type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">Point point{5.0, 6.0, 7.0};
+cout &lt;&lt; "My point is: " &lt;&lt; point &lt;&lt; " in Cartesian space.\n";</code></pre>
+<p>and get the same result.  There would be no breaking up output across multiple statements, and no having to remember what you named the print function.</p>
+<p>Fortunately, by overloading <code>operator&lt;&lt;</code>, you can!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Overloading <code>operator&lt;&lt;</code></p>
+<p>Overloading <code>operator&lt;&lt;</code> is similar to overloading operator+ (they are both binary operators), except that the parameter types are different.</p>
+<p>Consider the expression <code>std::cout &lt;&lt; point</code>.  If the operator is <code>&lt;&lt;</code>, what are the operands?  The left operand is the <code>std::cout</code> object, and the right operand is your <code>Point</code> class object.  <code>std::cout</code> is actually an object of type <code>std::ostream</code>.  Therefore, our overloaded function will look like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// std::ostream is the type for object std::cout
+friend std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point);</code></pre>
+<p>Implementation of <code>operator&lt;&lt;</code> for our <code>Point</code> class is fairly straightforward -- because C++ already knows how to output doubles using <code>operator&lt;&lt;</code>, and our members are all doubles, we can simply use <code>operator&lt;&lt;</code> to output the data members of our <code>Point</code>.  Here is the above <code>Point</code> class with the overloaded <code>operator&lt;&lt;</code>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Point
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+
+public:
+    Point(double x=0.0, double y=0.0, double z=0.0)
+      : m_x{x}, m_y{y}, m_z{z}
+    {
+    }
+
+    friend std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point);
+};
+
+std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point)
+{
+    // Since operator&lt;&lt; is a friend of the Point class, we can access Point's members directly.
+    out &lt;&lt; "Point(" &lt;&lt; point.m_x &lt;&lt; ", " &lt;&lt; point.m_y &lt;&lt; ", " &lt;&lt; point.m_z &lt;&lt; ')'; // actual output done here
+
+    return out; // return std::ostream so we can chain calls to operator&lt;&lt;
+}
+
+int main()
+{
+    const Point point1 { 2.0, 3.0, 4.0 };
+
+    std::cout &lt;&lt; point1 &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This is pretty straightforward -- note how similar our output line is to the line in the <code>print()</code> function we wrote previously.  The most notable difference is that <code>std::cout</code> has become parameter <code>out</code> (which will be a reference to <code>std::cout</code> when the function is called).</p>
+<p>The trickiest part here is the return type.  With the arithmetic operators, we calculated and returned a single answer by value (because we were creating and returning a new result).  However, if you try to return <code>std::ostream</code> by value, you’ll get a compiler error.  This happens because <code>std::ostream</code> specifically disallows being copied.</p>
+<p>In this case, we return the left hand parameter as a reference.  This not only prevents a copy of <code>std::ostream</code> from being made, it also allows us to “chain” output commands together, such as <code>std::cout &lt;&lt; point &lt;&lt; '\n'</code>.</p>
+<p>Consider what would happen if our <code>operator&lt;&lt;</code> returned <code>void</code> instead.  When the compiler evaluates <code>std::cout &lt;&lt; point &lt;&lt; '\n'</code>, due to the precedence/associativity rules, it evaluates this expression as <code>(std::cout &lt;&lt; point) &lt;&lt; '\n';</code>.  <code>std::cout &lt;&lt; point</code> would call our void-returning overloaded <code>operator&lt;&lt;</code> function, which returns <code>void</code>.  Then the partially evaluated expression becomes: <code>void &lt;&lt; '\n';</code>, which makes no sense!</p>
+<p>By returning the <code>out</code> parameter as the return type instead, <code>(std::cout &lt;&lt; point)</code> returns <code>std::cout</code>.  Then our partially evaluated expression becomes: <code>std::cout &lt;&lt; '\n';</code>, which then gets evaluated itself!</p>
+<p>Any time we want our overloaded binary operators to be chainable in such a manner, the left operand should be returned (by reference).  Returning the left-hand parameter by reference is okay in this case -- since the left-hand parameter was passed in by the calling function, it must still exist when the called function returns.  Therefore, we don’t have to worry about referencing something that will go out of scope and get destroyed when the operator returns.</p>
+<p>Just to prove it works, consider the following example, which uses the Point class with the overloaded <code>operator&lt;&lt;</code> we wrote above:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Point
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+
+public:
+    Point(double x=0.0, double y=0.0, double z=0.0)
+      : m_x{x}, m_y{y}, m_z{z}
+    {
+    }
+
+    friend std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point);
+};
+
+std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point)
+{
+    // Since operator&lt;&lt; is a friend of the Point class, we can access Point's members directly.
+    out &lt;&lt; "Point(" &lt;&lt; point.m_x &lt;&lt; ", " &lt;&lt; point.m_y &lt;&lt; ", " &lt;&lt; point.m_z &lt;&lt; ')';
+
+    return out;
+}
+
+int main()
+{
+    Point point1 { 2.0, 3.5, 4.0 };
+    Point point2 { 6.0, 7.5, 8.0 };
+
+    std::cout &lt;&lt; point1 &lt;&lt; ' ' &lt;&lt; point2 &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This produces the following result:</p>
+<pre>
+Point(2, 3.5, 4) Point(6, 7.5, 8)
+</pre>
+<p>In the above example, <code>operator&lt;&lt;</code> is a friend because it needs direct access to the member of <code>Point</code>.  However, if the members could be accessed via getters, then <code>operator&lt;&lt;</code> could be implemented as a non-friend.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Overloading <code>operator&gt;&gt;</code></p>
+<p>It is also possible to overload the input operator.  This is done in a manner analogous to overloading the output operator.  The key thing you need to know is that <code>std::cin</code> is an object of type <code>std::istream</code>.  Here’s our <code>Point</code> class with an overloaded <code>operator&gt;&gt;</code> added:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Point
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+
+public:
+    Point(double x=0.0, double y=0.0, double z=0.0)
+      : m_x{x}, m_y{y}, m_z{z}
+    {
+    }
+
+    friend std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point);
+    friend std::istream&amp; operator&gt;&gt; (std::istream&amp; out, Point&amp; point);
+};
+
+std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point)
+{
+    // Since operator&lt;&lt; is a friend of the Point class, we can access Point's members directly.
+    out &lt;&lt; "Point(" &lt;&lt; point.m_x &lt;&lt; ", " &lt;&lt; point.m_y &lt;&lt; ", " &lt;&lt; point.m_z &lt;&lt; ')';
+
+    return out;
+}
+
+// note that point must be non-const so we can modify the object
+std::istream&amp; operator&gt;&gt; (std::istream&amp; in, Point&amp; point)
+{
+    // This version subject to partial extraction issues (see below)
+    in &gt;&gt; point.m_x &gt;&gt; point.m_y &gt;&gt; point.m_z;
+
+    return in;
+}
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a point: ";
+
+    Point point{ 1.0, 2.0, 3.0 }; // non-zero test data
+    std::cin &gt;&gt; point;
+
+    std::cout &lt;&lt; "You entered: " &lt;&lt; point &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Assuming the user enters <code>4.0 5.6 7.26</code> as input, the program produces the following result:</p>
+<pre>
+You entered: Point(4, 5.6, 7.26)
+</pre>
+<p>Now let’s see what happens when the user enters <code>4.0b 5.6 7.26</code> as input (notice the <code>b</code> after the <code>4.0</code>):</p>
+<pre>
+You entered: Point(4, 0, 3)
+</pre>
+<p>Our point is now a weird hybrid consisting of one value from the user’s input (<code>4.0</code>), one value that has been zero-initialized (<code>0.0</code>), and one value that was untouched by the input function (<code>3.0</code>).  That’s…  not great!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Guarding against partial extraction</p>
+<p>When we’re extracting a single value, there are only two possible outcomes: the extraction fails, or it is successful.  However, when we’re extracting more than one value as part of an input operation, things get a bit more complicated.</p>
+<p>The above implementation of <code>operator&gt;&gt;</code> can result in a partial extraction.  And this is exactly what we’re seeing with input <code>4.0b 5.6 7.26</code>.  The extraction to <code>x_y</code> successfully extracts <code>4.0</code> from the user’s input, leaving <code>b 5.6 7.26</code> in the input stream.  The extraction to <code>m_y</code> fails to extract <code>b</code>, so <code>m_y</code> is copy-assigned the value <code>0.0</code> and the input stream is set to failure mode.  Since we haven’t cleared failure mode, the extraction to <code>m_z</code> aborts immediately, and the value that <code>m_z</code> had before the extraction attempt remains (<code>3.0</code>).</p>
+<p>There is no case where this is a desirable outcome.  And in some cases, it might even be actively dangerous.  Imagine we were writing an <code>operator&gt;&gt;</code> for a <code>Fraction</code> object instead.  After successfully extracting the numerator, a failed extraction to the denominator would set the denominator to <code>0.0</code>, which might later cause a divide by zero and cause the application to crash.</p>
+<p>So how might we avoid this?  One way is to make our operations transactional.  A <strong>transactional operation</strong> must either completely succeed or completely fail -- no partial successes or failures are allowed.  This is sometimes known as “all or nothing”.  If a failure occurs at any point during the transaction, prior changes made by the operation must be undone.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Transactions occur all the time in real life.  Consider the case where I want to transfer money from one bank account to another.  This requires two steps: First the money must first be deducted from one account, and then it must be credited to the other account.  In the execution of this operation, there are three possibilities:</p>
+<ul>
+<li>The deduction step fails (e.g. not enough funds).  The transaction fails, and neither account balance reflects the transfer.
+</li>
+<li>The crediting step fails (e.g. due to a technical problem).  In this case, the deduction (which has already succeeded) must be undone.  The transaction fails, and neither account balance reflects the transfer.
+</li>
+<li>Both steps succeed.  The transaction is successful, and both account balances reflect the transfer.
+</li>
+</ul>
+<p>The end result is that there are only two possible outcomes: the transfer fully fails and the account balances are unchanged, or the transfer succeeds and the account balances are both changed.
+</p></div>
+<p>Let’s reimplement our overloaded <code>Point</code> <code>operator&gt;&gt;</code> as a transactional operation:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// note that point must be non-const so we can modify the object
+// note that this implementation is a non-friend
+std::istream&amp; operator&gt;&gt; (std::istream&amp; in, Point&amp; point)
+{
+    double x{};
+    double y{};
+    double z{};
+    
+    if (in &gt;&gt; x &gt;&gt; y &gt;&gt; z)      // if all extractions succeeded
+        point = Point{x, y, z}; // overwrite our existing point
+        
+    return in;
+}</code></pre>
+<p>In this implementation, we’re not overwriting the data members directly with the user’s input.  Instead, we’re extracting the user’s input to temporary variables (<code>x</code>, <code>y</code>, and <code>z</code>).  Once all extraction attempts have completed, we check whether all extractions were successful.  If so, then we update all the members of <code>Point</code> together.  Otherwise, we do not update any of them.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p><code>if (in &gt;&gt; x &gt;&gt; y &gt;&gt; z)</code> is equivalent to <code>in &gt;&gt; x &gt;&gt; y &gt;&gt; z;  if (in)</code>.  Remember, each extraction returns <code>in</code> so that multiple extractions can be chained together.  The single-statement version uses the <code>in</code> returned from the last extraction as the condition of the if-statement, whereas the multi-statement version uses <code>in</code> explicitly.
+</p></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Transactional operations can be implemented using a number of different strategies.  For example:</p>
+<ul>
+<li>Alter on success: Store the result of each sub-operation.  If all sub-operations succeed, replace the relevant data with the stored results.  This is the strategy we use in the <code>Point</code> example above.
+</li>
+<li>Restore on failure: Copy any data that can be altered.  If any sub-operation fails, the changes made by prior sub-operations can be reverted using the data from copy.
+</li>
+<li>Rollback on failure: If any sub-operation fails, each prior sub-operation is reversed (using an opposite sub-operation).  This strategy is often used in databases, where the data is too large to back up, and the result of sub-operations can’t be stored.
+</li>
+</ul>
+</div>
+<p>While the above <code>operator&gt;&gt;</code> prevents partial extractions, it is inconsistent with how <code>operator&gt;&gt;</code> works for fundamental types.  When extraction to an object with a fundamental type fails, the object isn’t left unaltered -- it is copy assigned the value <code>0</code> (this ensures the object has some consistent value in case it wasn’t initialized before the extraction attempt).  Therefore, for consistency, you may wish to have a failed extraction reset the object to its default state (at least in cases where such a thing exists).</p>
+<p>Here’s an alternate version of <code>operator&gt;&gt;</code> that resets <code>Point</code> to its default state if any extraction fails:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// note that point must be non-const so we can modify the object
+// note that this implementation is a non-friend
+std::istream&amp; operator&gt;&gt; (std::istream&amp; in, Point&amp; point)
+{
+    double x{};
+    double y{};
+    double z{};
+    
+    in &gt;&gt; x &gt;&gt; y &gt;&gt; z;
+    point = in ? Point{x, y, z} : Point{};
+        
+    return in;
+}</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Such an operation is technically no longer transactional (because failure doesn’t “do nothing”).  There doesn’t appear to be a general term for operations that guarantee no partial results.  Perhaps “indivisible operation”.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Handling semantically invalid input</p>
+<p>Extraction can fail in different ways.</p>
+<p>In cases where <code>operator&gt;&gt;</code> simply fails to extract anything to a variable, <code>std::cin</code> will automatically be placed in failure mode (which we discuss in lesson <a href="stdcin-and-handling-invalid-input.html">9.5 -- std::cin and handling invalid input</a>).  The caller of this function can then check <code>std::cin</code> to see if it failed and handle that case as appropriate.</p>
+<p>But what about cases where the user inputs a value that is extractable but semantically invalid (e.g. a <code>Fraction</code> with a denominator of <code>0</code>)?  Because <code>std::cin</code> did extract something, it won’t go into failure mode automatically.  And then the caller probably won’t realize something went wrong.</p>
+<p>To address this, we can have our overloaded <code>operator&gt;&gt;</code> determine whether any of the values that were extracted are semantically invalid, and if so, manually put the input stream in failure mode.  This can be done by calling <code>std::cin.setstate(std::ios_base::failbit);</code>.</p>
+<p>Here’s an example of a transactional overloaded <code>operator&gt;&gt;</code> for <code>Point</code> that will cause the input stream to enter failure mode if the user inputs an extractable negative value:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::istream&amp; operator&gt;&gt; (std::istream&amp; in, Point&amp; point)
+{
+    double x{};
+    double y{};
+    double z{};
+    
+    in &gt;&gt; x &gt;&gt; y &gt;&gt; z;
+    if (x &lt; 0.0 || y &lt; 0.0 || z &lt; 0.0)       // if any extractable input is negative
+        in.setstate(std::ios_base::failbit); // set failure mode manually
+    point = in ? Point{x, y, z} : Point{};
+       
+    return in;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>Overloading <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> make it easy to output your class to screen and accept user input from the console.  </p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Take the Fraction class below and add an overloaded <code>operator&lt;&lt;</code> and <code>operator&gt;&gt;</code> to it.  Your <code>operator&gt;&gt;</code> should avoid partial extractions and fail if user inputs a denominator of <code>0</code>.  It should not reset the Fraction to default on failure.</p>
+<p>The following program should compile:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+	Fraction f1{};
+	std::cout &lt;&lt; "Enter fraction 1: ";
+	std::cin &gt;&gt; f1;
+
+	Fraction f2{};
+	std::cout &lt;&lt; "Enter fraction 2: ";
+	std::cin &gt;&gt; f2;
+
+	std::cout &lt;&lt; f1 &lt;&lt; " * " &lt;&lt; f2 &lt;&lt; " is " &lt;&lt; f1 * f2 &lt;&lt; '\n'; // note: The result of f1 * f2 is an r-value
+
+	return 0;
+}</code></pre>
+<p>And produce the result:</p>
+<pre>
+Enter fraction 1: 2/3
+Enter fraction 2: 3/8
+2/3 * 3/8 is 1/4
+</pre>
+<p>Here’s the Fraction class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;numeric&gt; // for std::gcd
+ 
+class Fraction
+{
+private:
+	int m_numerator{};
+	int m_denominator{};
+ 
+public:
+	Fraction(int numerator=0, int denominator=1):
+		m_numerator{numerator}, m_denominator{denominator}
+	{
+		// We put reduce() in the constructor to ensure any new fractions we make get reduced!
+		// Any fractions that are overwritten will need to be re-reduced
+		reduce();
+	}
+
+	void reduce()
+	{
+		int gcd{ std::gcd(m_numerator, m_denominator) };
+		if (gcd)
+		{
+			m_numerator /= gcd;
+			m_denominator /= gcd;
+		}
+	}
+ 
+	friend Fraction operator*(const Fraction&amp; f1, const Fraction&amp; f2);
+	friend Fraction operator*(const Fraction&amp; f1, int value);
+	friend Fraction operator*(int value, const Fraction&amp; f1);
+ 
+	void print() const
+	{
+		std::cout &lt;&lt; m_numerator &lt;&lt; '/' &lt;&lt; m_denominator &lt;&lt; '\n';
+	}
+};
+ 
+Fraction operator*(const Fraction&amp; f1, const Fraction&amp; f2)
+{
+	return Fraction { f1.m_numerator * f2.m_numerator, f1.m_denominator * f2.m_denominator };
+}
+ 
+Fraction operator*(const Fraction&amp; f1, int value)
+{
+	return Fraction { f1.m_numerator * value, f1.m_denominator };
+}
+ 
+Fraction operator*(int value, const Fraction&amp; f1)
+{
+	return Fraction { f1.m_numerator * value, f1.m_denominator };
+}</code></pre>
+<p>If you’re on a pre-C++17 compiler, you can replace std::gcd with this function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cmath&gt;
+ 
+int gcd(int a, int b) {
+    return (b == 0) ? std::abs(a) : gcd(b, a % b);
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+#include &lt;numeric&gt; // for std::gcd
+
+class Fraction
+{
+private:
+    int m_numerator{ 0 };
+    int m_denominator{ 1 };
+
+public:
+    Fraction(int numerator=0, int denominator = 1) :
+        m_numerator{ numerator }, m_denominator{ denominator }
+    {
+        // We put reduce() in the constructor to ensure any new fractions we make get reduced!
+        // Any fractions that are overwritten will need to be re-reduced
+        reduce();
+    }
+
+    void reduce()
+    {
+        int gcd{ std::gcd(m_numerator, m_denominator) };
+        if (gcd)
+        {
+            m_numerator /= gcd;
+            m_denominator /= gcd;
+        }
+    }
+
+    friend Fraction operator*(const Fraction&amp; f1, const Fraction&amp; f2);
+    friend Fraction operator*(const Fraction&amp; f1, int value);
+    friend Fraction operator*(int value, const Fraction&amp; f1);
+
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Fraction&amp; f1);
+
+    void print() const
+    {
+        std::cout &lt;&lt; m_numerator &lt;&lt; '/' &lt;&lt; m_denominator &lt;&lt; '\n';
+    }
+};
+
+Fraction operator*(const Fraction&amp; f1, const Fraction&amp; f2)
+{
+    return Fraction { f1.m_numerator * f2.m_numerator, f1.m_denominator * f2.m_denominator };
+}
+
+Fraction operator*(const Fraction&amp; f1, int value)
+{
+    return Fraction { f1.m_numerator * value, f1.m_denominator };
+}
+
+Fraction operator*(int value, const Fraction&amp; f1)
+{
+    return Fraction { f1.m_numerator * value, f1.m_denominator };
+}
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Fraction&amp; f1)
+{
+    out &lt;&lt; f1.m_numerator &lt;&lt; '/' &lt;&lt; f1.m_denominator;
+    return out;
+}
+
+std::istream&amp; operator&gt;&gt;(std::istream&amp; in, Fraction&amp; f1)
+{
+    int numerator {};
+    char ignore {};
+    int denominator {};
+    
+    in &gt;&gt; numerator &gt;&gt; ignore &gt;&gt; denominator;
+    if (denominator == 0)                       // if our denominator is semantically invalid
+        in.setstate(std::ios_base::failbit);    // set failure mode manually
+    if (in)                                     // if we're not in failure mode
+        f1 = Fraction {numerator, denominator}; // update our object to the extracted values
+
+    return in;
+}
+
+int main()
+{
+    Fraction f1{};
+    std::cout &lt;&lt; "Enter fraction 1: ";
+    std::cin &gt;&gt; f1;
+
+    Fraction f2{};
+    std::cout &lt;&lt; "Enter fraction 2: ";
+    std::cin &gt;&gt; f2;
+
+    std::cout &lt;&lt; f1 &lt;&lt; " * " &lt;&lt; f2 &lt;&lt; " is " &lt;&lt; f1 * f2 &lt;&lt; '\n'; // note: The result of f1 * f2 is an r-value
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="overloading-operators-using-normal-functions.html"><span class="nav-kicker">← Previous lesson</span>21.3 · Overloading operators using normal functions</a><a class="next" href="overloading-operators-using-member-functions.html"><span class="nav-kicker">Next lesson →</span>21.5 · Overloading operators using member functions</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

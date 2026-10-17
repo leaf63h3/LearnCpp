@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 16.1 -- Introduction to containers and arrays, we mentioned that arrays are stored sequentially in memory. In this lesson, we’ll take a deeper lo">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.9 — Pointer arithmetic and subscripting · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/pointer-arithmetic-and-subscripting/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html" aria-current="page"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.9 — Pointer arithmetic and subscripting</h1>
+        <div class="article-meta"><span>Updated: 2024-08-10 16:19</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="introduction-to-containers-and-arrays.html">16.1 -- Introduction to containers and arrays</a>, we mentioned that arrays are stored sequentially in memory.  In this lesson, we’ll take a deeper look at how arrays indexing math works.</p>
+<p>Although we won’t use the indexing math in future lessons, the topics covered in this lesson will give you insight into how range-based for loops actually work, and will come in handy again later when we cover iterators.</p>
+<p class="cpp-section cpp-topline" style="clear: both">What is pointer arithmetic?</p>
+<p><strong>Pointer arithmetic</strong> is a feature that allows us to apply certain integer arithmetic operators (addition, subtraction, increment, or decrement) to a pointer to produce a new memory address.</p>
+<p>Given some pointer <code>ptr</code>, <code>ptr + 1</code> returns the address of the <em>next object</em> in memory (based on the type being pointed to).  So if <code>ptr</code> is an <code>int*</code>, and an <code>int</code> is 4 bytes, <code>ptr + 1</code> will return the memory address that is 4 bytes after <code>ptr</code>, and <code>ptr + 2</code> will return the memory address that is 8 bytes after <code>ptr</code>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int x {};
+    const int* ptr{ &amp;x }; // assume 4 byte ints
+
+    std::cout &lt;&lt; ptr &lt;&lt; ' ' &lt;&lt; (ptr + 1) &lt;&lt; ' ' &lt;&lt; (ptr + 2) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this printed:</p>
+<pre>
+00AFFD80 00AFFD84 00AFFD88
+</pre>
+<p>Note that each memory address is 4 bytes greater than the previous.</p>
+<p>Although less common, pointer arithmetic also works with subtraction.  Given some pointer <code>ptr</code>, <code>ptr - 1</code> returns the address of the <em>previous object</em> in memory (based on the type being pointed to).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int x {};
+    const int* ptr{ &amp;x }; // assume 4 byte ints
+
+    std::cout &lt;&lt; ptr &lt;&lt; ' ' &lt;&lt; (ptr - 1) &lt;&lt; ' ' &lt;&lt; (ptr - 2) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this printed:</p>
+<pre>
+00AFFD80 00AFFD7C 00AFFD78
+</pre>
+<p>In this case, each memory address is 4 bytes less than the previous.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Pointer arithmetic returns the address of the next/previous object (based on the type being pointed to), not the next/previous address.
+</p></div>
+<p>Applying the increment (<code>++</code>) and decrement (<code>--</code>) operators to a pointer do the same thing as pointer addition and pointer subtraction respectively, but actually modify the address held by the pointer.</p>
+<p>Given some int value <code>x</code>, <code>++x</code> is shorthand for <code>x = x + 1</code>.  Similarly, given some pointer <code>ptr</code>, <code>++ptr</code> is shorthand for <code>ptr = ptr + 1</code>, which does pointer arithmetic and assigns the result back to <code>ptr</code>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int x {};
+    const int* ptr{ &amp;x }; // assume 4 byte ints
+
+    std::cout &lt;&lt; ptr &lt;&lt; '\n';
+
+    ++ptr; // ptr = ptr + 1
+    std::cout &lt;&lt; ptr &lt;&lt; '\n';
+
+    --ptr; // ptr = ptr - 1
+    std::cout &lt;&lt; ptr &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this printed:</p>
+<pre>
+00AFFD80 00AFFD84 00AFFD80
+</pre>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Technically, the above is undefined behavior.  According to the C++ standard, <a href="https://eel.is/c++draft/expr.add#4" target="_blank" rel="noopener noreferrer">pointer arithmetic is only defined behavior when the pointer and the result are within the same array (or one-past-the-end)</a>.  However, modern C++ implementations generally do not enforce this, and will typically not disallow you from using pointer arithmetic outside of arrays.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Subscripting is implemented via pointer arithmetic</p>
+<p>In the prior lesson (<a href="c-style-array-decay.html">17.8 -- C-style array decay</a>), we noted that <code>operator[]</code> can be applied to a pointer:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 9, 7, 5, 3, 1 };
+    
+    const int* ptr{ arr }; // a normal pointer holding the address of element 0
+    std::cout &lt;&lt; ptr[2];   // subscript ptr to get element 2, prints 5
+
+    return 0;
+}</code></pre>
+<p>Let’s take a deeper look at what’s happening here.</p>
+<p>It turns out that subscript operation <code>ptr[n]</code> is a concise syntax equivalent to the more verbose expression <code>*((ptr) + (n))</code>.  You’ll note that this is just pointer arithmetic, with some additional parenthesis to ensure things evaluate in the correct order, and an implicit dereference to get the object at that address.</p>
+<p>First, we initialize <code>ptr</code> with <code>arr</code>.  When <code>arr</code> is used as an initializer, it decays into a pointer holding the address of the element with index 0.  So <code>ptr</code> now holds the address of element 0.</p>
+<p>Next, we print <code>ptr[2]</code>.  <code>ptr[2]</code> is equivalent to <code>*((ptr) + (2))</code>, which is equivalent to <code>*(ptr + 2)</code>.  <code>ptr + 2</code> returns the address of the object that is two objects past <code>ptr</code>, which is the element with index 2.  The object at that address is then returned to the caller.</p>
+<p>Let’s take a look at another example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 3, 2, 1 };
+
+    // First, let's use subscripting to get the address and values of our array elements
+    std::cout &lt;&lt; &amp;arr[0] &lt;&lt; ' ' &lt;&lt; &amp;arr[1] &lt;&lt; ' ' &lt;&lt; &amp;arr[2] &lt;&lt; '\n';
+    std::cout &lt;&lt; arr[0] &lt;&lt; ' ' &lt;&lt; arr[1] &lt;&lt; ' ' &lt;&lt; arr[2] &lt;&lt; '\n';
+
+    // Now let's do the equivalent using pointer arithmetic
+    std::cout &lt;&lt; arr&lt;&lt; ' ' &lt;&lt; (arr+ 1) &lt;&lt; ' ' &lt;&lt; (arr+ 2) &lt;&lt; '\n';
+    std::cout &lt;&lt; *arr&lt;&lt; ' ' &lt;&lt; *(arr+ 1) &lt;&lt; ' ' &lt;&lt; *(arr+ 2) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this printed:</p>
+<pre>
+00AFFD80 00AFFD84 00AFFD88
+3 2 1
+00AFFD80 00AFFD84 00AFFD88
+3 2 1
+</pre>
+<p>You’ll note that <code>arr</code> is holding address <code>00AFFD80</code>, <code>(arr + 1)</code> returns an address 4 bytes later, and <code>(arr + 2)</code> returns an address 8 bytes later.  We can dereference these addresses to get the elements at those addresses.</p>
+<p>Because array elements are always sequential in memory, if <code>arr</code> is a pointer to element 0 of an array, <code>*(arr + n)</code> will return the n-th element in the array.</p>
+<p>This is the primary reason arrays are 0-based rather than 1-based.  It makes the math more efficient (because the compiler doesn’t have to subtract 1 whenever subscripting)!</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>As a neat bit of trivia, because the compiler converts <code>ptr[n]</code> into <code>*((ptr) + (n))</code> when subscripting a pointer, this means we can also subscript a pointer as <code>n[ptr]</code>!  The compiler converts this into <code>*((n) + (ptr))</code>, which is behaviorally identical to <code>*((ptr) + (n))</code>.  Don’t actually do this though, as it’s confusing.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Pointer arithmetic and subscripting are relative addresses</p>
+<p>When first learning about array subscripting, it’s natural to assume that the index represents a fixed element within the array: Index 0 is always the first element, index 1 is always the second element, etc…</p>
+<p>This is a illusion.  Array indices are actually relative positions.  The indices just appear fixed because we almost always index from the start (element 0) of the array!</p>
+<p>Remember, given some pointer <code>ptr</code>, both <code>*(ptr + 1)</code> and <code>ptr[1]</code> return the <em>next object</em> in memory (based on the type being pointed to).  Next is a relative term, not an absolute one.  Thus, if <code>ptr</code> is pointing to element 0, then both <code>*(ptr + 1)</code> and <code>ptr[1]</code> will return element 1.  But if <code>ptr</code> is pointing to element 3 instead, then both <code>*(ptr + 1)</code> and <code>ptr[1]</code> will return element 4!</p>
+<p>The following example demonstrates this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 9, 8, 7, 6, 5 };
+    const int *ptr { arr }; // arr decays into a pointer to element 0
+
+    // Prove that we're pointing at element 0
+    std::cout &lt;&lt; *ptr &lt;&lt; ptr[0] &lt;&lt; '\n'; // prints 99
+    // Prove that ptr[1] is element 1
+    std::cout &lt;&lt; *(ptr+1) &lt;&lt; ptr[1] &lt;&lt; '\n'; // prints 88
+
+    // Now set ptr to point at element 3
+    ptr = &amp;arr[3];
+
+    // Prove that we're pointing at element 3
+    std::cout &lt;&lt; *ptr &lt;&lt; ptr[0] &lt;&lt; '\n'; // prints 66
+    // Prove that ptr[1] is element 4!
+    std::cout &lt;&lt; *(ptr+1) &lt;&lt; ptr[1] &lt;&lt; '\n'; // prints 55
+ 
+    return 0;
+}</code></pre>
+<p>However, you’ll also note that our program is a lot more confusing if we can’t assume that <code>ptr[1]</code> is always the element with index 1.  For this reason, we recommend using subscripting only when indexing from the start of the array (element 0).  Use pointer arithmetic only when doing relative positioning.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Favor subscripting when indexing from the start of the array (element 0), so the array indices line up with the element.</p>
+<p>Favor pointer arithmetic when doing relative positioning from a given element.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Negative indices</p>
+<p>In the last lesson, we mentioned that (unlike the standard library container classes) the index of a C-style array can be either an unsigned integer or a signed integer.  This wasn’t done just for convenience -- it’s actually possible to index a C-style array with a negative subscript.  It sounds funny, but it makes sense.</p>
+<p>We just covered that <code>*(ptr+1)</code> returns the <em>next object</em> in memory.  And <code>ptr[1]</code> is just a convenient syntax to do the same.</p>
+<p>At the top of this lesson, we noted that <code>*(ptr-1)</code> returns the <em>previous object</em> in memory.  Want to guess what the subscript equivalent is?  Yup, <code>ptr[-1]</code>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 9, 8, 7, 6, 5 };
+
+    // Set ptr to point at element 3
+    const int* ptr { &amp;arr[3] };
+
+    // Prove that we're pointing at element 3
+    std::cout &lt;&lt; *ptr &lt;&lt; ptr[0] &lt;&lt; '\n'; // prints 66
+    // Prove that ptr[-1] is element 2!
+    std::cout &lt;&lt; *(ptr-1) &lt;&lt; ptr[-1] &lt;&lt; '\n'; // prints 77
+ 
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Pointer arithmetic can be used to traverse an array</p>
+<p>One of the most common uses of pointer arithmetic is to iterate through a C-style array without explicit indexing.  The following example illustrates how this is done:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+	constexpr int arr[]{ 9, 7, 5, 3, 1 };
+
+	const int* begin{ arr };                // begin points to start element
+	const int* end{ arr + std::size(arr) }; // end points to one-past-the-end element
+
+	for (; begin != end; ++begin)           // iterate from begin up to (but excluding) end
+	{
+		std::cout &lt;&lt; *begin &lt;&lt; ' ';     // dereference our loop variable to get the current element
+	}
+
+	return 0;
+}</code></pre>
+<p>In the above example, we start our traversal at the element pointed to by <code>begin</code> (which in this case is element 0 of the array).  Since <code>begin != end</code> yet, the loop body executes.  Inside the loop, we access the current element via <code>*begin</code>, which is just a pointer dereference.  After the loop body, we do <code>++begin</code>, which uses pointer arithmetic to increment <code>begin</code> to point at the next element.  Since <code>begin != end</code>, the loop body executes again.  This continues until <code>begin != end</code> is <code>false</code>, which happens when <code>begin == end</code>.</p>
+<p>Thus, the above prints:</p>
+<pre>
+9 7 5 3 1
+</pre>
+<p>Note that <code>end</code> is set to one-past-the-end of the array.  Having <code>end</code> hold this address is fine (so long as we don’t dereference <code>end</code>, as there isn’t a valid element at that address).  We do this because it makes our math and comparisons as simple as possible (no need to add or subtract 1 anywhere).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>For a pointer that is pointing to a C-style array element, pointer arithmetic is valid so long as the resulting address is the address of a valid array element, or one-past the last element.  If pointer arithmetic results in an address beyond these bounds, it is undefined behavior (even if the result is not dereferenced).
+</p></div>
+<p>In the prior lesson <a href="c-style-array-decay.html">17.8 -- C-style array decay</a>, we mentioned that array decay makes refactoring functions difficult because certain things work with non-decayed arrays but not with decayed arrays (like <code>std::size</code>).  One neat thing about this traversing an array this way is that we can refactor the loop part of the above example into a separate function exactly as written, and it will still work:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printArray(const int* begin, const int* end)
+{
+	for (; begin != end; ++begin)   // iterate from begin up to (but excluding) end
+	{
+		std::cout &lt;&lt; *begin &lt;&lt; ' '; // dereference our loop variable to get the current element
+	}
+    
+	std::cout &lt;&lt; '\n';
+}
+
+int main()
+{
+	constexpr int arr[]{ 9, 7, 5, 3, 1 };
+
+	const int* begin{ arr };                // begin points to start element
+	const int* end{ arr + std::size(arr) }; // end points to one-past-the-end element
+
+	printArray(begin, end);
+
+	return 0;
+}</code></pre>
+<p>Note that this program compiles and produces the correct result even though we never explicitly pass the array to the function!  And because we’re not passing <code>arr</code>, we don’t have to deal with a decayed <code>arr</code> in <code>printArray()</code>.  Instead, <code>begin</code> and <code>end</code> contain all the information we need to traverse the array.</p>
+<p>In future lessons (when we cover iterators and algorithms), we’ll see that the standard library is full of functions that use a <code>begin</code> and <code>end</code> pair to define what elements of a container the function should operate on.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Range-based for loops over C-style arrays are implemented using pointer arithmetic</p>
+<p>Consider the following range-based for loop:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+	constexpr int arr[]{ 9, 7, 5, 3, 1 };
+
+	for (auto e : arr)         // iterate from `begin` up to (but excluding) `end`
+	{
+		std::cout &lt;&lt; e &lt;&lt; ' '; // dereference our loop variable to get the current element
+	}
+
+	return 0;
+}</code></pre>
+<p>If you look at the <a href="https://en.cppreference.com/w/cpp/language/range-for" target="_blank" rel="noopener noreferrer">documentation</a> for range-based for loops, you’ll see that they are typically implemented something like this:</p>
+<pre>
+{
+    auto __begin = begin-expr;
+    auto __end = end-expr;
+
+    for ( ; __begin != __end; ++__begin)
+    {
+        range-declaration = *__begin;
+        loop-statement;
+    }
+}
+</pre>
+<p>Let’s replace the range-based for loop in the prior example with this implementation:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+	constexpr int arr[]{ 9, 7, 5, 3, 1 };
+
+	auto __begin = arr;                // arr is our begin-expr
+	auto __end = arr + std::size(arr); // arr + std::size(arr) is our end-expr
+
+	for ( ; __begin != __end; ++__begin)
+	{
+		auto e = *__begin;         // e is our range-declaration
+		std::cout &lt;&lt; e &lt;&lt; ' ';     // here is our loop-statement
+	}
+
+	return 0;
+}</code></pre>
+<p>Note how similar this is to the example we wrote in the prior section!  The only difference is that we’re assigning <code>*__begin</code> to <code>e</code> and using <code>e</code> rather than just using <code>*__begin</code> directly!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>a) Why is <code>arr[0]</code> the same as <code>*arr</code>?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p><code>arr[0]</code> is shorthand for <code>*((arr) + (0))</code>, which is equal to <code>*(arr + 0)</code>, which equals <code>*arr</code>.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We have more quiz questions on pointer arithmetic in the next lesson (<a href="c-style-strings.html">17.10 -- C-style strings</a>).
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="c-style-array-decay.html"><span class="nav-kicker">← Previous lesson</span>17.8 · C-style array decay</a><a class="next" href="c-style-strings.html"><span class="nav-kicker">Next lesson →</span>17.10 · C-style strings</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

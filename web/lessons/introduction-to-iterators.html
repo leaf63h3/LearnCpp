@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Iterating through an array (or other structure) of data is quite a common thing to do in programming. And so far, we’ve covered many different ways to do s">
+  <meta name="robots" content="noindex,nofollow">
+  <title>18.2 — Introduction to iterators · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-iterators/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 18 · Iterators and Algorithms (under construction)</summary><div class="sidebar-title"><small>Chapter 18</small><strong>Iterators and Algorithms (under construction)</strong></div>
+<ol class="sidebar-lessons"><li><a href="sorting-an-array-using-selection-sort.html"><span class="lesson-number">18.1</span><span>Sorting an array using selection sort</span></a></li><li><a href="introduction-to-iterators.html" aria-current="page"><span class="lesson-number">18.2</span><span>Introduction to iterators</span></a></li><li><a href="introduction-to-standard-library-algorithms.html"><span class="lesson-number">18.3</span><span>Introduction to standard library algorithms</span></a></li><li><a href="timing-your-code.html"><span class="lesson-number">18.4</span><span>Timing your code</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 18</div>
+        <h1>18.2 — Introduction to iterators</h1>
+        <div class="article-meta"><span>Updated: 2025-02-11 19:06</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Iterating through an array (or other structure) of data is quite a common thing to do in programming.  And so far, we’ve covered many different ways to do so: with loops and an index (<code>for-loops</code> and <code>while loops</code>), with pointers and pointer arithmetic, and with <code>range-based for-loops</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    // In C++17, the type of variable arr is deduced to std::array&lt;int, 7&gt;
+    // If you get an error compiling this example, see the warning below
+    std::array arr{ 0, 1, 2, 3, 4, 5, 6 };
+    std::size_t length{ std::size(arr) };
+
+    // while-loop with explicit index
+    std::size_t index{ 0 };
+    while (index &lt; length)
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+        ++index;
+    }
+    std::cout &lt;&lt; '\n';
+
+    // for-loop with explicit index
+    for (index = 0; index &lt; length; ++index)
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+    }
+    std::cout &lt;&lt; '\n';
+
+    // for-loop with pointer (Note: ptr can't be const, because we increment it)
+    for (auto ptr{ &amp;arr[0] }; ptr != (&amp;arr[0] + length); ++ptr)
+    {
+        std::cout &lt;&lt; *ptr &lt;&lt; ' ';
+    }
+    std::cout &lt;&lt; '\n';
+
+    // range-based for loop
+    for (int i : arr)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>The examples in this lesson use a C++17 feature called <code>class template argument deduction</code> to deduce the template arguments for a template variable from its initializer.  In the example above, when the compiler sees <code>std::array arr{ 0, 1, 2, 3, 4, 5, 6 };</code>, it will deduce that we want <code>std::array&lt;int, 7&gt; arr { 0, 1, 2, 3, 4, 5, 6 };</code>.</p>
+<p>If your compiler is not C++17 enabled, you’ll get an error that says something like, “missing template arguments before ‘arr’”.  In that case, your best bet is to enable C++17, as per lesson <a href="configuring-your-compiler-choosing-a-language-standard.html">0.12 -- Configuring your compiler: Choosing a language standard</a>.  If you can not, you can replace the lines that use class template argument deduction with lines that have explicit template arguments (e.g. replace <code>std::array arr{ 0, 1, 2, 3, 4, 5, 6 };</code> with <code>std::array&lt;int, 7&gt; arr { 0, 1, 2, 3, 4, 5, 6 };</code>
+</p></div>
+<p>Looping using indexes is more typing than needed if we only use the index to access elements.  It also only works if the container (e.g. the array) provides direct access to elements (which arrays do, but some other types of containers, such as lists, do not).</p>
+<p>Looping with pointers and pointer arithmetic is verbose, and can be confusing to readers who don’t know the rules of pointer arithmetic.  Pointer arithmetic also only works if elements are consecutive in memory (which is true for arrays, but not true for other types of containers, such as lists, trees, and maps).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Pointers (without pointer arithmetic) can also be used to iterate through some non-sequential structures.  In a linked list, each element is connected to the prior element by a pointer.  We can iterate through the list by following the chain of pointers.
+</p></div>
+<p>Range-based for-loops are a little more interesting, as the mechanism for iterating through our container is hidden -- and yet, they still work for all kinds of different structures (arrays, lists, trees, maps, etc…).  How do these work?  They use iterators.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Iterators</p>
+<p>An <strong>iterator</strong> is an object designed to traverse through a container (e.g. the values in an array, or the characters in a string), providing access to each element along the way.</p>
+<p>A container may provide different kinds of iterators.  For example, an array container might offer a forwards iterator that walks through the array in forward order, and a reverse iterator that walks through the array in reverse order.</p>
+<p>Once the appropriate type of iterator is created, the programmer can then use the interface provided by the iterator to traverse and access elements without having to worry about what kind of traversal is being done or how the data is being stored in the container.  And because C++ iterators typically use the same interface for traversal (operator++ to move to the next element) and access (operator* to access the current element), we can iterate through a wide variety of different container types using a consistent method.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Pointers as an iterator</p>
+<p>The simplest kind of iterator is a pointer, which (using pointer arithmetic) works for data stored sequentially in memory.  Let’s revisit a simple array traversal using a pointer and pointer arithmetic:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array arr{ 0, 1, 2, 3, 4, 5, 6 };
+
+    auto begin{ &amp;arr[0] };
+    // note that this points to one spot beyond the last element
+    auto end{ begin + std::size(arr) };
+
+    // for-loop with pointer
+    for (auto ptr{ begin }; ptr != end; ++ptr) // ++ to move to next element
+    {
+        std::cout &lt;&lt; *ptr &lt;&lt; ' '; // Indirection to get value of current element
+    }
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Output:</p>
+<pre>
+0 1 2 3 4 5 6
+</pre>
+<p>In the above, we defined two variables: <code>begin</code> (which points to the beginning of our container), and <code>end</code> (which marks an end point).  For arrays, the end marker is typically the place in memory where the last element would be if the container contained one more element.</p>
+<p>The pointer then iterates between <code>begin</code> and <code>end</code>, and the current element can be accessed by dereferencing the pointer.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>You might be tempted to calculate the end marker using the address-of operator and array syntax like so:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* end{ &amp;arr[std::size(arr)] };</code></pre>
+<p>But this causes undefined behavior, because <code>arr[std::size(arr)]</code> implicitly dereferences an element that is off the end of the array.</p>
+<p>Instead, use:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* end{ arr.data() + std::size(arr) }; // data() returns a pointer to the first element</code></pre>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Standard library iterators</p>
+<p>Iterating is such a common operation that all standard library containers offer direct support for iteration.  Instead of calculating our own begin and end points, we can simply ask the container for the begin and end points via member functions conveniently named <code>begin()</code> and <code>end()</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array array{ 1, 2, 3 };
+
+    // Ask our array for the begin and end points (via the begin and end member functions).
+    auto begin{ array.begin() };
+    auto end{ array.end() };
+
+    for (auto p{ begin }; p != end; ++p) // ++ to move to next element.
+    {
+        std::cout &lt;&lt; *p &lt;&lt; ' '; // Indirection to get value of current element.
+    }
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+1 2 3
+</pre>
+<p>The <code>iterator</code> header also contains two generic functions (<code>std::begin</code> and <code>std::end</code>) that can be used.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p><code>std::begin</code> and <code>std::end</code> for C-style arrays are defined in the &lt;iterator&gt; header.</p>
+<p><code>std::begin</code> and <code>std::end</code> for containers that support iterators are defined in the header files for those containers (e.g. &lt;array&gt;, &lt;vector&gt;).
+</p></div>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;    // includes &lt;iterator&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array array{ 1, 2, 3 };
+
+    // Use std::begin and std::end to get the begin and end points.
+    auto begin{ std::begin(array) };
+    auto end{ std::end(array) };
+
+    for (auto p{ begin }; p != end; ++p) // ++ to move to next element
+    {
+        std::cout &lt;&lt; *p &lt;&lt; ' '; // Indirection to get value of current element
+    }
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This also prints:</p>
+<pre>
+1 2 3
+</pre>
+<p>Don’t worry about the types of the iterators for now, we’ll re-visit iterators in a later chapter.  The important thing is that the iterator takes care of the details of iterating through the container.  All we need are four things: the begin point, the end point, operator++ to move the iterator to the next element (or the end), and operator* to get the value of the current element.</p>
+<p class="cpp-section cpp-topline" style="clear: both"><code>operator&lt;</code> vs <code>operator!=</code> for iterators</p>
+<p>In lesson <a href="for-statements.html">8.10 -- For statements</a>, we noted that using <code>operator&lt;</code> was preferred over <code>operator!=</code> when doing numeric comparisons in the loop condition:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    for (index = 0; index &lt; length; ++index)</code></pre>
+<p>With iterators, it is conventional to use <code>operator!=</code> to test whether the iterator has reached the end element:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    for (auto p{ begin }; p != end; ++p)</code></pre>
+<p>This is because some iterator types are not relationally comparable.  <code>operator!=</code> works with all iterator types.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Back to range-based for loops</p>
+<p>All types that have both <code>begin()</code> and <code>end()</code> member functions, or that can be used with <code>std::begin()</code> and <code>std::end()</code>, are usable in range-based for-loops.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array array{ 1, 2, 3 };
+
+    // This does exactly the same as the loop we used before.
+    for (int i : array)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Behind the scenes, the range-based for-loop calls <code>begin()</code> and <code>end()</code> of the type to iterate over. <code>std::array</code> has <code>begin</code> and <code>end</code> member functions, so we can use it in a range-based loop. C-style fixed arrays can be used with <code>std::begin</code> and <code>std::end</code> functions, so we can loop through them with a range-based loop as well. Dynamic C-style arrays (or decayed C-style arrays) don’t work though, because there is no <code>std::end</code> function for them (because the type information doesn’t contain the array’s length).</p>
+<p>You’ll learn how to add these functions to your types later, so that they can be used with range-based for-loops too.</p>
+<p>Range-based for-loops aren’t the only thing that makes use of iterators.  They’re also used in <code>std::sort</code> and other algorithms.  Now that you know what they are, you’ll notice they’re used quite a bit in the standard library.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Iterator invalidation (dangling iterators)</p>
+<p>Much like pointers and references, iterators can be left “dangling” if the elements being iterated over change address or are destroyed.  When this happens, we say the iterator has been <strong>invalidated</strong>.  Accessing an invalidated iterator produces undefined behavior.</p>
+<p>Some operations that modify containers (such as adding an element to a <code>std::vector</code>) can have the side effect of causing the elements in the container to change addresses.  When this happens, existing iterators to those elements will be invalidated. Good C++ reference documentation should note which container operations may or will invalidate iterators.  As an example, see the <a href="https://en.cppreference.com/w/cpp/container/vector#Iterator_invalidation" target="_blank" rel="noopener noreferrer">“Iterator invalidation” section of <code>std::vector</code> on cppreference</a>.</p>
+<p>Since range-based for-loops use iterators behind the scenes, we must be careful not to do anything that invalidates the iterators of the container we are actively traversing:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;vector&gt;
+
+int main()
+{
+    std::vector v { 0, 1, 2, 3 };
+
+    for (auto num : v) // implicitly iterates over v
+    {
+        if (num % 2 == 0)
+            v.push_back(num + 1); // when this invalidates the iterators of v, undefined behavior will result
+    }
+
+    return 0;
+}</code></pre>
+<p>Here’s another example of iterator invalidation:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+	std::vector v{ 1, 2, 3, 4, 5, 6, 7 };
+
+	auto it{ v.begin() };
+
+	++it; // move to second element
+	std::cout &lt;&lt; *it &lt;&lt; '\n'; // ok: prints 2
+
+	v.erase(it); // erase the element currently being iterated over
+
+	// erase() invalidates iterators to the erased element (and subsequent elements)
+	// so iterator "it" is now invalidated
+
+	++it; // undefined behavior
+	std::cout &lt;&lt; *it &lt;&lt; '\n'; // undefined behavior
+
+	return 0;
+}</code></pre>
+<p>Invalidated iterators can be revalidated by assigning a valid iterator to them (e.g. <code>begin()</code>, <code>end()</code>, or the return value of some other function that returns an iterator).</p>
+<p>The <code>erase()</code> function returns an iterator to the element one past the erased element (or <code>end()</code> if the last element was removed).  Therefore, we can fix the above code like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+	std::vector v{ 1, 2, 3, 4, 5, 6, 7 };
+
+	auto it{ v.begin() };
+
+	++it; // move to second element
+	std::cout &lt;&lt; *it &lt;&lt; '\n';
+
+	it = v.erase(it); // erase the element currently being iterated over, set `it` to next element
+
+	std::cout &lt;&lt; *it &lt;&lt; '\n'; // now ok, prints 3
+
+	return 0;
+}</code></pre>
+
+<p>(h/t to nascardriver for significant contributions to this lesson)</p>
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="sorting-an-array-using-selection-sort.html"><span class="nav-kicker">← Previous lesson</span>18.1 · Sorting an array using selection sort</a><a class="next" href="introduction-to-standard-library-algorithms.html"><span class="nav-kicker">Next lesson →</span>18.3 · Introduction to standard library algorithms</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

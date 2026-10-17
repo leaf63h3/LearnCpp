@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 5.1 -- Constant variables (named constants), you learned that objects of a fundamental data type (int, double, char, etc…) can be made constant v">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.4 — Const class objects and const member functions · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/const-class-objects-and-const-member-functions/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html" aria-current="page"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.4 — Const class objects and const member functions</h1>
+        <div class="article-meta"><span>Updated: 2025-02-12 11:31</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="constant-variables-named-constants.html">5.1 -- Constant variables (named constants)</a>, you learned that objects of a fundamental data type (<code>int</code>, <code>double</code>, <code>char</code>, etc…) can be made constant via the <code>const</code> keyword.  All const variables must be initialized at time of creation.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">const int x;      // compile error: not initialized
+const int y{};    // ok: value initialized
+const int z{ 5 }; // ok: list initialized</code></pre>
+<p>Similarly, class type objects (struct, classes, and unions) can also be made const by using the <code>const</code> keyword.  Such objects must also be initialized at the time of creation.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+};
+
+int main()
+{
+    const Date today { 2020, 10, 14 }; // const class type object
+
+    return 0;
+}</code></pre>
+<p>Just like with normal variables, you’ll generally want to make your class type objects const (or constexpr) when you need to ensure they aren’t modified after creation.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Modifying the data members of const objects is disallowed</p>
+<p>Once a const class type object has been initialized, any attempt to modify the data members of the object is disallowed, as it would violate the const-ness of the object.  This includes both changing member variables directly (if they are public), or calling member functions that set the value of member variables.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void incrementDay()
+    {
+        ++day;
+    }
+};
+
+int main()
+{
+    const Date today { 2020, 10, 14 }; // const
+
+    today.day += 1;        // compile error: can't modify member of const object
+    today.incrementDay();  // compile error: can't call member function that modifies member of const object
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Const objects may not call non-const member functions</p>
+<p>You may be surprised to find that this code also causes a compilation error:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void print()
+    {
+        std::cout &lt;&lt; year &lt;&lt; '/' &lt;&lt; month &lt;&lt; '/' &lt;&lt; day;
+    }
+};
+
+int main()
+{
+    const Date today { 2020, 10, 14 }; // const
+
+    today.print();  // compile error: can't call non-const member function
+
+    return 0;
+}</code></pre>
+<p>Even though <code>print()</code> does not try to modify a member variable, our call to <code>today.print()</code> is still a const violation.  This happens because the <code>print()</code> member function itself is not declared as const.  The compiler won’t let us call a non-const member function on a const object.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Const member functions</p>
+<p>To address the above issue, we need to make <code>print()</code> a const member function.  A <strong>const member function</strong> is a member function that guarantees it will not modify the object or call any non-const member functions (as they may modify the object).</p>
+<p>Making <code>print()</code> a const member function is easy -- we simply append the <code>const</code> keyword to the function prototype, after the parameter list, but before the function body:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void print() const // now a const member function
+    {
+        std::cout &lt;&lt; year &lt;&lt; '/' &lt;&lt; month &lt;&lt; '/' &lt;&lt; day;
+    }
+};
+
+int main()
+{
+    const Date today { 2020, 10, 14 }; // const
+
+    today.print();  // ok: const object can call const member function
+
+    return 0;
+}</code></pre>
+<p>In the above example, <code>print()</code> has been made a const member function, which means we can call it on const objects (such as <code>today</code>).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>For member functions defined outside of the class definition, the <code>const</code> keyword must be used on both the function declaration in the class definition, and on the function definition outside the class definition.  We show an example of this in lesson <a href="classes-and-header-files.html">15.2 -- Classes and header files</a>.</p>
+<p>Constructors may not be made const, as they need to initialize the members of the object, which requires modifying them.  We cover constructors in lesson <a href="introduction-to-constructors.html">14.9 -- Introduction to constructors</a>.
+</p></div>
+<p>A const member function that attempts to change a data member or call a non-const member function will cause a compiler error to occur.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void incrementDay() const // made const
+    {
+        ++day; // compile error: const function can't modify member
+    }
+};
+
+int main()
+{
+    const Date today { 2020, 10, 14 }; // const
+
+    today.incrementDay();
+
+    return 0;
+}</code></pre>
+<p>In this example, <code>incrementDay()</code> has been marked as a const member function, but it attempts to change <code>day</code>.  This will cause a compiler error.</p>
+<p>Const member functions can modify non-members (such as local variables and function parameters) and call non-member functions per usual.  The const only applies to members.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>A const member function may not: modify the implicit object, call non-const member functions.<br>
+A const member function may: modify objects that aren’t the implicit object, call const member functions, call non-member functions.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Const member functions may be called on non-const objects</p>
+<p>Const member functions may also be called on non-const objects:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void print() const // const
+    {
+        std::cout &lt;&lt; year &lt;&lt; '/' &lt;&lt; month &lt;&lt; '/' &lt;&lt; day;
+    }
+};
+
+int main()
+{
+    Date today { 2020, 10, 14 }; // non-const
+
+    today.print();  // ok: can call const member function on non-const object
+
+    return 0;
+}</code></pre>
+<p>Because const member functions can be called on both const and non-const objects, if a member function does not modify the state of the object, it should be made const.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>A member function that does not (and will not ever) modify the state of the object should be made const, so that it can be called on both const and non-const objects.
+</p></div>
+<p>Be careful about what member functions you apply <code>const</code> to.  Once a member function is made const, that function can be called on const objects.  Later removal of <code>const</code> on a member function will break any code that calls that member function on a const object.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Const objects via pass by const reference</p>
+<p>Although instantiating const local variables is one way to create const objects, a more common way to get a const object is by passing an object to a function by const reference.</p>
+<p>In lesson <a href="pass-by-lvalue-reference.html">12.5 -- Pass by lvalue reference</a>, we covered the merits of passing class type arguments by const reference instead of by value.  To recap, passing a class type argument by value causes a copy of the class to be made (which is slow) -- most of the time, we don’t need a copy, a reference to the original argument works just fine and avoids making a copy.  We typically make the reference const to allow the function to accept const lvalue arguments and rvalue arguments (e.g. literals and temporary objects).</p>
+<p>Can you figure out what’s wrong with the following code?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void print() // non-const
+    {
+        std::cout &lt;&lt; year &lt;&lt; '/' &lt;&lt; month &lt;&lt; '/' &lt;&lt; day;
+    }
+};
+
+void doSomething(const Date&amp; date)
+{
+    date.print();
+}
+
+int main()
+{
+    Date today { 2020, 10, 14 }; // non-const
+    today.print();
+
+    doSomething(today);
+
+    return 0;
+}</code></pre>
+<p>The answer is that inside of the <code>doSomething()</code> function, <code>date</code> is treated as a const object (because it was passed by const reference).  And with that const <code>date</code>, we’re calling non-const member function <code>print()</code>.  Since we can’t call non-const member functions on const objects, this will cause a compile error.</p>
+<p>The fix is simple: make <code>print()</code> const:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Date
+{
+    int year {};
+    int month {};
+    int day {};
+
+    void print() const // now const
+    {
+        std::cout &lt;&lt; year &lt;&lt; '/' &lt;&lt; month &lt;&lt; '/' &lt;&lt; day;
+    }
+};
+
+void doSomething(const Date&amp; date)
+{
+    date.print();
+}
+
+int main()
+{
+    Date today { 2020, 10, 14 }; // non-const
+    today.print();
+
+    doSomething(today);
+
+    return 0;
+}</code></pre>
+<p>Now in function <code>doSomething()</code>, <code>const date</code> will be able to successfully call const member function <code>print()</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Member function const and non-const overloading</p>
+<p>Finally, although it is not done very often, it is possible to overload a member function to have a const and non-const version of the same function.  This works because the const qualifier is considered part of the function’s signature, so two functions which differ only in their const-ness are considered distinct.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Something
+{
+    void print()
+    {
+        std::cout &lt;&lt; "non-const\n";
+    }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "const\n";
+    }
+};
+
+int main()
+{
+    Something s1{};
+    s1.print(); // calls print()
+
+    const Something s2{};
+    s2.print(); // calls print() const
+    
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">non-const
+const</code></pre>
+<p>Overloading a function with a const and non-const version is typically done when the return value needs to differ in constness.  This is pretty rare.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="member-functions.html"><span class="nav-kicker">← Previous lesson</span>14.3 · Member functions</a><a class="next" href="public-and-private-members-and-access-specifiers.html"><span class="nav-kicker">Next lesson →</span>14.5 · Public and private members and access specifiers</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The variable scalability challenge Consider a scenario where we want to record the test scores for 30 students and calculate the average score for the clas">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.1 — Introduction to containers and arrays · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-containers-and-arrays/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html" aria-current="page"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.1 — Introduction to containers and arrays</h1>
+        <div class="article-meta"><span>Updated: 2024-08-13 00:36</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">The variable scalability challenge</p>
+<p>Consider a scenario where we want to record the test scores for 30 students and calculate the average score for the class.  To do so, we’ll need 30 variables.  We could define those like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// allocate 30 integer variables (each with a different name)
+int testScore1 {};
+int testScore2 {};
+int testScore3 {};
+// ...
+int testScore30 {};</code></pre>
+<p>That’s a lot of variables to define!  And to calculate the average score for the class, we’d need to do something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int average { (testScore1 + testScore2 + testScore3 + testScore4 + testScore5
+     + testScore6 + testScore7 + testScore8 + testScore9 + testScore10
+     + testScore11 + testScore12 + testScore13 + testScore14 + testScore15
+     + testScore16 + testScore17 + testScore18 + testScore19 + testScore20
+     + testScore21 + testScore22 + testScore23 + testScore24 + testScore25
+     + testScore26 + testScore27 + testScore28 + testScore29 + testScore30)
+     / 30; };</code></pre>
+<p>This is not only a lot of typing, it’s also very repetitive (and it wouldn’t be that hard to typo one of the numbers and not notice).  And if we want to do anything with each of these values (like print them to the screen), we’d have to enter each of these variables names all over again.</p>
+<p>Now let’s say we need to modify our program to accommodate another student who was just added to the class.  We’ll have to scan the entire codebase and manually add in <code>testScore31</code> wherever relevant.  Any time we modify existing code, we risk introducing new bugs.  For example, it wouldn’t be that hard to forget to update the divisor in the calculation of the average from <code>30</code> to <code>31</code>!</p>
+<p>And this is with only 30 variables.  Think about the case where we have hundreds or thousands of objects.  When we need more than a few objects of the same type, defining individual variables simply doesn’t scale.</p>
+<p>We could put our data inside a struct:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct testScores
+{
+// allocate 30 integer variables (each with a different name)
+int score1 {};
+int score2 {};
+int score3 {};
+// ...
+int score30 {};
+}</code></pre>
+<p>While this provides some additional organization for our scores (and allows us to pass them to functions more easily), it doesn’t solve the core problem: we still need to define and access each test score object individually.</p>
+<p>As you may have guessed, C++ has solutions to the above challenges.  In this chapter, we’ll introduce one such solution.  And in the following chapters, we’ll explore some other variants of that solution.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Containers</p>
+<p>When you go to the grocery store to buy a dozen eggs, you (probably) aren’t selecting 12 eggs individually and putting them in your cart (you aren’t, right?).  Instead, you’re likely to select a single carton of eggs.  The carton is a type of container, holding some predefined number of eggs (likely 6, 12, or 24).  Now consider breakfast cereal, containing many little pieces of cereal.  You definitely wouldn’t want to store all these pieces in your pantry individually!  Cereal often comes in a box, which is another container.  We use containers all the time in real life because they make it easy to manage a collection of items.</p>
+<p>Containers also exist in programming, to make it easier to create and manage (potentially large) collections of objects.  In general programming, a <strong>container</strong> is a data type that provides storage for a collection of unnamed objects (called <strong>elements</strong>).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>We typically use containers when we need to work with a set of related values.
+</p></div>
+<p>As it turns out, you’ve already been using one container type: strings!  A string container provides storage for a collection of characters, which can then be output as text:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main()
+{
+    std::string name{ "Alex" }; // strings are a container for characters
+    std::cout &lt;&lt; name; // output our string as a sequence of characters
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">The elements of a container are unnamed</p>
+<p>While the container object itself typically has a name (otherwise how would we use it?), the elements of a container are unnamed.  This is so that we can put as many elements in our container as we desire, without having to give each element a unique name!  This lack of named elements is important, and is what distinguishes containers from other types of data structures.  It is why plain structs (those that are just a collection of data members, like our <code>testScores</code> struct above) typically aren’t considered containers -- their data members require unique names.</p>
+<p>In the example above, our string container has a name (<code>name</code>), but the characters inside the container (<code>'A'</code>, <code>'l'</code>, <code>'e'</code>, <code>'x'</code>) do not.</p>
+<p>But if the elements themselves are unnamed, how do we access them?  Each container provides one or more methods to access its elements -- but exactly how depends on the type of container.  We’ll see our first example of this in the next lesson.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>The elements of a container do not have their own names, so that the container can have as many elements as we want without having to give each element a unique name.</p>
+<p>Each container provides some method to access these elements, but how depends on the specific type of container.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">The length of a container</p>
+<p>In programming, the number of elements in a container is often called it’s <strong>length</strong> (or sometimes <strong>count</strong>).</p>
+<p>In lesson <a href="introduction-to-stdstring.html">5.7 -- Introduction to std::string</a>, we showed how we could use the <code>length</code> member function of <code>std::string</code> to get the number of character elements in the string container:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main()
+{
+    std::string name{ "Alex" };
+    std::cout &lt;&lt; name &lt;&lt; " has " &lt;&lt; name.length() &lt;&lt; " characters\n";
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">Alex has 4 characters</code></pre>
+<p>In C++, the term <strong>size</strong> is also commonly used for the number of elements in a container.  This is an unfortunate choice of nomenclature, as the term “size” can also refer to the number of bytes of memory used by an object (as returned by the <code>sizeof</code> operator).</p>
+<p>We’ll prefer the term “length” when referring to the number of elements in a container, and use the term “size” to refer to amount of storage required by an object.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Container operations</p>
+<p>Back to our carton of eggs for a moment.  What can you do with such a carton?  Well, first you can acquire a carton of eggs.  You can open the carton of eggs and select an egg, and then do whatever you want with that egg.  You can remove an existing egg from the carton, or add a new egg to an empty space.  You can also count the number of eggs in the carton.</p>
+<p>Similarly, containers typically implement a significant subset of the following operations:</p>
+<ul>
+<li>Create a container (e.g. empty, with storage for some initial number of elements, from a list of values).
+</li>
+<li>Access to elements (e.g. get first element, get last element, get any element).
+</li>
+<li>Insert and remove elements.
+</li>
+<li>Get the number of elements in the container.
+</li>
+</ul>
+<p>Containers may also provide other operations (or variations on the above) that assist in managing the collection of elements.</p>
+<p>Modern programming languages typically provide a variety of different container types.  These container types differ in terms of which operations they actually support, and how performant those operations are.  For example, one container type might provide fast access to any element in the container, but not support insertion or removal of elements.  Another container type might provide fast insertion and removal of elements, but only allow access to elements in sequential order.  </p>
+<p>Every container has a set of strengths and limitations.  Picking the right container type for the task you are trying to solve can have a huge impact on both code maintainability and overall performance.  We will discuss this topic further in a future lesson.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Element types</p>
+<p>In most programming languages (including C++), containers are <strong>homogenous</strong>, meaning the elements of a container are required to have the same type.</p>
+<p>Some containers use a preset element type (e.g. a string typically has <code>char</code> elements), but more often the element type can be set by the user of the container.  In C++, containers are typically implemented as class templates, so that the user can provide the desired element type as a template type argument.  We’ll see an example of this next lesson.</p>
+<p>This makes containers flexible, as we do not need to create a new container type for each different element type.  Instead, we just instantiate the class template with the desired element type, and we’re ready to go.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>The opposite of a homogenous container is a <strong>heterogenous</strong> container, which allows elements to be different types.  Heterogeneous containers are typically supported by scripting languages (such as Python).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Containers in C++</p>
+<p>The <strong>Containers library</strong> is a part of the C++ standard library that contains various class types that implement some common types of containers.  A class type that implements a container is sometimes called a <strong>container class</strong>.  The full list of containers in the Containers library is documented <a href="https://en.cppreference.com/w/cpp/container" target="_blank" rel="noopener noreferrer">here</a>.</p>
+<p>In C++, the definition of “container” is narrower than the general programming definition.  Only the class types in the Containers library are considered to be containers in C++.  We will use the term “container” when talking about containers in general, and “container class” when talking specifically about the container class types that are part of the Containers library.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>The following types are containers under the general programming definition, but are not considered to be containers by the C++ standard:</p>
+<ul>
+<li>C-style arrays
+</li>
+<li><code>std::string</code>
+</li>
+<li><code>std::vector&lt;bool&gt;</code>
+</li>
+</ul>
+<p>To be a container in C++, the container must implement all of the requirements listed <a href="https://en.cppreference.com/w/cpp/named_req/Container" target="_blank" rel="noopener noreferrer">here</a>.  Note that these requirements include the implementation of certain member functions -- this implies that C++ containers must be class types!  The types listed above do not implement all of these requirements.</p>
+<p>However, because <code>std::string</code> and <code>std::vector&lt;bool&gt;</code> implement most of the requirements, they behave like containers in most circumstances.  As a result, they are sometimes called “pseudo-containers”.
+</p></div>
+<p>Of the provided container classes, <code>std::vector</code> and <code>std::array</code> see by far the most use, and will be where we focus the bulk of our attention.  The other containers classes are typically only used in more specialized situations.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Introduction to arrays</p>
+<p>An <strong>array</strong> is a container data type that stores a sequence of values <strong>contiguously</strong> (meaning each element is placed in an adjacent memory location, with no gaps).  Arrays allow fast, direct access to any element.  They are conceptually simple and easy to use, making them the first choice when we need to create and work with a set of related values.</p>
+<p>C++ contains three primary array types: (C-style) arrays, the <code>std::vector</code> container class, and the <code>std::array</code> container class.</p>
+<p>(C-style) arrays were inherited from the C language.  For backwards compatibility, these arrays are defined as part of the core C++ language (much like the fundamental data types).  The C++ standard calls these “arrays”, but in modern C++ these are often called <strong>C arrays</strong> or <strong>C-style arrays</strong> in order to differentiate them from the similarly named <code>std::array</code>.  C-style arrays are also sometimes called “naked arrays”, “fixed-sized arrays”, “fixed arrays”, or “built-in arrays”.  We’ll prefer the term “C-style array”, and use “array” when discussing array types in general.  By modern standards, C-style arrays behave strangely and they are dangerous.  We will explore why in a future chapter.</p>
+<p>To help make arrays safer and easier to use in C++, the <code>std::vector</code> container class was introduced in C++03.  <code>std::vector</code> is the most flexible of the three array types, and has a bunch of useful capabilities that the other array types don’t.</p>
+<p>Finally, the <code>std::array</code> container class was introduced in C++11 as a direct replacement for C-style arrays.  It is more limited than <code>std::vector</code>, but can also be more efficient, especially for smaller arrays.</p>
+<p>All of these array types are still used in modern C++ in different capacities, so we will cover all three to varying degrees.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Moving forward</p>
+<p>In the next lesson, we’ll introduce our first container class, <code>std::vector</code>, and begin our journey to show how it can efficiently solve the challenge we presented at the top of this lesson.  We’ll spend a lot of time with <code>std::vector</code>, as we’ll need to introduce quite a few new concepts, and address some additional challenges along the way.</p>
+<p>One nice thing is that all of the container classes have similar interfaces.  Thus, once you’ve learned how to use one container (e.g. <code>std::vector</code>), learning the others (e.g. <code>std::array</code>) is much simpler.  For future containers (e.g. <code>std::array</code>), we’ll cover the notable differences (and reiterate the most important points).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>A quick note on terminology:</p>
+<ul>
+<li>We will use <code>container classes</code> when we’re talking about something that applies to most or all the standard library containers classes.
+</li>
+<li>We will use <code>array</code> when we’re talking about something that generally applies to all array types, even ones implemented in other programming languages.
+</li>
+</ul>
+<p><code>std::vector</code> falls into both of these categories, so even though we may be using different terms, it’s still applicable to <code>std::vector</code>.
+</p></div>
+<p>Okay, ready?</p>
+<p>Let’s goooooooooooooooooooooooooooooooooooooooooooooooo.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="chapter-15-summary-and-quiz.html"><span class="nav-kicker">← Previous lesson</span>15.x · Chapter 15 summary and quiz</a><a class="next" href="introduction-to-stdvector-and-list-constructors.html"><span class="nav-kicker">Next lesson →</span>16.2 · Introduction to std::vector and list constructors</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

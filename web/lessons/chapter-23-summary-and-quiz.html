@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In this chapter, we learned about some different kinds of relationships between two objects. Summary The process of building complex objects from simpler o">
+  <meta name="robots" content="noindex,nofollow">
+  <title>23.x — Chapter 23 summary and quiz · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/chapter-23-summary-and-quiz/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 23 · Object Relationships</summary><div class="sidebar-title"><small>Chapter 23</small><strong>Object Relationships</strong></div>
+<ol class="sidebar-lessons"><li><a href="object-relationships.html"><span class="lesson-number">23.1</span><span>Object relationships</span></a></li><li><a href="composition.html"><span class="lesson-number">23.2</span><span>Composition</span></a></li><li><a href="aggregation.html"><span class="lesson-number">23.3</span><span>Aggregation</span></a></li><li><a href="association.html"><span class="lesson-number">23.4</span><span>Association</span></a></li><li><a href="dependencies.html"><span class="lesson-number">23.5</span><span>Dependencies</span></a></li><li><a href="container-classes.html"><span class="lesson-number">23.6</span><span>Container classes</span></a></li><li><a href="stdinitializer_list.html"><span class="lesson-number">23.7</span><span>std::initializer_list</span></a></li><li><a href="chapter-23-summary-and-quiz.html" aria-current="page"><span class="lesson-number">23.x</span><span>Chapter 23 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 23</div>
+        <h1>23.x — Chapter 23 summary and quiz</h1>
+        <div class="article-meta"><span>Updated: 2024-08-29 13:43</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In this chapter, we learned about some different kinds of relationships between two objects.</p>
+<p><strong>Summary</strong></p>
+<p>The process of building complex objects from simpler ones is called <strong>object composition</strong>.  There are two types of object composition: composition, and aggregation.  </p>
+<p><strong>Composition</strong> exists when a member of a class has a part-of relationship with the class.  In a composition relationship, the class manages the existence of the members.  To qualify as a <strong>composition</strong>, an object and a part must have the following relationship:</p>
+<ul>
+<li>The part (member) is part of the object (class)</li>
+<li>The part (member) can only belong to one object (class) at a time</li>
+<li>The part (member) has its existence managed by the object (class)</li>
+<li>The part (member) does not know about the existence of the object (class)</li>
+</ul>
+<p>Compositions are typically implemented via normal member variables, or by pointers where the class manages all the memory allocation and deallocation.  If you can implement a class as a composition, you should implement a class as a composition.</p>
+<p><strong>Aggregations</strong> exists when a class has a has-a relationship with the member.  In an aggregation relationship, the class does not manage the existence of the members.  To qualify as an <strong>aggregation</strong>, an object and its parts must have the following relationship:</p>
+<ul>
+<li>The part (member) is part of the object (class)</li>
+<li>The part (member) can belong to more than one object (class) at a time</li>
+<li>The part (member) does <em>not</em> have its existence managed by the object (class)</li>
+<li>The part (member) does not know about the existence of the object (class)</li>
+</ul>
+<p>Aggregations are typically implemented via pointer or reference.</p>
+<p><strong>Associations</strong> are a looser type of relationship, where the class uses-an otherwise unrelated object.  To qualify as an <strong>association</strong>, an object and an associated object must have the following relationship:</p>
+<ul>
+<li>The associated object (member) is otherwise unrelated to the object (class)</li>
+<li>The associated object (member) can belong to more than one object (class) at a time</li>
+<li>The associated object (member) does <em>not</em> have its existence managed by the object (class)</li>
+<li>The associated object (member) may or may not know about the existence of the object (class)</li>
+</ul>
+<p>Associations may be implemented via pointer or reference, or by a more indirect means (such as holding the index or key of the associated object).</p>
+<p>In a <strong>dependency</strong>, one class uses another class to perform a task.  The dependent class typically is not a member of the class using it, but rather is temporarily created, used, and then destroyed, or passed into a member function from an external source.</p>
+<p>In a <strong>container class</strong> one class provides a container to hold multiple objects of another type.  A <strong>value container</strong> is a composition that stores copies of the objects it is holding.  A <strong>reference container</strong> is an aggregation that stores pointers or references to objects that live outside the container.</p>
+<p>std::initializer_list can be used to implement constructors, assignment operators, and other functions that accept a list initialization parameter.  std::initializer_list lives in the &lt;initializer_list&gt; header.</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Property\Type</th>
+<th>Composition</th>
+<th>Aggregation</th>
+<th>Association</th>
+<th>Dependency</th>
+</tr>
+<tr>
+<td>Relationship type</td>
+<td>Whole/part</td>
+<td>Whole/part</td>
+<td>Otherwise unrelated</td>
+<td>Otherwise unrelated</td>
+</tr>
+<tr>
+<td>Members can belong to multiple classes</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Members existence managed by class</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Directionality</td>
+<td>Unidirectional</td>
+<td>Unidirectional</td>
+<td>Unidirectional or bidirectional</td>
+<td>Unidirectional</td>
+</tr>
+<tr>
+<td>Relationship verb</td>
+<td>Part-of</td>
+<td>Has-a</td>
+<td>Uses-a</td>
+<td>Depends-on</td>
+</tr>
+<p></p></table></div>
+<p><strong>Quiz time</strong></p>
+<p>This chapter is pretty straightforward and a little more abstract than the previous ones, so this quiz will be short and to the point.</p>
+<ol start="1">
+<li>What type of relationship (composition, aggregation, association, or dependency) do the following describe?
+</li>
+</ol>
+<p>1a) An Animal class that contains an animal type (enum) and name (string).<br>
+<button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+Composition -- The animal type and name don’t have a use outside of the Animal.</div>
+<p>1b) A text editor class with a save() function that takes a File object as an argument.  The save() function writes the contents of the editor to disk.<br>
+<button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+Dependency -- The text editor class is using the File object for the task of saving to disk.</div>
+<p>1c) An Adventurer class that can carry various kinds of Items, such as swords, wands, potions, or spellbooks.  These Items can be dropped and picked up by other Adventurers.<br>
+<button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+Association -- the Adventurer and Items aren’t a whole-part relationship, so this isn’t an aggregation.  The Adventurer uses-a Items, and doesn’t manage their existence.</div>
+<p>1d) The Player prays at a Shrine (to receive a new power).<br>
+<button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+Dependency -- They player depends on the shrine to receive the power, but does not have any long-term association with it.</div>
+<p>1e) A Computer class that contains a CPU class.  The CPU can be removed from the Computer and tested on its own.<br>
+<button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_4" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_4" hidden="hidden">
+Aggregation -- The computer has a CPU, but does not manage its existence.</div>
+<p>1f) A blacksmith has a specific anvil that he uses to do his work.<br>
+<button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_5" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_5" hidden="hidden">
+Association -- The blacksmith uses the anvil, but does not have a whole-part relationship with it.</div>
+<ol start="2">
+<li>Select one: If you can design a class using (pick one: composition, aggregation, association, or dependency), then you should.
+</li>
+</ol>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_6" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_6" hidden="hidden">
+composition</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdinitializer_list.html"><span class="nav-kicker">← Previous lesson</span>23.7 · std::initializer_list</a><a class="next" href="introduction-to-inheritance.html"><span class="nav-kicker">Next lesson →</span>24.1 · Introduction to inheritance</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

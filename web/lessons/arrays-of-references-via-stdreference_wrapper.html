@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the prior lesson, we mentioned that arrays can have elements of any object type. This includes objects with fundamental types (e.g. int) and objects wit">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.5 — Arrays of references via std::reference_wrapper · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/arrays-of-references-via-stdreference_wrapper/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html" aria-current="page"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.5 — Arrays of references via std::reference_wrapper</h1>
+        <div class="article-meta"><span>Updated: 2023-10-14 13:25</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the prior lesson, we mentioned that arrays can have elements of any object type.  This includes objects with fundamental types (e.g. int) and objects with compound types (e.g. pointer to int).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    int x { 1 };
+    int y { 2 };
+
+    [[maybe_unused]] std::array valarr { x, y };   // an array of int values
+    [[maybe_unused]] std::vector ptrarr { &amp;x, &amp;y }; // a vector of int pointers
+    
+    return 0;
+}</code></pre>
+<p>However, because references are not objects, you cannot make an array of references.  The elements of an array must also be assignable, and references can’t be reseated.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    int x { 1 };
+    int y { 2 };
+
+    [[maybe_unused]] std::array&lt;int&amp;, 2&gt; refarr { x, y }; // compile error: cannot define array of references
+
+    int&amp; ref1 { x };
+    int&amp; ref2 { y };
+    [[maybe_unused]] std::array valarr { ref1, ref2 }; // ok: this is actually a std::array&lt;int, 2&gt;, not an array of references
+
+    return 0;
+}</code></pre>
+<p>In this lesson, we’ll use <code>std::array</code> in the examples, but this is equally applicable to all array types.</p>
+<p>However, if you want an array of references, there is a workaround.</p>
+<p class="cpp-section cpp-topline" style="clear: both">std::reference_wrapper</p>
+<p><code>std::reference_wrapper</code> is a standard library class template that lives in the &lt;functional&gt; header.  It takes a type template argument T, and then behaves like a modifiable lvalue reference to T.</p>
+<p>There are a few things worth noting about <code>std::reference_wrapper</code>:</p>
+<ul>
+<li><code>Operator=</code> will reseat a <code>std::reference_wrapper</code> (change which object is being referenced).
+</li>
+<li><code>std::reference_wrapper&lt;T&gt;</code> will implicitly convert to <code>T&amp;</code>.
+</li>
+<li>The <code>get()</code> member function can be used to get a <code>T&amp;</code>.  This is useful when we want to update the value of the object being referenced.
+</li>
+</ul>
+<p>Here’s a simple example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;functional&gt; // for std::reference_wrapper
+#include &lt;iostream&gt;
+
+int main()
+{
+    int x { 1 };
+    int y { 2 };
+    int z { 3 };
+
+    std::array&lt;std::reference_wrapper&lt;int&gt;, 3&gt; arr { x, y, z };
+    
+    arr[1].get() = 5; // modify the object in array element 1
+
+    std::cout &lt;&lt; arr[1] &lt;&lt; y &lt;&lt; '\n'; // show that we modified arr[1] and y, prints 55
+    
+    return 0;
+}</code></pre>
+<p>This example prints the following:</p>
+<pre>
+55
+</pre>
+<p>Note that we must use <code>arr[1].get() = 5</code> and not <code>arr[1] = 5</code>.  The latter is ambiguous, as the compiler can’t tell if we intend to reseat the <code>std::reference_wrapper&lt;int&gt;</code> to value 5 (something that is illegal anyway) or change the value being referenced.  Using <code>get()</code> disambiguates this.</p>
+<p>When printing <code>arr[1]</code>, the compiler will realize it can’t print a <code>std::reference_wrapper&lt;int&gt;</code>, so it will implicitly convert it to an <code>int&amp;</code>, which it can print.  So we don’t need to use <code>get()</code> here.</p>
+<p class="cpp-section cpp-topline" style="clear: both"><code>std::ref</code> and <code>std::cref</code></p>
+<p>Prior to C++17, CTAD (class template argument deduction) didn’t exist, so all template arguments for a class type needed to be listed explicitly.  Thus, to create a <code>std::reference_wrapper&lt;int&gt;</code>, you could do either of these:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    int x { 5 };
+
+    std::reference_wrapper&lt;int&gt; ref1 { x };        // C++11
+    auto ref2 { std::reference_wrapper&lt;int&gt;{ x }}; // C++11</code></pre>
+<p>Between the long name and having to explicitly list the template arguments, creating many such reference wrappers could be a pain.</p>
+<p>To make things easier, the <code>std::ref()</code> and <code>std::cref()</code> functions were provided as shortcuts to create <code>std::reference_wrapper</code> and <code>const std::reference_wrapper</code> wrapped objects.  Note that these functions can be used with <code>auto</code> to avoid having to explicitly specify the template argument.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    int x { 5 };
+    auto ref { std::ref(x) };   // C++11, deduces to std::reference_wrapper&lt;int&gt;
+    auto cref { std::cref(x) }; // C++11, deduces to std::reference_wrapper&lt;const int&gt;</code></pre>
+<p>Of course, now that we have CTAD in C++17, we can also do this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    std::reference_wrapper ref1 { x };        // C++17
+    auto ref2 { std::reference_wrapper{ x }}; // C++17</code></pre>
+<p>But since <code>std::ref()</code> and <code>std::cref()</code> are shorter to type, they are still widely used to create <code>std::reference_wrapper</code> objects.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdarray-of-class-types-and-brace-elision.html"><span class="nav-kicker">← Previous lesson</span>17.4 · std::array of class types, and brace elision</a><a class="next" href="stdarray-and-enumerations.html"><span class="nav-kicker">Next lesson →</span>17.6 · std::array and enumerations</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

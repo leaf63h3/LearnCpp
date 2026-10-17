@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 16.1 -- Introduction to containers and arrays, we introduced containers and arrays. To summarize: Containers provide storage for a collection of ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.1 — Introduction to std::array · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-stdarray/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html" aria-current="page"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.1 — Introduction to std::array</h1>
+        <div class="article-meta"><span>Updated: 2024-07-22 14:17</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="introduction-to-containers-and-arrays.html">16.1 -- Introduction to containers and arrays</a>, we introduced containers and arrays.  To summarize:</p>
+<ul>
+<li>Containers provide storage for a collection of unnamed objects (called elements).
+</li>
+<li>Arrays allocate their elements contiguously in memory, and allow fast, direct access to any element via subscripting.
+</li>
+<li>C++ has three different array types that are commonly used: <code>std::vector</code>, <code>std::array</code>, and C-style arrays.
+</li>
+</ul>
+<p>In lesson <a href="stdvector-resizing-and-capacity.html">16.10 -- std::vector resizing and capacity</a>, we mentioned that arrays fall into two categories:</p>
+<ul>
+<li>Fixed-size arrays (also called fixed-length arrays) require that the length of the array be known at the point of instantiation, and that length cannot be changed afterward.    C-style arrays and <code>std::array</code> are both fixed-size arrays.
+</li>
+<li>Dynamic arrays can be resized at runtime.  <code>std::vector</code> is a dynamic array.
+</li>
+</ul>
+<p>In the previous chapter, we focused on <code>std::vector</code>, as it is fast, comparatively easy to use, and versatile.  This makes it our go-to type when we need an array container.</p>
+<p class="cpp-section cpp-topline" style="clear: both">So why not use dynamic arrays for everything?</p>
+<p>Dynamic arrays are powerful and convenient, but like everything in life, they make some tradeoffs for the benefits they offer.</p>
+<ul>
+<li><code>std::vector</code> is slightly less performant than the fixed-size arrays.  In most cases you probably won’t notice the difference (unless you’re writing sloppy code that causes lots of inadvertent reallocations).
+</li>
+<li><code>std::vector</code> only supports <code>constexpr</code> in very limited contexts.
+</li>
+</ul>
+<p>In modern C++, it is really this latter point that’s significant.  Constexpr arrays offer the ability to write code that is more robust, and can also be optimized more highly by the compiler.  Whenever we can use a constexpr array, we should -- and if we need a constexpr array, <code>std::array</code> is the container class we should be using.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use <code>std::array</code> for constexpr arrays, and <code>std::vector</code> for non-constexpr arrays.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Defining a <code>std::array</code></p>
+<p><code>std::array</code> is defined in the &lt;array&gt; header.  It is designed to work similarly to <code>std::vector</code>, and as you’ll see, there are more similarities than differences between the two.</p>
+<p>One difference is in how we declare a <code>std::array</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;  // for std::array
+#include &lt;vector&gt; // for std::vector
+
+int main()
+{
+    std::array&lt;int, 5&gt; a {};  // a std::array of 5 ints
+
+    std::vector&lt;int&gt; b(5);    // a std::vector of 5 ints (for comparison)
+
+    return 0;
+}</code></pre>
+<p>Our <code>std::array</code> declaration has two template arguments.  The first (<code>int</code>) is a type template argument defining the type of the array element.  The second (<code>5</code>) is an integral non-type template argument defining the array length.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover non-type template parameters in lesson <a href="non-type-template-parameters.html">11.9 -- Non-type template parameters</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">The length of a <code>std::array</code> must be a constant expression</p>
+<p>Unlike a <code>std::vector</code>, which can be resized at runtime, the length of a <code>std::array</code> must be a constant expression.  Most often, the value provided for the length will be an integer literal, constexpr variable, or an unscoped enumerator.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+
+int main()
+{
+    std::array&lt;int, 7&gt; a {}; // Using a literal constant
+
+    constexpr int len { 8 };
+    std::array&lt;int, len&gt; b {}; // Using a constexpr variable
+
+    enum Colors
+    {
+         red,
+         green,
+         blue,
+         max_colors
+    };
+
+    std::array&lt;int, max_colors&gt; c {}; // Using an enumerator
+
+#define DAYS_PER_WEEK 7
+    std::array&lt;int, DAYS_PER_WEEK&gt; d {}; // Using a macro (don't do this, use a constexpr variable instead)
+
+    return 0;
+}</code></pre>
+<p>Note that non-const variables and runtime constants cannot be used for the length:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+void foo(const int length) // length is a runtime constant
+{
+    std::array&lt;int, length&gt; e {}; // error: length is not a constant expression
+}
+
+int main()
+{
+    // using a non-const variable
+    int numStudents{};
+    std::cin &gt;&gt; numStudents; // numStudents is non-constant
+
+    std::array&lt;int, numStudents&gt; {}; // error: numStudents is not a constant expression
+
+    foo(7);
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Perhaps surprisingly, a <code>std::array</code> can be defined with a length of 0:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array&lt;int, 0&gt; arr {}; // creates a zero-length std::array
+    std::cout &lt;&lt; arr.empty();  // true if arr is zero-length
+
+    return 0;
+}</code></pre>
+<p>A zero-length <code>std::array</code> is a special-case class that has no data.  As such, calling any member function that accesses the data of a zero-length <code>std::array</code> (including <code>operator[]</code>) will produce undefined behavior.</p>
+<p>You can test whether a <code>std::array</code> is zero-length using the <code>empty()</code> member function, which returns <code>true</code> if the array is zero-length and <code>false</code> otherwise.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Aggregate initialization of a <code>std::array</code></p>
+<p>Perhaps surprisingly, <code>std::array</code> is an aggregate.  This means it has no constructors, and instead is initialized using aggregate initialization.  As a quick recap, aggregate initialization allows us to directly initialize the members of aggregates. To do this, we provide an initializer list, which is a brace-enclosed list of comma-separated initialization values.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We covered aggregate initialization for structs in lesson <a href="struct-aggregate-initialization.html">13.8 -- Struct aggregate initialization</a>.
+</p></div>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+
+int main()
+{
+    std::array&lt;int, 6&gt; fibonnaci = { 0, 1, 1, 2, 3, 5 }; // copy-list initialization using braced list
+    std::array&lt;int, 5&gt; prime { 2, 3, 5, 7, 11 };         // list initialization using braced list (preferred)
+
+    return 0;
+}</code></pre>
+<p>Each of these initialization forms initializes the array members in sequence, starting with element 0.</p>
+<p>If a <code>std::array</code> is defined without an initializer, the elements will be default initialized.  In most cases, this will result in elements being left uninitialized.</p>
+<p>Because we generally want our elements to be initialized, <code>std::array</code> should be value initialized (using empty braces) when defined with no initializers.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::array&lt;int, 5&gt; a;   // Members default initialized (int elements are left uninitialized)
+    std::array&lt;int, 5&gt; b{}; // Members value initialized (int elements are zero initialized) (preferred)
+
+    std::vector&lt;int&gt; v(5);  // Members value initialized (int elements are zero initialized) (for comparison)
+
+    return 0;
+}</code></pre>
+<p>If more initializers are provided in an initializer list than the defined array length, the compiler will error.  If fewer initializers are provided in an initializer list than the defined array length, the remaining elements without initializers are value initialized:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+
+int main()
+{
+    std::array&lt;int, 4&gt; a { 1, 2, 3, 4, 5 }; // compile error: too many initializers
+    std::array&lt;int, 4&gt; b { 1, 2 };          // b[2] and b[3] are value initialized
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Const and constexpr <code>std::array</code></p>
+<p>A <code>std::array</code> can be const:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+
+int main()
+{
+    const std::array&lt;int, 5&gt; prime { 2, 3, 5, 7, 11 };
+
+    return 0;
+}</code></pre>
+<p>Even though the elements of a <code>const std::array</code> are not explicitly marked as const, they are still treated as const (because the whole array is const).</p>
+<p><code>std::array</code> also has full support for constexpr:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+
+int main()
+{
+    constexpr std::array&lt;int, 5&gt; prime { 2, 3, 5, 7, 11 };
+
+    return 0;
+}</code></pre>
+<p>This support for constexpr is the key reason to use <code>std::array</code>.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Define your <code>std::array</code> as constexpr whenever possible.  If your <code>std::array</code> is not constexpr, consider using a <code>std::vector</code> instead.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Class template argument deduction (CTAD) for <code>std::array</code> <span class="cpp-section-pill cpp-section-standard">C++17</span></p>
+<p>Using CTAD (class template argument deduction) in C++17, we can have the compiler deduce both the element type and the array length of a <code>std::array</code> from a list of initializers:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    constexpr std::array a1 { 9, 7, 5, 3, 1 }; // The type is deduced to std::array&lt;int, 5&gt;
+    constexpr std::array a2 { 9.7, 7.31 };     // The type is deduced to std::array&lt;double, 2&gt;
+
+    return 0;
+}</code></pre>
+<p>We favor this syntax whenever practical.  If your compiler is not C++17 capable, you’ll need to explicitly provide the type and length template arguments.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use class template argument deduction (CTAD) to have the compiler deduce the type and length of a <code>std::array</code> from its initializers.
+</p></div>
+<p>CTAD does not support partial omission of template arguments (as of C++23), so there is no way to use a core language feature to omit just the length or just the type of a <code>std::array</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    constexpr std::array&lt;int&gt; a2 { 9, 7, 5, 3, 1 };     // error: too few template arguments (length missing)
+    constexpr std::array&lt;5&gt; a2 { 9, 7, 5, 3, 1 };       // error: too few template arguments (type missing)
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Omitting just the array length using <code>std::to_array</code> <span class="cpp-section-pill cpp-section-standard">C++20</span></p>
+<p>However, TAD (template argument deduction, used for function template resolution) does support partial omission of template arguments.  Since C++20, it is possible to omit the array length of a <code>std::array</code> by using the <code>std::to_array</code> helper function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    constexpr auto myArray1 { std::to_array&lt;int, 5&gt;({ 9, 7, 5, 3, 1 }) }; // Specify type and size
+    constexpr auto myArray2 { std::to_array&lt;int&gt;({ 9, 7, 5, 3, 1 }) };    // Specify type only, deduce size
+    constexpr auto myArray3 { std::to_array({ 9, 7, 5, 3, 1 }) };         // Deduce type and size
+
+    return 0;
+}</code></pre>
+<p>Unfortunately, using <code>std::to_array</code> is more expensive than creating a <code>std::array</code> directly, because it involves creation of a temporary <code>std::array</code> that is then used to copy initialize our desired <code>std::array</code>.  For this reason, <code>std::to_array</code> should only be used in cases where the type can’t be effectively determined from the initializers, and should be avoided when an array is created many times (e.g. inside a loop).</p>
+<p>For example, because there is no way to specify a literal of type <code>short</code>, you could use the following to create an <code>std::array</code> of <code>short</code> values (without having to explicitly specify the length of the <code>std::array</code>):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    constexpr auto shortArray { std::to_array&lt;short&gt;({ 9, 7, 5, 3, 1 }) };
+    std::cout &lt;&lt; sizeof(shortArray[0]) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Accessing array elements using <code>operator[]</code></p>
+<p>Just like a <code>std::vector</code>, the most common way to access elements of a <code>std::array</code> is by using the subscript operator (<code>operator[]</code>):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt; // for std::array
+#include &lt;iostream&gt;
+
+int main()
+{
+    constexpr std::array&lt;int, 5&gt; prime{ 2, 3, 5, 7, 11 };
+
+    std::cout &lt;&lt; prime[3]; // print the value of element with index 3 (7)
+    std::cout &lt;&lt; prime[9]; // invalid index (undefined behavior)
+
+    return 0;
+}</code></pre>
+<p>As a reminder, <code>operator[]</code> does not do bounds checking.  If an invalid index is provided, undefined behavior will result.</p>
+<p>We’ll discuss a few other ways to index a <code>std::array</code> in the next lesson.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>What type of initialization does <code>std::array</code> use?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p><code>std::array</code> is an aggregate, so it uses aggregate initialization.
+</p></div>
+<p>Why should you explicitly value-initialize a <code>std::array</code> if you are not providing initialization values?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<p>A <code>std::array</code> will default initialize members if no initializers are provided.  This will leave elements of most types uninitialized.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Define a <code>std::array</code> that will hold the high temperature for each day of the year (to the nearest tenth of a degree).</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+
+std::array&lt;double, 365&gt; highTemp {};</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>Initialize a <code>std::array</code> with the following values: ‘h’, ‘e’, ‘l’, ‘l’, ‘o’.  Print the value of the element with index 1.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+        constexpr std::array arr { 'h', 'e', 'l', 'l', 'o' };
+        std::cout &lt;&lt; arr[1] &lt;&lt; '\n';
+
+        return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="chapter-16-summary-and-quiz.html"><span class="nav-kicker">← Previous lesson</span>16.x · Chapter 16 summary and quiz</a><a class="next" href="stdarray-length-and-indexing.html"><span class="nav-kicker">Next lesson →</span>17.2 · std::array length and indexing</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

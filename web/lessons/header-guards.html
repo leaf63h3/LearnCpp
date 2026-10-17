@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The duplicate definition problem In lesson 2.7 -- Forward declarations and definitions, we noted that a variable or function identifier can only have one d">
+  <meta name="robots" content="noindex,nofollow">
+  <title>2.12 — Header guards · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/header-guards/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 2 · C++ Basics: Functions and Files</summary><div class="sidebar-title"><small>Chapter 2</small><strong>C++ Basics: Functions and Files</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-functions.html"><span class="lesson-number">2.1</span><span>Introduction to functions</span></a></li><li><a href="function-return-values-value-returning-functions.html"><span class="lesson-number">2.2</span><span>Function return values (value-returning functions)</span></a></li><li><a href="void-functions-non-value-returning-functions.html"><span class="lesson-number">2.3</span><span>Void functions (non-value returning functions)</span></a></li><li><a href="introduction-to-function-parameters-and-arguments.html"><span class="lesson-number">2.4</span><span>Introduction to function parameters and arguments</span></a></li><li><a href="introduction-to-local-scope.html"><span class="lesson-number">2.5</span><span>Introduction to local scope</span></a></li><li><a href="why-functions-are-useful-and-how-to-use-them-effectively.html"><span class="lesson-number">2.6</span><span>Why functions are useful, and how to use them effectively</span></a></li><li><a href="forward-declarations.html"><span class="lesson-number">2.7</span><span>Forward declarations and definitions</span></a></li><li><a href="programs-with-multiple-code-files.html"><span class="lesson-number">2.8</span><span>Programs with multiple code files</span></a></li><li><a href="naming-collisions-and-an-introduction-to-namespaces.html"><span class="lesson-number">2.9</span><span>Naming collisions and an introduction to namespaces</span></a></li><li><a href="introduction-to-the-preprocessor.html"><span class="lesson-number">2.10</span><span>Introduction to the preprocessor</span></a></li><li><a href="header-files.html"><span class="lesson-number">2.11</span><span>Header files</span></a></li><li><a href="header-guards.html" aria-current="page"><span class="lesson-number">2.12</span><span>Header guards</span></a></li><li><a href="how-to-design-your-first-programs.html"><span class="lesson-number">2.13</span><span>How to design your first programs</span></a></li><li><a href="chapter-2-summary-and-quiz.html"><span class="lesson-number">2.x</span><span>Chapter 2 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 2</div>
+        <h1>2.12 — Header guards</h1>
+        <div class="article-meta"><span>Updated: 2024-06-12 17:32</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">The duplicate definition problem</p>
+<p>In lesson <a href="forward-declarations.html">2.7 -- Forward declarations and definitions</a>, we noted that a variable or function identifier can only have one definition (the one definition rule).  Thus, a program that defines a variable identifier more than once will cause a compile error:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int x; // this is a definition for variable x
+    int x; // compile error: duplicate definition
+
+    return 0;
+}</code></pre>
+<p>Similarly, programs that define a function more than once will also cause a compile error:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int foo() // this is a definition for function foo
+{
+    return 5;
+}
+
+int foo() // compile error: duplicate definition
+{
+    return 5;
+}
+
+int main()
+{
+    std::cout &lt;&lt; foo();
+    return 0;
+}</code></pre>
+<p>While these programs are easy to fix (remove the duplicate definition), with header files, it’s quite easy to end up in a situation where a definition in a header file gets included more than once.  This can happen when a header file #includes another header file (which is common).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>In upcoming examples, we’ll define some functions inside header files.  You generally shouldn’t do this.</p>
+<p>We are doing so here because it is the most effective way to demonstrate some concepts using functionality we’ve already covered.
+</p></div>
+<p>Consider the following academic example:</p>
+<p>square.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int getSquareSides()
+{
+    return 4;
+}</code></pre>
+<p>wave.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h"</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h"
+#include "wave.h"
+
+int main()
+{
+    return 0;
+}</code></pre>
+<p>This seemingly innocent looking program won’t compile!  Here’s what’s happening.  First, <em>main.cpp</em> #includes <em>square.h</em>, which copies the definition for function <em>getSquareSides</em> into <em>main.cpp</em>.  Then <em>main.cpp</em> #includes <em>wave.h</em>, which #includes <em>square.h</em> itself.  This copies contents of <em>square.h</em> (including the definition for function <em>getSquareSides</em>) into <em>wave.h</em>, which then gets copied into <em>main.cpp</em>.</p>
+<p>Thus, after resolving all of the #includes, <em>main.cpp</em> ends up looking like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int getSquareSides()  // from square.h
+{
+    return 4;
+}
+
+int getSquareSides() // from wave.h (via square.h)
+{
+    return 4;
+}
+
+int main()
+{
+    return 0;
+}</code></pre>
+<p>Duplicate definitions and a compile error.  Each file, individually, is fine.  However, because <em>main.cpp</em> ends up #including the content of <em>square.h</em> twice, we’ve run into problems.  If <em>wave.h</em> needs <em>getSquareSides()</em>, and <em>main.cpp</em> needs both <em>wave.h</em> and <em>square.h</em>, how would you resolve this issue?</p>
+<p class="cpp-section cpp-topline" style="clear: both">Header guards</p>
+<p>The good news is that we can avoid the above problem via a mechanism called a <strong>header guard</strong> (also called an <strong>include guard</strong>).  Header guards are conditional compilation directives that take the following form:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef SOME_UNIQUE_NAME_HERE
+#define SOME_UNIQUE_NAME_HERE
+
+// your declarations (and certain types of definitions) here
+
+#endif</code></pre>
+<p>When this header is #included, the preprocessor will check whether <em>SOME_UNIQUE_NAME_HERE</em> has been previously defined in this translation unit.  If this is the first time we’re including the header, <em>SOME_UNIQUE_NAME_HERE</em> will not have been defined.  Consequently, it #defines <em>SOME_UNIQUE_NAME_HERE</em> and includes the contents of the file.  If the header is included again into the same file, <em>SOME_UNIQUE_NAME_HERE</em> will already have been defined from the first time the contents of the header were included, and the contents of the header will be ignored (thanks to the #ifndef).</p>
+<p>All of your header files should have header guards on them.  <em>SOME_UNIQUE_NAME_HERE</em> can be any name you want, but by convention is set to the full filename of the header file, typed in all caps, using underscores for spaces or punctuation.  For example, <em>square.h</em> would have the header guard:</p>
+<p>square.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef SQUARE_H
+#define SQUARE_H
+
+int getSquareSides()
+{
+    return 4;
+}
+
+#endif</code></pre>
+<p>Even the standard library headers use header guards.  If you were to take a look at the iostream header file from Visual Studio, you would see:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef _IOSTREAM_
+#define _IOSTREAM_
+
+// content here
+
+#endif</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>In large programs, it’s possible to have two separate header files (included from different directories) that end up having the same filename (e.g. directoryA\config.h and directoryB\config.h).  If only the filename is used for the include guard (e.g. CONFIG_H), these two files may end up using the same guard name.  If that happens, any file that includes (directly or indirectly) both config.h files will not receive the contents of the include file to be included second.  This will probably cause a compilation error.</p>
+<p>Because of this possibility for guard name conflicts, many developers recommend using a more complex/unique name in your header guards.  Some good suggestions are a naming convention of PROJECT_PATH_FILE_H, FILE_LARGE-RANDOM-NUMBER_H, or FILE_CREATION-DATE_H.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Updating our previous example with header guards</p>
+<p>Let’s return to the <em>square.h</em> example, using the <em>square.h</em> with header guards.  For good form, we’ll also add header guards to <em>wave.h</em>.</p>
+<p>square.h</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef SQUARE_H
+#define SQUARE_H
+
+int getSquareSides()
+{
+    return 4;
+}
+
+#endif</code></pre>
+<p>wave.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef WAVE_H
+#define WAVE_H
+
+#include "square.h"
+
+#endif</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h"
+#include "wave.h"
+
+int main()
+{
+    return 0;
+}</code></pre>
+<p>After the preprocessor resolves all of the #include directives, this program looks like this:</p>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// Square.h included from main.cpp
+#ifndef SQUARE_H // square.h included from main.cpp
+#define SQUARE_H // SQUARE_H gets defined here
+
+// and all this content gets included
+int getSquareSides()
+{
+    return 4;
+}
+
+#endif // SQUARE_H
+
+#ifndef WAVE_H // wave.h included from main.cpp
+#define WAVE_H
+#ifndef SQUARE_H // square.h included from wave.h, SQUARE_H is already defined from above
+#define SQUARE_H // so none of this content gets included
+
+int getSquareSides()
+{
+    return 4;
+}
+
+#endif // SQUARE_H
+#endif // WAVE_H
+
+int main()
+{
+    return 0;
+}</code></pre>
+<p>Let’s look at how this evaluates.</p>
+<p>First, the preprocessor evaluates <code>#ifndef SQUARE_H</code>. <code>SQUARE_H</code> has not been defined yet, so the code from the <code>#ifndef</code> to the subsequent <code>#endif</code> is included for compilation. This code defines <code>SQUARE_H</code>, and has the definition for the <code>getSquareSides</code> function.</p>
+<p>Later, the next <code>#ifndef SQUARE_H</code> is evaluated. This time, <code>SQUARE_H</code> is defined (because it got defined above), so the code from the <code>#ifndef</code> to the subsequent <code>#endif</code> is excluded from compilation.</p>
+<p>Header guards prevent duplicate inclusions because the first time a guard is encountered, the guard macro isn’t defined, so the guarded content is included. Past that point, the guard macro is defined, so any subsequent copies of the guarded content are excluded.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Header guards do not prevent a header from being included once into different code files</p>
+<p>Note that the goal of header guards is to prevent a code file from receiving more than one copy of a guarded header.  By design, header guards do <em>not</em> prevent a given header file from being included (once) into separate code files.  This can also cause unexpected problems.  Consider:</p>
+<p>square.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef SQUARE_H
+#define SQUARE_H
+
+int getSquareSides()
+{
+    return 4;
+}
+
+int getSquarePerimeter(int sideLength); // forward declaration for getSquarePerimeter
+
+#endif</code></pre>
+<p>square.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h"  // square.h is included once here
+
+int getSquarePerimeter(int sideLength)
+{
+    return sideLength * getSquareSides();
+}</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h" // square.h is also included once here
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "a square has " &lt;&lt; getSquareSides() &lt;&lt; " sides\n";
+    std::cout &lt;&lt; "a square of length 5 has perimeter length " &lt;&lt; getSquarePerimeter(5) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Note that <em>square.h</em> is included from both <em>main.cpp</em> and <em>square.cpp</em>.  This means the contents of <em>square.h</em> will be included once into <em>square.cpp</em> and once into <em>main.cpp</em>.</p>
+<p>Let’s examine why this happens in more detail.  When <em>square.h</em> is included from <em>square.cpp</em>, <em>SQUARE_H</em> is defined until the end of <em>square.cpp</em>.  This define prevents <em>square.h</em> from being included into <em>square.cpp</em> a second time (which is the point of header guards).  However, once <em>square.cpp</em> is finished, <em>SQUARE_H</em> is no longer considered defined.  This means that when the preprocessor runs on <em>main.cpp</em>, <em>SQUARE_H</em> is not initially defined in <em>main.cpp</em>.</p>
+<p>The end result is that both <em>square.cpp</em> and <em>main.cpp</em> get a copy of the definition of <em>getSquareSides</em>.  This program will compile, but the linker will complain about your program having multiple definitions for identifier <em>getSquareSides</em>!</p>
+<p>The best way to work around this issue is simply to put the function definition in one of the .cpp files so that the header just contains a forward declaration:</p>
+<p>square.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef SQUARE_H
+#define SQUARE_H
+
+int getSquareSides(); // forward declaration for getSquareSides
+int getSquarePerimeter(int sideLength); // forward declaration for getSquarePerimeter
+
+#endif</code></pre>
+<p>square.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h"
+
+int getSquareSides() // actual definition for getSquareSides
+{
+    return 4;
+}
+
+int getSquarePerimeter(int sideLength)
+{
+    return sideLength * getSquareSides();
+}</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "square.h" // square.h is also included once here
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "a square has " &lt;&lt; getSquareSides() &lt;&lt; " sides\n";
+    std::cout &lt;&lt; "a square of length 5 has perimeter length " &lt;&lt; getSquarePerimeter(5) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Now when the program is compiled, function <em>getSquareSides</em> will have just one definition (via <em>square.cpp</em>), so the linker is happy.  File <em>main.cpp</em> is able to call this function (even though it lives in <em>square.cpp</em>) because it includes <em>square.h</em>, which has a forward declaration for the function (the linker will connect the call to <em>getSquareSides</em> from <em>main.cpp</em> to the definition of <em>getSquareSides</em> in <em>square.cpp</em>).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Can’t we just avoid definitions in header files?</p>
+<p>We’ve generally told you not to include function definitions in your headers.  So you may be wondering why you should include header guards if they protect you from something you shouldn’t do.</p>
+<p>There are quite a few cases we’ll show you in the future where it’s necessary to put non-function definitions in a header file.  For example, C++ will let you create your own types.  These custom types are typically defined in header files, so the type definitions can be propagated out to the code files that need to use them.  Without a header guard, a code file could end up with multiple (identical) copies of a given type definition, which the compiler will flag as an error.</p>
+<p>So even though it’s not strictly necessary to have header guards at this point in the tutorial series, we’re establishing good habits now, so you don’t have to unlearn bad habits later.</p>
+<p class="cpp-section cpp-topline" style="clear: both">#pragma once</p>
+<p>Modern compilers support a simpler, alternate form of header guards using the <code>#pragma</code> preprocessor directive:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#pragma once
+
+// your code here</code></pre>
+<p><code>#pragma once</code> serves the same purpose as header guards: to avoid a header file from being included multiple times.  With traditional header guards, the developer is responsible for guarding the header (by using preprocessor directives <code>#ifndef</code>, <code>#define</code>, and <code>#endif</code>).  With <code>#pragma once</code>, we’re requesting that the compiler guard the header.  How exactly it does this is an implementation-specific detail.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>There is one known case where <code>#pragma once</code> will typically fail.  If a header file is copied so that it exists in multiple places on the file system, if somehow both copies of the header get included, header guards will successfully de-dupe the identical headers, but <code>#pragma once</code> won’t (because the compiler won’t realize they are actually identical content).
+</p></div>
+<p>For most projects, <code>#pragma once</code> works fine, and many developers now prefer it because it is easier and less error-prone.  Many IDEs will also auto-include <code>#pragma once</code> at the top of a new header file generated through the IDE.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>The <code>#pragma</code> directive was designed for compiler implementers to use for whatever purposes they desire.  As such, which pragmas are supported and what meaning those pragmas have is completely implementation-specific.  With the exception of <code>#pragma once</code>, do not expect a pragma that works on one compiler to be supported by another.
+</p></div>
+<p>Because <code>#pragma once</code> is not defined by the C++ standard, it is possible that some compilers may not implement it.  For this reason, some development houses (such as Google) recommend using traditional header guards.  In this tutorial series, we will favor header guards, as they are the most conventional way to guard headers.  However, support for <code>#pragma once</code> is fairly ubiquitous at this point, and if you wish to use <code>#pragma once</code> instead, that is generally accepted in modern C++.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Summary</p>
+<p>Header guards are designed to ensure that the contents of a given header file are not copied more than once into any single file, in order to prevent duplicate definitions.</p>
+<p>Duplicate <em>declarations</em> are fine -- but even if your header file is composed of all declarations (no definitions) it’s still a best practice to include header guards.</p>
+<p>Note that header guards do <em>not</em> prevent the contents of a header file from being copied (once) into separate project files.  This is a good thing, because we often need to reference the contents of a given header from different project files.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<div class="quiz" style="clear: both">
+<p class="quiz-header">Question #1</p>
+<p>Add header guards to this header file:</p>
+<p>add.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int add(int x, int y);</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef ADD_H
+#define ADD_H
+
+int add(int x, int y);
+
+#endif</code></pre>
+</div>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="header-files.html"><span class="nav-kicker">← Previous lesson</span>2.11 · Header files</a><a class="next" href="how-to-design-your-first-programs.html"><span class="nav-kicker">Next lesson →</span>2.13 · How to design your first programs</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Let’s go back to an example we looked at previously: #include &lt;iostream&gt; #include &lt;string_view&gt; class Base { protected: int m_value{}; public: Base(int val">
+  <meta name="robots" content="noindex,nofollow">
+  <title>25.9 — Object slicing · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/object-slicing/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 25 · Virtual Functions</summary><div class="sidebar-title"><small>Chapter 25</small><strong>Virtual Functions</strong></div>
+<ol class="sidebar-lessons"><li><a href="pointers-and-references-to-the-base-class-of-derived-objects.html"><span class="lesson-number">25.1</span><span>Pointers and references to the base class of derived objects</span></a></li><li><a href="virtual-functions.html"><span class="lesson-number">25.2</span><span>Virtual functions and polymorphism</span></a></li><li><a href="the-override-and-final-specifiers-and-covariant-return-types.html"><span class="lesson-number">25.3</span><span>The override and final specifiers, and covariant return types</span></a></li><li><a href="virtual-destructors-virtual-assignment-and-overriding-virtualization.html"><span class="lesson-number">25.4</span><span>Virtual destructors, virtual assignment, and overriding virtualization</span></a></li><li><a href="early-binding-and-late-binding.html"><span class="lesson-number">25.5</span><span>Early binding and late binding</span></a></li><li><a href="the-virtual-table.html"><span class="lesson-number">25.6</span><span>The virtual table</span></a></li><li><a href="pure-virtual-functions-abstract-base-classes-and-interface-classes.html"><span class="lesson-number">25.7</span><span>Pure virtual functions, abstract base classes, and interface classes</span></a></li><li><a href="virtual-base-classes.html"><span class="lesson-number">25.8</span><span>Virtual base classes</span></a></li><li><a href="object-slicing.html" aria-current="page"><span class="lesson-number">25.9</span><span>Object slicing</span></a></li><li><a href="dynamic-casting.html"><span class="lesson-number">25.10</span><span>Dynamic casting</span></a></li><li><a href="printing-inherited-classes-using-operator.html"><span class="lesson-number">25.11</span><span>Printing inherited classes using operator&lt;&lt;</span></a></li><li><a href="chapter-25-summary-and-quiz.html"><span class="lesson-number">25.x</span><span>Chapter 25 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 25</div>
+        <h1>25.9 — Object slicing</h1>
+        <div class="article-meta"><span>Updated: 2024-10-28 22:02</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Let’s go back to an example we looked at previously:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+class Base
+{
+protected:
+    int m_value{};
+ 
+public:
+    Base(int value)
+        : m_value{ value }
+    {
+    }
+
+    virtual ~Base() = default;
+
+    virtual std::string_view getName() const { return "Base"; }
+    int getValue() const { return m_value; }
+};
+ 
+class Derived: public Base
+{
+public:
+    Derived(int value)
+        : Base{ value }
+    {
+    }
+ 
+   std::string_view getName() const override { return "Derived"; }
+};
+
+int main()
+{
+    Derived derived{ 5 };
+    std::cout &lt;&lt; "derived is a " &lt;&lt; derived.getName() &lt;&lt; " and has value " &lt;&lt; derived.getValue() &lt;&lt; '\n';
+ 
+    Base&amp; ref{ derived };
+    std::cout &lt;&lt; "ref is a " &lt;&lt; ref.getName() &lt;&lt; " and has value " &lt;&lt; ref.getValue() &lt;&lt; '\n';
+ 
+    Base* ptr{ &amp;derived };
+    std::cout &lt;&lt; "ptr is a " &lt;&lt; ptr-&gt;getName() &lt;&lt; " and has value " &lt;&lt; ptr-&gt;getValue() &lt;&lt; '\n';
+ 
+    return 0;
+}</code></pre>
+<p>In the above example, ref references and ptr points to derived, which has a Base part, and a Derived part.  Because ref and ptr are of type Base, ref and ptr can only see the Base part of derived -- the Derived part of derived still exists, but simply can’t be seen through ref or ptr.  However, through use of virtual functions, we can access the most-derived version of a function.  Consequently, the above program prints:</p>
+<pre>
+derived is a Derived and has value 5
+ref is a Derived and has value 5
+ptr is a Derived and has value 5
+</pre>
+<p>But what happens if instead of setting a Base reference or pointer to a Derived object, we simply <em>assign</em> a Derived object to a Base object?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    Derived derived{ 5 };
+    Base base{ derived }; // what happens here?
+    std::cout &lt;&lt; "base is a " &lt;&lt; base.getName() &lt;&lt; " and has value " &lt;&lt; base.getValue() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Remember that derived has a Base part and a Derived part.  When we assign a Derived object to a Base object, only the Base portion of the Derived object is copied.  The Derived portion is not.  In the example above, base receives a copy of the Base portion of derived, but not the Derived portion.  That Derived portion has effectively been “sliced off”.  Consequently, the assigning of a Derived class object to a Base class object is called <strong>object slicing</strong> (or slicing for short).</p>
+<p>Because base was and still is just a Base, Base’s virtual pointer still points to Base.  Thus, base.getName() resolves to Base::getName().</p>
+<p>The above example prints:</p>
+<pre>
+base is a Base and has value 5
+</pre>
+<p>Used conscientiously, slicing can be benign.  However, used improperly, slicing can cause unexpected results in quite a few different ways.  Let’s examine some of those cases.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Slicing and functions</p>
+<p>Now, you might think the above example is a bit silly.  After all, why would you assign derived to base like that?  You probably wouldn’t.  However, slicing is much more likely to occur accidentally with functions.</p>
+<p>Consider the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void printName(const Base base) // note: base passed by value, not reference
+{
+    std::cout &lt;&lt; "I am a " &lt;&lt; base.getName() &lt;&lt; '\n';
+}</code></pre>
+<p>This is a pretty simple function with a const base object parameter that is passed by value.  If we call this function like such:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    Derived d{ 5 };
+    printName(d); // oops, didn't realize this was pass by value on the calling end
+
+    return 0;
+}</code></pre>
+<p>When you wrote this program, you may not have noticed that base is a value parameter, not a reference.  Therefore, when called as printName(d), while we might have expected base.getName() to call virtualized function getName() and print “I am a Derived”, that is not what happens.  Instead, Derived object d is sliced and only the Base portion is copied into the base parameter.  When base.getName() executes, even though the getName() function is virtualized, there’s no Derived portion of the class for it to resolve to.  Consequently, this program prints:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">I am a Base</code></pre>
+<p>In this case, it’s pretty obvious what happened, but if your functions don’t actually print any identifying information like this, tracking down the error can be challenging.</p>
+<p>Of course, slicing here can all be easily avoided by making the function parameter a reference instead of a pass by value (yet another reason why passing classes by reference instead of value is a good idea).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void printName(const Base&amp; base) // note: base now passed by reference
+{
+    std::cout &lt;&lt; "I am a " &lt;&lt; base.getName() &lt;&lt; '\n';
+}
+
+int main()
+{
+    Derived d{ 5 };
+    printName(d);
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+I am a Derived
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Slicing vectors</p>
+<p>Yet another area where new programmers run into trouble with slicing is trying to implement polymorphism with std::vector.  Consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;vector&gt;
+
+int main()
+{
+	std::vector&lt;Base&gt; v{};
+	v.push_back(Base{ 5 });    // add a Base object to our vector
+	v.push_back(Derived{ 6 }); // add a Derived object to our vector
+
+        // Print out all of the elements in our vector
+	for (const auto&amp; element : v)
+		std::cout &lt;&lt; "I am a " &lt;&lt; element.getName() &lt;&lt; " with value " &lt;&lt; element.getValue() &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>This program compiles just fine.  But when run, it prints:</p>
+<pre>
+I am a Base with value 5
+I am a Base with value 6
+</pre>
+<p>Similar to the previous examples, because the std::vector was declared to be a vector of type Base, when Derived(6) was added to the vector, it was sliced.</p>
+<p>Fixing this is a little more difficult.  Many new programmers try creating a std::vector of references to an object, like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::vector&lt;Base&amp;&gt; v{};</code></pre>
+<p>Unfortunately, this won’t compile.  The elements of std::vector must be assignable, whereas references can’t be reassigned (only initialized).</p>
+<p>One way to address this is to make a vector of pointers:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+	std::vector&lt;Base*&gt; v{};
+	
+	Base b{ 5 }; // b and d can't be anonymous objects
+	Derived d{ 6 };
+
+	v.push_back(&amp;b); // add a Base object to our vector
+	v.push_back(&amp;d); // add a Derived object to our vector
+
+	// Print out all of the elements in our vector
+	for (const auto* element : v)
+		std::cout &lt;&lt; "I am a " &lt;&lt; element-&gt;getName() &lt;&lt; " with value " &lt;&lt; element-&gt;getValue() &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+I am a Base with value 5
+I am a Derived with value 6
+</pre>
+<p>which works!  A few comments about this.  First, nullptr is now a valid option, which may or may not be desirable.  Second, you now have to deal with pointer semantics, which can be awkward.  But the upside is that using pointers allows us to put dynamically allocated objects in the vector (just don’t forget to explicitly delete them).</p>
+<p>Another option is to use std::reference_wrapper, which is a class that mimics an reassignable reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;functional&gt; // for std::reference_wrapper
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+class Base
+{
+protected:
+    int m_value{};
+
+public:
+    Base(int value)
+        : m_value{ value }
+    {
+    }
+    virtual ~Base() = default;
+
+    virtual std::string_view getName() const { return "Base"; }
+    int getValue() const { return m_value; }
+};
+
+class Derived : public Base
+{
+public:
+    Derived(int value)
+        : Base{ value }
+    {
+    }
+
+    std::string_view getName() const override { return "Derived"; }
+};
+
+int main()
+{
+	std::vector&lt;std::reference_wrapper&lt;Base&gt;&gt; v{}; // a vector of reassignable references to Base
+
+	Base b{ 5 }; // b and d can't be anonymous objects
+	Derived d{ 6 };
+
+	v.push_back(b); // add a Base object to our vector
+	v.push_back(d); // add a Derived object to our vector
+
+	// Print out all of the elements in our vector
+	// we use .get() to get our element out of the std::reference_wrapper
+	for (const auto&amp; element : v) // element has type const std::reference_wrapper&lt;Base&gt;&amp;
+		std::cout &lt;&lt; "I am a " &lt;&lt; element.get().getName() &lt;&lt; " with value " &lt;&lt; element.get().getValue() &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">The Frankenobject</p>
+<p>In the above examples, we’ve seen cases where slicing lead to the wrong result because the derived class had been sliced off.  Now let’s take a look at another dangerous case where the derived object still exists!</p>
+<p>Consider the following code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    Derived d1{ 5 };
+    Derived d2{ 6 };
+    Base&amp; b{ d2 };
+
+    b = d1; // this line is problematic
+
+    return 0;
+}</code></pre>
+<p>The first three lines in the function are pretty straightforward.  Create two Derived objects, and set a Base reference to the second one.</p>
+<p>The fourth line is where things go astray.  Since b points at d2, and we’re assigning d1 to b, you might think that the result would be that d1 would get copied into d2 -- and it would, if b were a Derived.  But b is a Base, and the operator= that C++ provides for classes isn’t virtual by default.  Consequently, the assignment operator that copies a Base is invoked, and only the Base portion of d1 is copied into d2.</p>
+<p>As a result, you’ll discover that d2 now has the Base portion of d1 and the Derived portion of d2.  In this particular example, that’s not a problem (because the Derived class has no data of its own), but in most cases, you’ll have just created a Frankenobject -- composed of parts of multiple objects.</p>
+<p>Worse, there’s no easy way to prevent this from happening (other than avoiding assignments like this as much as possible).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>If the Base class is not designed to be instantiated by itself (e.g. it is just an interface class), slicing can be avoided by making the Base class non-copyable (by deleting the Base copy constructor and Base assignment operator).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>Although C++ supports assigning derived objects to base objects via object slicing, in general, this is likely to cause nothing but headaches, and you should generally try to avoid slicing.  Make sure your function parameters are references (or pointers) and try to avoid any kind of pass-by-value when it comes to derived classes.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="virtual-base-classes.html"><span class="nav-kicker">← Previous lesson</span>25.8 · Virtual base classes</a><a class="next" href="dynamic-casting.html"><span class="nav-kicker">Next lesson →</span>25.10 · Dynamic casting</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

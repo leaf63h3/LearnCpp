@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Object composition In real-life, complex objects are often built from smaller, simpler objects. For example, a car is built using a metal frame, an engine,">
+  <meta name="robots" content="noindex,nofollow">
+  <title>23.2 — Composition · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/composition/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 23 · Object Relationships</summary><div class="sidebar-title"><small>Chapter 23</small><strong>Object Relationships</strong></div>
+<ol class="sidebar-lessons"><li><a href="object-relationships.html"><span class="lesson-number">23.1</span><span>Object relationships</span></a></li><li><a href="composition.html" aria-current="page"><span class="lesson-number">23.2</span><span>Composition</span></a></li><li><a href="aggregation.html"><span class="lesson-number">23.3</span><span>Aggregation</span></a></li><li><a href="association.html"><span class="lesson-number">23.4</span><span>Association</span></a></li><li><a href="dependencies.html"><span class="lesson-number">23.5</span><span>Dependencies</span></a></li><li><a href="container-classes.html"><span class="lesson-number">23.6</span><span>Container classes</span></a></li><li><a href="stdinitializer_list.html"><span class="lesson-number">23.7</span><span>std::initializer_list</span></a></li><li><a href="chapter-23-summary-and-quiz.html"><span class="lesson-number">23.x</span><span>Chapter 23 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 23</div>
+        <h1>23.2 — Composition</h1>
+        <div class="article-meta"><span>Updated: 2023-09-11 11:13</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">Object composition</p>
+<p>In real-life, complex objects are often built from smaller, simpler objects.  For example, a car is built using a metal frame, an engine, some tires, a transmission, a steering wheel, and a large number of other parts.  A personal computer is built from a CPU, a motherboard, some memory, etc…  Even you are built from smaller parts: you have a head, a body, some legs, arms, and so on.  This process of building complex objects from simpler ones is called <strong>object composition</strong>.</p>
+<p>Broadly speaking, object composition models a “has-a” relationship between two objects.  A car “has-a” transmission.  Your computer “has-a” CPU.  You “have-a” heart.  The complex object is sometimes called the whole, or the parent.  The simpler object is often called the part, child, or component.</p>
+<p>In C++, you’ve already seen that structs and classes can have data members of various types (such as fundamental types or other classes).  When we build classes with data members, we’re essentially constructing a complex object from simpler parts, which is object composition.  For this reason, structs and classes are sometimes referred to as <strong>composite types</strong>.</p>
+<p>Object Composition is useful in a C++ context because it allows us to create complex classes by combining simpler, more easily manageable parts.  This reduces complexity, and allows us to write code faster and with less errors because we can reuse code that has already been written, tested, and verified as working.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Types of object composition</p>
+<p>There are two basic subtypes of object composition: composition and aggregation.  We’ll examine composition in this lesson, and aggregation in the next.</p>
+<p>A note on terminology: the term “composition” is often used to refer to both composition and aggregation, not just to the composition subtype.  In this tutorial, we’ll use the term “object composition” when we’re referring to both, and “composition” when we’re referring specifically to the composition subtype.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Composition</p>
+<p>To qualify as a <strong>composition</strong>, an object and a part must have the following relationship:</p>
+<ul>
+<li>The part (member) is part of the object (class)</li>
+<li>The part (member) can only belong to one object (class) at a time</li>
+<li>The part (member) has its existence managed by the object (class)</li>
+<li>The part (member) does not know about the existence of the object (class)</li>
+</ul>
+<p>A good real-life example of a composition is the relationship between a person’s body and a heart.  Let’s examine these in more detail.</p>
+<p>Composition relationships are part-whole relationships where the part must constitute part of the whole object.  For example, a heart is a part of a person’s body.  The part in a composition can only be part of one object at a time.  A heart that is part of one person’s body can not be part of someone else’s body at the same time.</p>
+<p>In a composition relationship, the object is responsible for the existence of the parts.  Most often, this means the part is created when the object is created, and destroyed when the object is destroyed.  But more broadly, it means the object manages the part’s lifetime in such a way that the user of the object does not need to get involved.  For example, when a body is created, the heart is created too.  When a person’s body is destroyed, their heart is destroyed too.  Because of this, composition is sometimes called a “death relationship”.</p>
+<p>And finally, the part doesn’t know about the existence of the whole.  Your heart operates blissfully unaware that it is part of a larger structure.  We call this a <strong>unidirectional</strong> relationship, because the body knows about the heart, but not the other way around.</p>
+<p>Note that composition has nothing to say about the transferability of parts.  A heart can be transplanted from one body to another.  However, even after being transplanted, it still meets the requirements for a composition (the heart is now owned by the recipient, and can only be part of the recipient object unless transferred again).</p>
+<p>Our ubiquitous Fraction class is a great example of a composition:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Fraction
+{
+private:
+	int m_numerator;
+	int m_denominator;
+ 
+public:
+	Fraction(int numerator=0, int denominator=1)
+		: m_numerator{ numerator }, m_denominator{ denominator }
+	{
+	}
+};</code></pre>
+<p>This class has two data members: a numerator and a denominator.  The numerator and denominator are part of the Fraction (contained within it).  They can not belong to more than one Fraction at a time.  The numerator and denominator don’t know they are part of a Fraction, they just hold integers.  When a Fraction instance is created, the numerator and denominator are created.  When the fraction instance is destroyed, the numerator and denominator are destroyed as well.</p>
+<p>While object composition models has-a type relationships (a body has-a heart, a fraction has-a denominator), we can be more precise and say that composition models “part-of” relationships (a heart is part-of a body, a numerator is part of a fraction).  Composition is often used to model physical relationships, where one object is physically contained inside another.</p>
+<p>The parts of an object composition can be singular or multiplicative -- for example, a heart is a singular part of the body, but a body contains 10 fingers (which could be modeled as an array).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Implementing compositions</p>
+<p>Compositions are one of the easiest relationship types to implement in C++.  They are typically created as structs or classes with normal data members.  Because these data members exist directly as part of the struct/class, their lifetimes are bound to that of the class instance itself.</p>
+<p>Compositions that need to do dynamic allocation or deallocation may be implemented using pointer data members.  In this case, the composition class should be responsible for doing all necessary memory management itself (not the user of the class).</p>
+<p>In general, if you <em>can</em> design a class using composition, you <em>should</em> design a class using composition.  Classes designed using composition are straightforward, flexible, and robust (in that they clean up after themselves nicely).</p>
+<p class="cpp-section cpp-topline" style="clear: both">More examples</p>
+<p>Many games and simulations have creatures or objects that move around a board, map, or screen.  One thing that all of these creatures/objects have in common is that they all have a location.  In this example, we are going to create a creature class that uses a point class to hold the creature’s location.</p>
+<p>First, let’s design the point class.  Our creature is going to live in a 2d world, so our point class will have 2 dimensions, X and Y.  We will assume the world is made up of discrete squares, so these dimensions will always be integers.</p>
+<p>Point2D.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef POINT2D_H
+#define POINT2D_H
+
+#include &lt;iostream&gt;
+
+class Point2D
+{
+private:
+    int m_x;
+    int m_y;
+
+public:
+    // A default constructor
+    Point2D()
+        : m_x{ 0 }, m_y{ 0 }
+    {
+    }
+
+    // A specific constructor
+    Point2D(int x, int y)
+        : m_x{ x }, m_y{ y }
+    {
+    }
+
+    // An overloaded output operator
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Point2D&amp; point)
+    {
+        out &lt;&lt; '(' &lt;&lt; point.m_x &lt;&lt; ", " &lt;&lt; point.m_y &lt;&lt; ')';
+        return out;
+    }
+
+    // Access functions
+    void setPoint(int x, int y)
+    {
+        m_x = x;
+        m_y = y;
+    }
+
+};
+
+#endif</code></pre>
+<p>Note that because we’ve implemented all of our functions in the header file (for the sake of keeping the example concise), there is no Point2D.cpp.</p>
+<p>This Point2d class is a composition of its parts: location values x and y are part-of Point2D, and their lifespan is tied to that of a given Point2D instance.</p>
+<p>Now let’s design our Creature.  Our Creature is going to have a few properties: a name, which will be a string, and a location, which will be our Point2D class.</p>
+<p>Creature.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef CREATURE_H
+#define CREATURE_H
+
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+#include "Point2D.h"
+
+class Creature
+{
+private:
+    std::string m_name;
+    Point2D m_location;
+
+public:
+    Creature(std::string_view name, const Point2D&amp; location)
+        : m_name{ name }, m_location{ location }
+    {
+    }
+
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Creature&amp; creature)
+    {
+        out &lt;&lt; creature.m_name &lt;&lt; " is at " &lt;&lt; creature.m_location;
+        return out;
+    }
+
+    void moveTo(int x, int y)
+    {
+        m_location.setPoint(x, y);
+    }
+};
+#endif</code></pre>
+<p>This Creature is also a composition of its parts.  The creature’s name and location have one parent, and their lifetime is tied to that of the Creature they are part of.</p>
+<p>And finally, main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include "Creature.h"
+#include "Point2D.h"
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a name for your creature: ";
+    std::string name;
+    std::cin &gt;&gt; name;
+    Creature creature{ name, { 4, 7 } };
+	
+    while (true)
+    {
+        // print the creature's name and location
+        std::cout &lt;&lt; creature &lt;&lt; '\n';
+
+        std::cout &lt;&lt; "Enter new X location for creature (-1 to quit): ";
+        int x{ 0 };
+        std::cin &gt;&gt; x;
+        if (x == -1)
+            break;
+
+        std::cout &lt;&lt; "Enter new Y location for creature (-1 to quit): ";
+        int y{ 0 };
+        std::cin &gt;&gt; y;
+        if (y == -1)
+            break;
+		
+        creature.moveTo(x, y);
+    }
+
+    return 0;
+}</code></pre>
+<p>Here’s a transcript of this code being run:</p>
+<pre>
+Enter a name for your creature: Marvin
+Marvin is at (4, 7)
+Enter new X location for creature (-1 to quit): 6
+Enter new Y location for creature (-1 to quit): 12
+Marvin is at (6, 12)
+Enter new X location for creature (-1 to quit): 3
+Enter new Y location for creature (-1 to quit): 2
+Marvin is at (3, 2)
+Enter new X location for creature (-1 to quit): -1
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Variants on the composition theme</p>
+<p>Although most compositions directly create their parts when the composition is created and directly destroy their parts when the composition is destroyed, there are some variations of composition that bend these rules a bit.</p>
+<p>For example:</p>
+<ul>
+<li>A composition may defer creation of some parts until they are needed.  For example, a string class may not create a dynamic array of characters until the user assigns the string some data to hold.</li>
+<li>A composition may opt to use a part that has been given to it as input rather than create the part itself.</li>
+<li>A composition may delegate destruction of its parts to some other object (e.g. to a garbage collection routine).</li>
+</ul>
+<p>The key point here is that the composition should manage its parts without the user of the composition needing to manage anything.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Composition and class members</p>
+<p>One question that new programmers often ask when it comes to object composition is, “When should I use a class member instead of direct implementation of a feature?”.  For example, instead of using the Point2D class to implement the Creature’s location, we could have instead just added 2 integers to the Creature class and written code in the Creature class to handle the positioning.  However, making Point2D its own class (and a member of Creature) has a number of benefits:</p>
+<ol>
+<li>Each individual class can be kept relatively simple and straightforward, focused on performing one task well.  This makes those classes easier to write and much easier to understand, as they are more focused.  For example, Point2D only worries about point-related stuff, which helps keep it simple.
+</li><li>Each class can be self-contained, which makes them reusable.  For example, we could reuse our Point2D class in a completely different application.  Or if our creature ever needed another point (for example, a destination it was trying to get to), we can simply add another Point2D member variable.
+</li><li>The outer class can have the class members do most of the hard work, and instead focus on coordinating the data flow between the members .  This helps lower the overall complexity of the outer class, because it can delegate tasks to its members, who already know how to do those tasks.  For example, when we move our Creature, it delegates that task to the Point class, which already understands how to set a point.  Thus, the Creature class does not have to worry about how such things would be implemented.
+</li></ol>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>A good rule of thumb is that each class should be built to accomplish a single task.  That task should either be the storage and manipulation of some kind of data (e.g. Point2D, std::string), OR the coordination of its members (e.g. Creature).  Ideally not both.
+</p></div>
+<p>In this case of our example, it makes sense that Creature shouldn’t have to worry about how Points are implemented, or how the name is being stored.  Creature’s job isn’t to know those intimate details.  Creature’s job is to worry about how to coordinate the data flow and ensure that each of the class members knows <i>what</i> it is supposed to do.  It’s up to the individual classes to worry about <i>how</i> they will do it.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="object-relationships.html"><span class="nav-kicker">← Previous lesson</span>23.1 · Object relationships</a><a class="next" href="aggregation.html"><span class="nav-kicker">Next lesson →</span>23.3 · Aggregation</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous lesson, we saw how std::shared_ptr allowed us to have multiple smart pointers co-owning the same resource. However, in certain cases, this ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>22.7 — Circular dependency issues with std::shared_ptr, and std::weak_ptr · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/circular-dependency-issues-with-stdshared_ptr-and-stdweak_ptr/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 22 · Move Semantics and Smart Pointers</summary><div class="sidebar-title"><small>Chapter 22</small><strong>Move Semantics and Smart Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-smart-pointers-move-semantics.html"><span class="lesson-number">22.1</span><span>Introduction to smart pointers and move semantics</span></a></li><li><a href="rvalue-references.html"><span class="lesson-number">22.2</span><span>R-value references</span></a></li><li><a href="move-constructors-and-move-assignment.html"><span class="lesson-number">22.3</span><span>Move constructors and move assignment</span></a></li><li><a href="stdmove.html"><span class="lesson-number">22.4</span><span>std::move</span></a></li><li><a href="stdunique_ptr.html"><span class="lesson-number">22.5</span><span>std::unique_ptr</span></a></li><li><a href="stdshared_ptr.html"><span class="lesson-number">22.6</span><span>std::shared_ptr</span></a></li><li><a href="circular-dependency-issues-with-stdshared_ptr-and-stdweak_ptr.html" aria-current="page"><span class="lesson-number">22.7</span><span>Circular dependency issues with std::shared_ptr, and std::weak_ptr</span></a></li><li><a href="chapter-22-summary-and-quiz.html"><span class="lesson-number">22.x</span><span>Chapter 22 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 22</div>
+        <h1>22.7 — Circular dependency issues with std::shared_ptr, and std::weak_ptr</h1>
+        <div class="article-meta"><span>Updated: 2024-07-22 14:20</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous lesson, we saw how std::shared_ptr allowed us to have multiple smart pointers co-owning the same resource.  However, in certain cases, this can become problematic.  Consider the following case, where the shared pointers in two separate objects each point at the other object:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;memory&gt; // for std::shared_ptr
+#include &lt;string&gt;
+
+class Person
+{
+	std::string m_name;
+	std::shared_ptr&lt;Person&gt; m_partner; // initially created empty
+
+public:
+		
+	Person(const std::string &amp;name): m_name(name)
+	{ 
+		std::cout &lt;&lt; m_name &lt;&lt; " created\n";
+	}
+	~Person()
+	{
+		std::cout &lt;&lt; m_name &lt;&lt; " destroyed\n";
+	}
+
+	friend bool partnerUp(std::shared_ptr&lt;Person&gt; &amp;p1, std::shared_ptr&lt;Person&gt; &amp;p2)
+	{
+		if (!p1 || !p2)
+			return false;
+
+		p1-&gt;m_partner = p2;
+		p2-&gt;m_partner = p1;
+
+		std::cout &lt;&lt; p1-&gt;m_name &lt;&lt; " is now partnered with " &lt;&lt; p2-&gt;m_name &lt;&lt; '\n';
+
+		return true;
+	}
+};
+
+int main()
+{
+	auto lucy { std::make_shared&lt;Person&gt;("Lucy") }; // create a Person named "Lucy"
+	auto ricky { std::make_shared&lt;Person&gt;("Ricky") }; // create a Person named "Ricky"
+
+	partnerUp(lucy, ricky); // Make "Lucy" point to "Ricky" and vice-versa
+
+	return 0;
+}</code></pre>
+<p>In the above example, we dynamically allocate two Persons, “Lucy” and “Ricky” using make_shared() (to ensure lucy and ricky are destroyed at the end of main()).  Then we partner them up.  This sets the std::shared_ptr inside “Lucy” to point at “Ricky”, and the std::shared_ptr inside “Ricky” to point at “Lucy”.  Shared pointers are meant to be shared, so it’s fine that both the lucy shared pointer and Rick’s m_partner shared pointer both point at “Lucy” (and vice-versa).</p>
+<p>However, this program doesn’t execute as expected:</p>
+<pre>
+Lucy created
+Ricky created
+Lucy is now partnered with Ricky
+</pre>
+<p>And that’s it.  No deallocations took place.  Uh oh.  What happened?</p>
+<p>After partnerUp() is called, there are two shared pointers pointing to “Ricky” (ricky, and Lucy’s m_partner) and two shared pointers pointing to “Lucy” (lucy, and Ricky’s m_partner).</p>
+<p>At the end of main(), the ricky shared pointer goes out of scope first.  When that happens, ricky checks if there are any other shared pointers that co-own the Person “Ricky”.  There are (Lucy’s m_partner).  Because of this, it doesn’t deallocate “Ricky” (if it did, then Lucy’s m_partner would end up as a dangling pointer).  At this point, we now have one shared pointer to “Ricky” (Lucy’s m_partner) and two shared pointers to “Lucy” (lucy, and Ricky’s m_partner).</p>
+<p>Next the lucy shared pointer goes out of scope, and the same thing happens.  The shared pointer lucy checks if there are any other shared pointers co-owning the Person “Lucy”.  There are (Ricky’s m_partner), so “Lucy” isn’t deallocated.  At this point, there is one shared pointer to “Lucy” (Ricky’s m_partner) and one shared pointer to “Ricky” (Lucy’s m_partner).</p>
+<p>Then the program ends -- and neither Person “Lucy” or “Ricky” have been deallocated!  Essentially, “Lucy” ends up keeping “Ricky” from being destroyed, and “Ricky” ends up keeping “Lucy” from being destroyed.</p>
+<p>It turns out that this can happen any time shared pointers form a circular reference.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Circular references</p>
+<p>A <strong>Circular reference</strong> (also called a <strong>cyclical reference</strong> or a <strong>cycle</strong>) is a series of references where each object references the next, and the last object references back to the first, causing a referential loop.  The references do not need to be actual C++ references -- they can be pointers, unique IDs, or any other means of identifying specific objects.  </p>
+<p>In the context of shared pointers, the references will be pointers.</p>
+<p>This is exactly what we see in the case above: “Lucy” points at “Ricky”, and “Ricky” points at “Lucy”.  With three pointers, you’d get the same thing when A points at B, B points at C, and C points at A.  The practical effect of having shared pointers form a cycle is that each object ends up keeping the next object alive -- with the last object keeping the first object alive.  Thus, no objects in the series can be deallocated because they all think some other object still needs it!</p>
+<p class="cpp-section cpp-topline" style="clear: both">A reductive case</p>
+<p>It turns out, this cyclical reference issue can even happen with a single std::shared_ptr -- a std::shared_ptr referencing the object that contains it is still a cycle (just a reductive one).  Although it’s fairly unlikely that this would ever happen in practice, we’ll show you for additional comprehension:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;memory&gt; // for std::shared_ptr
+
+class Resource
+{
+public:
+	std::shared_ptr&lt;Resource&gt; m_ptr {}; // initially created empty
+	
+	Resource() { std::cout &lt;&lt; "Resource acquired\n"; }
+	~Resource() { std::cout &lt;&lt; "Resource destroyed\n"; }
+};
+
+int main()
+{
+	auto ptr1 { std::make_shared&lt;Resource&gt;() };
+
+	ptr1-&gt;m_ptr = ptr1; // m_ptr is now sharing the Resource that contains it
+
+	return 0;
+}</code></pre>
+<p>In the above example, when ptr1 goes out of scope, the Resource is not deallocated because the Resource’s m_ptr is sharing the Resource.  At that point, the only way for the Resource to be released would be to set m_ptr to something else (so nothing is sharing the Resource any longer).  But we can’t access m_ptr because ptr1 is out of scope, so we no longer have a way to do this.  The Resource has become a memory leak.</p>
+<p>Thus, the program prints:</p>
+<pre>
+Resource acquired
+</pre>
+<p>and that’s it.</p>
+<p class="cpp-section cpp-topline" style="clear: both">So what is std::weak_ptr for anyway?</p>
+<p>std::weak_ptr was designed to solve the “cyclical ownership” problem described above.  A std::weak_ptr is an observer -- it can observe and access the same object as a std::shared_ptr (or other std::weak_ptrs) but it is not considered an owner.  Remember, when a std::shared pointer goes out of scope, it only considers whether other std::shared_ptr are co-owning the object.  std::weak_ptr does not count!</p>
+<p>Let’s solve our Person-al issue using a std::weak_ptr:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;memory&gt; // for std::shared_ptr and std::weak_ptr
+#include &lt;string&gt;
+
+class Person
+{
+	std::string m_name;
+	std::weak_ptr&lt;Person&gt; m_partner; // note: This is now a std::weak_ptr
+
+public:
+		
+	Person(const std::string &amp;name): m_name(name)
+	{ 
+		std::cout &lt;&lt; m_name &lt;&lt; " created\n";
+	}
+	~Person()
+	{
+		std::cout &lt;&lt; m_name &lt;&lt; " destroyed\n";
+	}
+
+	friend bool partnerUp(std::shared_ptr&lt;Person&gt; &amp;p1, std::shared_ptr&lt;Person&gt; &amp;p2)
+	{
+		if (!p1 || !p2)
+			return false;
+
+		p1-&gt;m_partner = p2;
+		p2-&gt;m_partner = p1;
+
+		std::cout &lt;&lt; p1-&gt;m_name &lt;&lt; " is now partnered with " &lt;&lt; p2-&gt;m_name &lt;&lt; '\n';
+
+		return true;
+	}
+};
+
+int main()
+{
+	auto lucy { std::make_shared&lt;Person&gt;("Lucy") };
+	auto ricky { std::make_shared&lt;Person&gt;("Ricky") };
+
+	partnerUp(lucy, ricky);
+
+	return 0;
+}</code></pre>
+<p>This code behaves properly:</p>
+<pre>
+Lucy created
+Ricky created
+Lucy is now partnered with Ricky
+Ricky destroyed
+Lucy destroyed
+</pre>
+<p>Functionally, it works almost identically to the problematic example.  However, now when ricky goes out of scope, it sees that there are no other std::shared_ptr pointing at “Ricky” (the std::weak_ptr from “Lucy” doesn’t count).  Therefore, it will deallocate “Ricky”.  The same occurs for lucy.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using std::weak_ptr</p>
+<p>One downside of std::weak_ptr is that std::weak_ptr are not directly usable (they have no operator-&gt;).  To use a std::weak_ptr, you must first convert it into a std::shared_ptr.  Then you can use the std::shared_ptr.  To convert a std::weak_ptr into a std::shared_ptr, you can use the lock() member function.  Here’s the above example, updated to show this off:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;memory&gt; // for std::shared_ptr and std::weak_ptr
+#include &lt;string&gt;
+
+class Person
+{
+	std::string m_name;
+	std::weak_ptr&lt;Person&gt; m_partner; // note: This is now a std::weak_ptr
+
+public:
+
+	Person(const std::string &amp;name) : m_name(name)
+	{
+		std::cout &lt;&lt; m_name &lt;&lt; " created\n";
+	}
+	~Person()
+	{
+		std::cout &lt;&lt; m_name &lt;&lt; " destroyed\n";
+	}
+
+	friend bool partnerUp(std::shared_ptr&lt;Person&gt; &amp;p1, std::shared_ptr&lt;Person&gt; &amp;p2)
+	{
+		if (!p1 || !p2)
+			return false;
+
+		p1-&gt;m_partner = p2;
+		p2-&gt;m_partner = p1;
+
+		std::cout &lt;&lt; p1-&gt;m_name &lt;&lt; " is now partnered with " &lt;&lt; p2-&gt;m_name &lt;&lt; '\n';
+
+		return true;
+	}
+
+	std::shared_ptr&lt;Person&gt; getPartner() const { return m_partner.lock(); } // use lock() to convert weak_ptr to shared_ptr
+	const std::string&amp; getName() const { return m_name; }
+};
+
+int main()
+{
+	auto lucy { std::make_shared&lt;Person&gt;("Lucy") };
+	auto ricky { std::make_shared&lt;Person&gt;("Ricky") };
+
+	partnerUp(lucy, ricky);
+
+	auto partner = ricky-&gt;getPartner(); // get shared_ptr to Ricky's partner
+	std::cout &lt;&lt; ricky-&gt;getName() &lt;&lt; "'s partner is: " &lt;&lt; partner-&gt;getName() &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Lucy created
+Ricky created
+Lucy is now partnered with Ricky
+Ricky's partner is: Lucy
+Ricky destroyed
+Lucy destroyed
+</pre>
+<p>We don’t have to worry about circular dependencies with std::shared_ptr variable “partner” since it’s just a local variable inside the function.  It will eventually go out of scope at the end of the function and the reference count will be decremented by 1.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Avoiding dangling pointers with std::weak_ptr</p>
+<p>Consider the case where a normal “dumb” pointer is holding the address of some object, and then that object is destroyed.  Such a pointer is dangling, and dereferencing the pointer will lead to undefined behavior.  And unfortunately, there is no way for us to determine whether a pointer holding a non-null address is dangling or not.  This is a large part of the reason dumb pointers are dangerous.</p>
+<p>Because std::weak_ptr won’t keep an owned resource alive, it’s similarly possible for a std::weak_ptr to be left pointing to a resource that has been deallocated by a std::shared_ptr.  However, std::weak_ptr has a neat trick up its sleeve -- because it has access to the reference count for an object, it can determine if it is pointing to a valid object or not!  If the reference count is non-zero, the resource is still valid.  If the reference count is zero, then the resource has been destroyed.</p>
+<p>The easiest way to test whether a std::weak_ptr is valid is to use the <code>expired()</code> member function, which returns <code>true</code> if the std::weak_ptr is pointing to an invalid object, and <code>false</code> otherwise.</p>
+<p>Here’s a simple example showing this difference in behavior:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// h/t to reader Waldo for an early version of this example
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+class Resource
+{
+public:
+	Resource() { std::cerr &lt;&lt; "Resource acquired\n"; }
+	~Resource() { std::cerr &lt;&lt; "Resource destroyed\n"; }
+};
+
+// Returns a std::weak_ptr to an invalid object
+std::weak_ptr&lt;Resource&gt; getWeakPtr()
+{
+	auto ptr{ std::make_shared&lt;Resource&gt;() };
+	return std::weak_ptr&lt;Resource&gt;{ ptr };
+} // ptr goes out of scope, Resource destroyed
+
+// Returns a dumb pointer to an invalid object
+Resource* getDumbPtr()
+{
+	auto ptr{ std::make_unique&lt;Resource&gt;() };
+	return ptr.get();
+} // ptr goes out of scope, Resource destroyed
+
+int main()
+{
+	auto dumb{ getDumbPtr() };
+	std::cout &lt;&lt; "Our dumb ptr is: " &lt;&lt; ((dumb == nullptr) ? "nullptr\n" : "non-null\n");
+
+	auto weak{ getWeakPtr() };
+	std::cout &lt;&lt; "Our weak ptr is: " &lt;&lt; ((weak.expired()) ? "expired\n" : "valid\n");
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Resource acquired
+Resource destroyed
+Our dumb ptr is: non-null
+Resource acquired
+Resource destroyed
+Our weak ptr is: expired
+</pre>
+<p>Both <code>getDumbPtr()</code> and <code>getWeakPtr()</code> use a smart pointer to allocate a Resource -- this smart pointer ensures that the allocated Resource will be destroyed at the end of the function.  When <code>getDumbPtr()</code> returns a Resource*, it returns a dangling pointer (because std::unique_ptr destroyed the Resource at the end of the function).  When <code>getWeakPtr()</code> returns a std::weak_ptr, that std::weak_ptr is similarly pointing to an invalid object (because std::shared_ptr destroyed the Resource at the end of the function).</p>
+<p>Inside main(), we first test whether the returned dumb pointer is <code>nullptr</code>.  Because the dumb pointer is still holding the address of the deallocated resource, this test fails.  There is no way for <code>main()</code> to tell whether this pointer is dangling or not.  In this case, because it is a dangling pointer, if we were to dereference this pointer, undefined behavior would result.</p>
+<p>Next, we test whether <code>weak.expired()</code> is <code>true</code>.  Because the reference count for the object being pointed to by <code>weak</code> is <code>0</code> (because the object being pointed to was already destroyed), this resolves to <code>true</code>.  The code in <code>main()</code> can thus tell that <code>weak</code> is pointing to an invalid object, and we can conditionalize our code as appropriate!</p>
+<p>Note that if a std::weak_ptr is expired, then we shouldn’t call <code>lock()</code> on it, because the object being pointed to has already been destroyed, so there is no object to share.  If you do call <code>lock()</code> on an expired std::weak_ptr, it will return a std::shared_ptr to <code>nullptr</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>std::shared_ptr can be used when you need multiple smart pointers that can co-own a resource.  The resource will be deallocated when the last std::shared_ptr goes out of scope.  std::weak_ptr can be used when you want a smart pointer that can see and use a shared resource, but does not participate in the ownership of that resource.</p>
+<p></p><p class="cpp-section cpp-topline" style="clear: both">Quiz time</p><p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<ol start="1">
+<li>Fix the program presented in the section “A reductive case” so that the Resource is properly deallocated.  Do not alter the code in <code>main()</code>.
+</li>
+</ol>
+<p>Here is the program again for ease of reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;memory&gt; // for std::shared_ptr
+
+class Resource
+{
+public:
+	std::shared_ptr&lt;Resource&gt; m_ptr {}; // initially created empty
+	
+	Resource() { std::cout &lt;&lt; "Resource acquired\n"; }
+	~Resource() { std::cout &lt;&lt; "Resource destroyed\n"; }
+};
+
+int main()
+{
+	auto ptr1 { std::make_shared&lt;Resource&gt;() };
+
+	ptr1-&gt;m_ptr = ptr1; // m_ptr is now sharing the Resource that contains it
+
+	return 0;
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;memory&gt; // for std::shared_ptr and std::weak_ptr
+
+class Resource
+{
+public:
+	std::weak_ptr&lt;Resource&gt; m_ptr {}; // use std::weak_ptr so m_ptr doesn't keep the Resource alive
+	
+	Resource() { std::cout &lt;&lt; "Resource acquired\n"; }
+	~Resource() { std::cout &lt;&lt; "Resource destroyed\n"; }
+};
+
+int main()
+{
+	auto ptr1 { std::make_shared&lt;Resource&gt;() };
+
+	ptr1-&gt;m_ptr = ptr1; // m_ptr is now sharing the Resource that contains it
+
+	return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdshared_ptr.html"><span class="nav-kicker">← Previous lesson</span>22.6 · std::shared_ptr</a><a class="next" href="chapter-22-summary-and-quiz.html"><span class="nav-kicker">Next lesson →</span>22.x · Chapter 22 summary and quiz</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

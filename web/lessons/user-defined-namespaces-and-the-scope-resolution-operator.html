@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 2.9 -- Naming collisions and an introduction to namespaces, we introduced the concept of naming collisions and namespaces. As a reminder, a namin">
+  <meta name="robots" content="noindex,nofollow">
+  <title>7.2 — User-defined namespaces and the scope resolution operator · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/user-defined-namespaces-and-the-scope-resolution-operator/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 7 · Scope, Duration, and Linkage</summary><div class="sidebar-title"><small>Chapter 7</small><strong>Scope, Duration, and Linkage</strong></div>
+<ol class="sidebar-lessons"><li><a href="compound-statements-blocks.html"><span class="lesson-number">7.1</span><span>Compound statements (blocks)</span></a></li><li><a href="user-defined-namespaces-and-the-scope-resolution-operator.html" aria-current="page"><span class="lesson-number">7.2</span><span>User-defined namespaces and the scope resolution operator</span></a></li><li><a href="local-variables.html"><span class="lesson-number">7.3</span><span>Local variables</span></a></li><li><a href="introduction-to-global-variables.html"><span class="lesson-number">7.4</span><span>Introduction to global variables</span></a></li><li><a href="variable-shadowing-name-hiding.html"><span class="lesson-number">7.5</span><span>Variable shadowing (name hiding)</span></a></li><li><a href="internal-linkage.html"><span class="lesson-number">7.6</span><span>Internal linkage</span></a></li><li><a href="external-linkage-and-variable-forward-declarations.html"><span class="lesson-number">7.7</span><span>External linkage and variable forward declarations</span></a></li><li><a href="why-non-const-global-variables-are-evil.html"><span class="lesson-number">7.8</span><span>Why (non-const) global variables are evil</span></a></li><li><a href="inline-functions-and-variables.html"><span class="lesson-number">7.9</span><span>Inline functions and variables</span></a></li><li><a href="sharing-global-constants-across-multiple-files-using-inline-variables.html"><span class="lesson-number">7.10</span><span>Sharing global constants across multiple files (using inline variables)</span></a></li><li><a href="static-local-variables.html"><span class="lesson-number">7.11</span><span>Static local variables</span></a></li><li><a href="scope-duration-and-linkage-summary.html"><span class="lesson-number">7.12</span><span>Scope, duration, and linkage summary</span></a></li><li><a href="using-declarations-and-using-directives.html"><span class="lesson-number">7.13</span><span>Using declarations and using directives</span></a></li><li><a href="unnamed-and-inline-namespaces.html"><span class="lesson-number">7.14</span><span>Unnamed and inline namespaces</span></a></li><li><a href="chapter-7-summary-and-quiz.html"><span class="lesson-number">7.x</span><span>Chapter 7 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 7</div>
+        <h1>7.2 — User-defined namespaces and the scope resolution operator</h1>
+        <div class="article-meta"><span>Updated: 2024-06-28 19:08</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="naming-collisions-and-an-introduction-to-namespaces.html">2.9 -- Naming collisions and an introduction to namespaces</a>, we introduced the concept of <code>naming collisions</code> and <code>namespaces</code>.  As a reminder, a naming collision occurs when two identical identifiers are introduced into the same scope, and the compiler can’t disambiguate which one to use.  When this happens, compiler or linker will produce an error because they do not have enough information to resolve the ambiguity.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>As programs become larger, the number of identifiers increases, which in turn causes the probability of a naming collision occurring to increase significantly.  Because every name in a given scope can potentially collide with every other name in the same scope, a linear increase in identifiers will result in an exponential increase in potential collisions!  This is one of the key reasons for defining identifiers in the smallest scope possible.
+</p></div>
+<p>Let’s revisit an example of a naming collision, and then show how we can improve things using namespaces.  In the following example, <code>foo.cpp</code> and <code>goo.cpp</code> are the source files that contain functions that do different things but have the same name and parameters.</p>
+<p style="clear: both">
+</p><p> <!-- break around image --></p>
+<p>foo.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// This doSomething() adds the value of its parameters
+int doSomething(int x, int y)
+{
+    return x + y;
+}</code></pre>
+<p>goo.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// This doSomething() subtracts the value of its parameters
+int doSomething(int x, int y)
+{
+    return x - y;
+}</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int doSomething(int x, int y); // forward declaration for doSomething
+
+int main()
+{
+    std::cout &lt;&lt; doSomething(4, 3) &lt;&lt; '\n'; // which doSomething will we get?
+    return 0;
+}</code></pre>
+<p>If this project contains only <code>foo.cpp</code> <em>or</em> <code>goo.cpp</code> (but not both), it will compile and run without incident.  However, by compiling both into the same program, we have now introduced two different functions with the same name and parameters into the same scope (the global scope), which causes a naming collision.  As a result, the linker will issue an error:</p>
+<pre>
+goo.cpp:3: multiple definition of `doSomething(int, int)'; foo.cpp:3: first defined here
+</pre>
+<p>Note that this error happens at the point of redefinition, so it doesn’t matter whether function <code>doSomething</code> is ever called.</p>
+<p>One way to resolve this would be to rename one of the functions, so the names no longer collide.  But this would also require changing the names of all the function calls, which can be a pain, and is subject to error.  A better way to avoid collisions is to put your functions into your own namespaces. For this reason the standard library was moved into the <code>std</code> namespace.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Defining your own namespaces</p>
+<p>C++ allows us to define our own namespaces via the <code>namespace</code> keyword.  Namespaces that you create in your own programs are casually called <strong>user-defined namespaces</strong> (though it would be more accurate to call them <strong>program-defined namespaces</strong>).</p>
+<p>The syntax for a namespace is as follows:</p>
+<pre>
+namespace NamespaceIdentifier
+{
+    // content of namespace here
+}
+</pre>
+<p>We start with the <code>namespace</code> keyword, followed by an identifier for the namespace, and then curly braces with the content of the namespace inside.</p>
+<p>Historically, namespace names have not been capitalized, and many style guides still recommend this convention.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Some reasons to prefer namespace names starting with a capital letter:</p>
+<ul>
+<li>It is convention to name program-defined types starting with a capital letter.  Using the same convention for program-defined namespaces is consistent (especially when using a qualified name such as <code>Foo::x</code>, where <code>Foo</code> could be a namespace or a class type).
+</li>
+<li>It helps prevent naming collisions with other system-provided or library-provided lower-cased names.
+</li>
+<li>The C++20 standards document uses this style.
+</li>
+<li>The C++ Core guidelines document uses this style.
+</li>
+</ul>
+</div>
+<p>We recommend starting namespace names with a capital letter.  However, either style should be seen as acceptable.</p>
+<p>A namespace must be defined either in the global scope, or inside another namespace.  Much like the content of a function, the content of a namespace is conventionally indented one level.  You may occasionally see an optional semicolon placed after the closing brace of a namespace.</p>
+<p>Here is an example of the files in the prior example rewritten using namespaces:</p>
+<p>foo.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">namespace Foo // define a namespace named Foo
+{
+    // This doSomething() belongs to namespace Foo
+    int doSomething(int x, int y)
+    {
+        return x + y;
+    }
+}</code></pre>
+<p>goo.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">namespace Goo // define a namespace named Goo
+{
+    // This doSomething() belongs to namespace Goo
+    int doSomething(int x, int y)
+    {
+        return x - y;
+    }
+}</code></pre>
+<p>Now <code>doSomething()</code> inside of <code>foo.cpp</code> is inside the <code>Foo</code> namespace, and the <code>doSomething()</code> inside of <code>goo.cpp</code> is inside the <code>Goo</code> namespace.  Let’s see what happens when we recompile our program.</p>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int doSomething(int x, int y); // forward declaration for doSomething
+
+int main()
+{
+    std::cout &lt;&lt; doSomething(4, 3) &lt;&lt; '\n'; // which doSomething will we get?
+    return 0;
+}</code></pre>
+<p>The answer is that we now get another error!</p>
+<pre>
+ConsoleApplication1.obj : error LNK2019: unresolved external symbol "int __cdecl doSomething(int,int)" (?doSomething@@YAHHH@Z) referenced in function _main
+</pre>
+<p>In this case, the compiler was satisfied (by our forward declaration), but the linker could not find a definition for <code>doSomething</code> in the global namespace.  This is because both of our versions of <code>doSomething</code> are no longer in the global namespace!  They are now in the scope of their respective namespaces!</p>
+<p>There are two different ways to tell the compiler which version of <code>doSomething()</code> to use, via the <code>scope resolution operator</code>, or via <code>using statements</code> (which we’ll discuss in a later lesson in this chapter).</p>
+<p>For the subsequent examples, we’ll collapse our examples down to a one-file solution for ease of reading.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Accessing a namespace with the scope resolution operator (::)</p>
+<p>The best way to tell the compiler to look in a particular namespace for an identifier is to use the <strong>scope resolution operator</strong> (::).  The scope resolution operator tells the compiler that the identifier specified by the right-hand operand should be looked for in the scope of the left-hand operand.</p>
+<p>Here is an example of using the scope resolution operator to tell the compiler that we explicitly want to use the version of <code>doSomething()</code> that lives in the <code>Foo</code> namespace:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo // define a namespace named Foo
+{
+    // This doSomething() belongs to namespace Foo
+    int doSomething(int x, int y)
+    {
+        return x + y;
+    }
+}
+
+namespace Goo // define a namespace named Goo
+{
+    // This doSomething() belongs to namespace Goo
+    int doSomething(int x, int y)
+    {
+        return x - y;
+    }
+}
+
+int main()
+{
+    std::cout &lt;&lt; Foo::doSomething(4, 3) &lt;&lt; '\n'; // use the doSomething() that exists in namespace Foo
+    return 0;
+}</code></pre>
+<p>This produces the expected result:</p>
+<pre>
+7
+</pre>
+<p>If we wanted to use the version of <code>doSomething()</code> that lives in <code>Goo</code> instead:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo // define a namespace named Foo
+{
+    // This doSomething() belongs to namespace Foo
+    int doSomething(int x, int y)
+    {
+        return x + y;
+    }
+}
+
+namespace Goo // define a namespace named Goo
+{
+    // This doSomething() belongs to namespace Goo
+    int doSomething(int x, int y)
+    {
+        return x - y;
+    }
+}
+
+int main()
+{
+    std::cout &lt;&lt; Goo::doSomething(4, 3) &lt;&lt; '\n'; // use the doSomething() that exists in namespace Goo
+    return 0;
+}</code></pre>
+<p>This produces the result:</p>
+<pre>
+1
+</pre>
+<p>The scope resolution operator is great because it allows us to <em>explicitly</em> pick which namespace we want to look in, so there’s no potential ambiguity.  We can even do the following:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo // define a namespace named Foo
+{
+    // This doSomething() belongs to namespace Foo
+    int doSomething(int x, int y)
+    {
+        return x + y;
+    }
+}
+
+namespace Goo // define a namespace named Goo
+{
+    // This doSomething() belongs to namespace Goo
+    int doSomething(int x, int y)
+    {
+        return x - y;
+    }
+}
+
+int main()
+{
+    std::cout &lt;&lt; Foo::doSomething(4, 3) &lt;&lt; '\n'; // use the doSomething() that exists in namespace Foo
+    std::cout &lt;&lt; Goo::doSomething(4, 3) &lt;&lt; '\n'; // use the doSomething() that exists in namespace Goo
+    return 0;
+}</code></pre>
+<p>This produces the result:</p>
+<pre>
+7
+1
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Using the scope resolution operator with no name prefix</p>
+<p>The scope resolution operator can also be used in front of an identifier without providing a namespace name (e.g. <code>::doSomething</code>).  In such a case, the identifier (e.g. <code>doSomething</code>) is looked for in the global namespace.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void print() // this print() lives in the global namespace
+{
+	std::cout &lt;&lt; " there\n";
+}
+
+namespace Foo
+{
+	void print() // this print() lives in the Foo namespace
+	{
+		std::cout &lt;&lt; "Hello";
+	}
+}
+
+int main()
+{
+	Foo::print(); // call print() in Foo namespace
+	::print();    // call print() in global namespace (same as just calling print() in this case)
+
+	return 0;
+}</code></pre>
+<p>In the above example, the <code>::print()</code> performs the same as if we’d called <code>print()</code> with no scope resolution, so use of the scope resolution operator is superfluous in this case.  But the next example will show a case where the scope resolution operator with no namespace can be useful.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Identifier resolution from within a namespace</p>
+<p>If an identifier inside a namespace is used and no scope resolution is provided, the compiler will first try to find a matching declaration in that same namespace.  If no matching identifier is found, the compiler will then check each containing namespace in sequence to see if a match is found, with the global namespace being checked last.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void print() // this print() lives in the global namespace
+{
+	std::cout &lt;&lt; " there\n";
+}
+
+namespace Foo
+{
+	void print() // this print() lives in the Foo namespace
+	{
+		std::cout &lt;&lt; "Hello";
+	}
+
+	void printHelloThere()
+	{
+		print();   // calls print() in Foo namespace
+		::print(); // calls print() in global namespace
+	}
+}
+
+int main()
+{
+	Foo::printHelloThere();
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Hello there
+</pre>
+<p>In the above example, <code>print()</code> is called with no scope resolution provided.  Because this use of <code>print()</code> is inside the <code>Foo</code> namespace, the compiler will first see if a declaration for <code>Foo::print()</code> can be found.  Since one exists, <code>Foo::print()</code> is called.</p>
+<p>If <code>Foo::print()</code> had not been found, the compiler would have checked the containing namespace (in this case, the global namespace) to see if it could match a <code>print()</code> there.</p>
+<p>Note that we also make use of the scope resolution operator with no namespace (<code>::print()</code>) to explicitly call the global version of <code>print()</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Forward declaration of content in namespaces</p>
+<p>In lesson <a href="header-files.html">2.11 -- Header files</a>, we discussed how we can use header files to propagate forward declarations.  For identifiers inside a namespace, those forward declarations also need to be inside the same namespace:</p>
+<p>add.h</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef ADD_H
+#define ADD_H
+
+namespace BasicMath
+{
+    // function add() is part of namespace BasicMath
+    int add(int x, int y);
+}
+
+#endif</code></pre>
+<p>add.cpp</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "add.h"
+
+namespace BasicMath
+{
+    // define the function add() inside namespace BasicMath
+    int add(int x, int y)
+    {
+        return x + y;
+    }
+}</code></pre>
+<p>main.cpp</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "add.h" // for BasicMath::add()
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; BasicMath::add(4, 3) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>If the forward declaration for <code>add()</code> wasn’t placed inside namespace <code>BasicMath</code>, then <code>add()</code> would be declared in the global namespace instead, and the compiler would complain that it hadn’t seen a declaration for the call to <code>BasicMath::add(4, 3)</code>.  If the definition of function <code>add()</code> wasn’t inside namespace <code>BasicMath</code>, the linker would complain that it couldn’t find a matching definition for the call to <code>BasicMath::add(4, 3)</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Multiple namespace blocks are allowed</p>
+<p>It’s legal to declare namespace blocks in multiple locations (either across multiple files, or multiple places within the same file).  All declarations within the namespace are considered part of the namespace.</p>
+<p>circle.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef CIRCLE_H
+#define CIRCLE_H
+
+namespace BasicMath
+{
+    constexpr double pi{ 3.14 };
+}
+
+#endif</code></pre>
+<p>growth.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef GROWTH_H
+#define GROWTH_H
+
+namespace BasicMath
+{
+    // the constant e is also part of namespace BasicMath
+    constexpr double e{ 2.7 };
+}
+
+#endif</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "circle.h" // for BasicMath::pi
+#include "growth.h" // for BasicMath::e
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; BasicMath::pi &lt;&lt; '\n';
+    std::cout &lt;&lt; BasicMath::e &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This works exactly as you would expect:</p>
+<pre>
+3.14
+2.7
+</pre>
+<p>The standard library makes extensive use of this feature, as each standard library header file contains its declarations inside a <code>namespace std</code> block contained within that header file.  Otherwise the entire standard library would have to be defined in a single header file!</p>
+<p>Note that this capability also means you could add your own functionality to the <code>std</code> namespace.  Doing so causes undefined behavior most of the time, because the <code>std</code> namespace has a special rule prohibiting extension from user code.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Do not add custom functionality to the std namespace.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Nested namespaces</p>
+<p>Namespaces can be nested inside other namespaces.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo
+{
+    namespace Goo // Goo is a namespace inside the Foo namespace
+    {
+        int add(int x, int y)
+        {
+            return x + y;
+        }
+    }
+}
+
+int main()
+{
+    std::cout &lt;&lt; Foo::Goo::add(1, 2) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p>Note that because namespace <code>Goo</code> is inside of namespace <code>Foo</code>, we access <code>add</code> as <code>Foo::Goo::add</code>.</p>
+<p>Since C++17, nested namespaces can also be declared this way:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo::Goo // Goo is a namespace inside the Foo namespace (C++17 style)
+{
+    int add(int x, int y)
+    {
+        return x + y;
+    }
+}
+
+int main()
+{
+    std::cout &lt;&lt; Foo::Goo::add(1, 2) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p>This is equivalent to the prior example.</p>
+<p>If you later need to add declarations to the <code>Foo</code> namespace (only), you can define a separate <code>Foo</code> namespace to do so:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo::Goo // Goo is a namespace inside the Foo namespace (C++17 style)
+{
+    int add(int x, int y)
+    {
+        return x + y;
+    }
+}
+
+namespace Foo
+{
+     void someFcn() {} // This function is in Foo only
+}
+
+int main()
+{
+    std::cout &lt;&lt; Foo::Goo::add(1, 2) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p>Whether you keep the separate <code>Foo::Goo</code> definition or nest <code>Goo</code> inside <code>Foo</code> is a stylistic choice. </p>
+<p class="cpp-section cpp-topline" style="clear: both">Namespace aliases</p>
+<p>Because typing the qualified name of a variable or function inside a nested namespace can be painful, C++ allows you to create <strong>namespace aliases</strong>, which allow us to temporarily shorten a long sequence of namespaces into something shorter:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace Foo::Goo
+{
+    int add(int x, int y)
+    {
+        return x + y;
+    }
+}
+
+int main()
+{
+    namespace Active = Foo::Goo; // active now refers to Foo::Goo
+
+    std::cout &lt;&lt; Active::add(1, 2) &lt;&lt; '\n'; // This is really Foo::Goo::add()
+
+    return 0;
+} // The Active alias ends here</code></pre>
+<p>One nice advantage of namespace aliases: If you ever want to move the functionality within <code>Foo::Goo</code> to a different place, you can just update the <code>Active</code> alias to reflect the new destination, rather than having to find/replace every instance of <code>Foo::Goo</code>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+ 
+namespace Foo::Goo
+{
+}
+
+namespace V2
+{
+    int add(int x, int y)
+    {
+        return x + y;
+    }
+}
+ 
+int main()
+{
+    namespace Active = V2; // active now refers to V2
+ 
+    std::cout &lt;&lt; Active::add(1, 2) &lt;&lt; '\n'; // We don't have to change this
+ 
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">How to use namespaces</p>
+<p>It’s worth noting that namespaces in C++ were not originally designed as a way to implement an information hierarchy -- they were designed primarily as a mechanism for preventing naming collisions.  As evidence of this, note that the entirety of the standard library lives under the single top-level namespace <code>std</code>.  Newer standard library features that introduce lots of names have started using nested namespaces (e.g. <code>std::ranges</code>) to avoid naming collisions within the <code>std</code> namespace.</p>
+<ul>
+<li>Small applications developed for your own use typically do not need to be placed in namespaces.  However, for larger personal projects that include lots of third party libraries, namespacing your code can help prevent naming collisions with libraries that aren’t properly namespaced.
+</li>
+</ul>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>The examples in these tutorials will typically not be namespaced unless we are illustrating something specific about namespaces, to help keep the examples concise.
+</p></div>
+<ul>
+<li>Any code that will be distributed to others should definitely be namespaced to prevent conflicts with the code it is integrated into.  Often a single top-level namespace will suffice (e.g. <code>Foologger</code>).  As an additional advantage, placing library code inside a namespace also allows the user to see the contents of your library by using their editor’s auto-complete and suggestion feature (e.g. if you type <code>Foologger</code>, autocomplete will show you all of the names inside <code>Foologger</code>).
+</li>
+<li>In multi-team organizations, two-level or even three-level namespaces are often used to prevent naming conflicts between code generated by different teams.  These often take the form of one of the following:
+</li>
+</ul>
+<ol start="1">
+<li>Project or library :: module (e.g. <code>Foologger::Lang</code>)
+</li>
+<li>Company or org :: project or library (e.g. <code>Foosoft::Foologger</code>)
+</li>
+<li>Company or org :: project or library :: module (e.g. <code>Foosoft::Foologger::Lang</code>)
+</li>
+</ol>
+<p>Use of module-level namespaces can help separate code that might be reusable later from application-specific code that will not be reusable.  For example, physics and math functions could go into one namespace (e.g. <code>Math::</code>).  Language and localization functions in another (e.g. <code>Lang::</code>).  However, directory structures can also be used for this (with app-specific code in the project directory tree, and reusable code in a separate shared directory tree).</p>
+<p>In general, you should avoid deeply nested namespaces (more than 3 levels).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>C++ provides other useful namespace functionality.  We cover unnamed namespaces and inline namespaces later in this chapter, in lesson <a href="unnamed-and-inline-namespaces.html">7.14 -- Unnamed and inline namespaces</a>.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="compound-statements-blocks.html"><span class="nav-kicker">← Previous lesson</span>7.1 · Compound statements (blocks)</a><a class="next" href="local-variables.html"><span class="nav-kicker">Next lesson →</span>7.3 · Local variables</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The concepts of scope, duration, and linkage cause a lot of confusion, so we’re going to take an extra lesson to summarize everything. Some of these things">
+  <meta name="robots" content="noindex,nofollow">
+  <title>7.12 — Scope, duration, and linkage summary · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/scope-duration-and-linkage-summary/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 7 · Scope, Duration, and Linkage</summary><div class="sidebar-title"><small>Chapter 7</small><strong>Scope, Duration, and Linkage</strong></div>
+<ol class="sidebar-lessons"><li><a href="compound-statements-blocks.html"><span class="lesson-number">7.1</span><span>Compound statements (blocks)</span></a></li><li><a href="user-defined-namespaces-and-the-scope-resolution-operator.html"><span class="lesson-number">7.2</span><span>User-defined namespaces and the scope resolution operator</span></a></li><li><a href="local-variables.html"><span class="lesson-number">7.3</span><span>Local variables</span></a></li><li><a href="introduction-to-global-variables.html"><span class="lesson-number">7.4</span><span>Introduction to global variables</span></a></li><li><a href="variable-shadowing-name-hiding.html"><span class="lesson-number">7.5</span><span>Variable shadowing (name hiding)</span></a></li><li><a href="internal-linkage.html"><span class="lesson-number">7.6</span><span>Internal linkage</span></a></li><li><a href="external-linkage-and-variable-forward-declarations.html"><span class="lesson-number">7.7</span><span>External linkage and variable forward declarations</span></a></li><li><a href="why-non-const-global-variables-are-evil.html"><span class="lesson-number">7.8</span><span>Why (non-const) global variables are evil</span></a></li><li><a href="inline-functions-and-variables.html"><span class="lesson-number">7.9</span><span>Inline functions and variables</span></a></li><li><a href="sharing-global-constants-across-multiple-files-using-inline-variables.html"><span class="lesson-number">7.10</span><span>Sharing global constants across multiple files (using inline variables)</span></a></li><li><a href="static-local-variables.html"><span class="lesson-number">7.11</span><span>Static local variables</span></a></li><li><a href="scope-duration-and-linkage-summary.html" aria-current="page"><span class="lesson-number">7.12</span><span>Scope, duration, and linkage summary</span></a></li><li><a href="using-declarations-and-using-directives.html"><span class="lesson-number">7.13</span><span>Using declarations and using directives</span></a></li><li><a href="unnamed-and-inline-namespaces.html"><span class="lesson-number">7.14</span><span>Unnamed and inline namespaces</span></a></li><li><a href="chapter-7-summary-and-quiz.html"><span class="lesson-number">7.x</span><span>Chapter 7 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 7</div>
+        <h1>7.12 — Scope, duration, and linkage summary</h1>
+        <div class="article-meta"><span>Updated: 2024-12-01 21:30</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>The concepts of scope, duration, and linkage cause a lot of confusion, so we’re going to take an extra lesson to summarize everything.  Some of these things we haven’t covered yet, and they’re here just for completeness / reference later.</p>
+<p style="clear: both">
+</p><p> <!-- break around image --></p>
+<p class="cpp-section cpp-topline" style="clear: both">Scope summary</p>
+<p>An identifier’s <em>scope</em> determines where the identifier can be accessed within the source code.</p>
+<ul>
+<li>Variables with <strong>block (local) scope</strong> can only be accessed from the point of declaration until the end of the block in which they are declared (including nested blocks).  This includes:</li>
+<ul>
+<li>Local variables</li>
+<li>Function parameters</li>
+<li>Program-defined type definitions (such as enums and classes) declared inside a block</li>
+</ul>
+<li>Variables and functions with <strong>global scope</strong> can be accessed from the point of declaration until the end of the file.  This includes:</li>
+<ul>
+<li>Global variables</li>
+<li>Functions</li>
+<li>Program-defined type definitions (such as enums and classes) declared inside a namespace or in the global scope</li>
+</ul>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">Duration summary</p>
+<p>A variable’s <em>duration</em> determines when it is created and destroyed.</p>
+<ul>
+<li>Variables with <strong>automatic duration</strong> are created at the point of definition, and destroyed when the block they are part of is exited.  This includes:</li>
+<ul>
+<li>Local variables</li>
+<li>Function parameters</li>
+</ul>
+<li>Variables with <strong>static duration</strong> are created when the program begins and destroyed when the program ends.  This includes:</li>
+<ul>
+<li>Global variables</li>
+<li>Static local variables</li>
+</ul>
+
+<li>Variables with <strong>dynamic duration</strong> are created and destroyed by programmer request.  This includes:</li>
+<ul>
+<li>Dynamically allocated variables</li>
+</ul>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">Linkage summary</p>
+<p>An identifier’s <strong>linkage</strong> determines whether a declaration of that same identifier in a different scope refers to the same entity (object, function, reference, etc…) or not.  </p>
+<p>Local variables have no linkage.  Each declaration of an identifier with no linkage refers to a unique object or function.</p>
+<ul>
+<li>An identifier with <strong>no linkage</strong> means another declaration of the same identifier refers to a unique entity.  Entities whose identifiers have no linkage include:</li>
+<ul>
+<li>Local variables</li>
+<li>Program-defined type identifiers (such as enums and classes) declared inside a block</li>
+</ul>
+<li>An identifier with <strong>internal linkage</strong> means a declaration of the same identifier within the same translation unit refers to the same object or function.  Entities whose identifiers have internal linkage include:</li>
+<ul>
+<li>Static global variables (initialized or uninitialized)</li>
+<li>Static functions</li>
+<li>Const global variables</li>
+<li>Unnamed namespaces and anything defined within them</li>
+</ul>
+<li>An identifier with <strong>external linkage</strong> means a declaration of the same identifier within the entire program refers to the same object or function.  Entities whose identifiers have external linkage include:</li>
+<ul>
+<li>Non-static functions</li>
+<li>Non-const global variables (initialized or uninitialized)</li>
+<li>Extern const global variables</li>
+<li>Inline const global variables</li>
+<li>Namespaces</li>
+</ul>
+</ul>
+<p>Identifiers with external linkage will generally cause a duplicate definition linker error if the definitions are compiled into more than one .cpp file (due to violating the one-definition rule).  There are some exceptions to this rule (for types, templates, and inline functions and variables) -- we’ll cover these further in future lessons when we talk about those topics.</p>
+<p>Also note that functions have external linkage by default.  They can be made internal by using the static keyword.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Variable scope, duration, and linkage summary</p>
+<p>Because variables have scope, duration, and linkage, let’s summarize in a chart:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Type</th>
+<th>Example</th>
+<th>Scope</th>
+<th>Duration</th>
+<th>Linkage</th>
+<th>Notes</th>
+</tr>
+<tr>
+<td>Local variable</td>
+<td>int x;</td>
+<td>Block</td>
+<td>Automatic</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>Static local variable</td>
+<td>static int s_x;</td>
+<td>Block</td>
+<td>Static</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>Dynamic local variable</td>
+<td>int* x { new int{} };</td>
+<td>Block</td>
+<td>Dynamic</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>Function parameter</td>
+<td>void foo(int x)</td>
+<td>Block</td>
+<td>Automatic</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>Internal non-const global variable</td>
+<td>static int g_x;</td>
+<td>Global</td>
+<td>Static</td>
+<td>Internal</td>
+<td>Initialized or uninitialized</td>
+</tr>
+<tr>
+<td>External non-const global variable</td>
+<td>int g_x;</td>
+<td>Global</td>
+<td>Static</td>
+<td>External</td>
+<td>Initialized or uninitialized</td>
+</tr>
+<tr>
+<td>Inline non-const global variable (C++17)</td>
+<td>inline int g_x;</td>
+<td>Global</td>
+<td>Static</td>
+<td>External</td>
+<td>Initialized or uninitialized</td>
+</tr>
+<tr>
+<td>Internal constant global variable</td>
+<td>constexpr int g_x { 1 };</td>
+<td>Global</td>
+<td>Static</td>
+<td>Internal</td>
+<td>Must be initialized</td>
+</tr>
+<tr>
+<td>External constant global variable</td>
+<td>extern const int g_x { 1 };</td>
+<td>Global</td>
+<td>Static</td>
+<td>External</td>
+<td>Must be initialized</td>
+</tr>
+<tr>
+<td>Inline constant global variable (C++17)</td>
+<td>inline constexpr int g_x { 1 };</td>
+<td>Global</td>
+<td>Static</td>
+<td>External</td>
+<td>Must be initialized</td>
+</tr>
+<p></p></table></div>
+<p class="cpp-section cpp-topline" style="clear: both">Forward declaration summary</p>
+<p>You can use a forward declaration to access a function or variable in another file.  The scope of the declared variable is as per usual (global scope for globals, block scope for locals).</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Type</th>
+<th>Example</th>
+<th>Notes</th>
+</tr>
+<tr>
+<td>Function forward declaration</td>
+<td>void foo(int x);</td>
+<td>Prototype only, no function body</td>
+</tr>
+<tr>
+<td>Non-constant variable forward declaration</td>
+<td>extern int g_x;</td>
+<td>Must be uninitialized</td>
+</tr>
+<tr>
+<td>Const variable forward declaration</td>
+<td>extern const int g_x;</td>
+<td>Must be uninitialized</td>
+</tr>
+<tr>
+<td>Constexpr variable forward declaration</td>
+<td>extern constexpr int g_x;</td>
+<td>Not allowed, constexpr cannot be forward declared</td>
+</tr>
+<p></p></table></div>
+<p>A constexpr variable (which is implicitly const) can be forward declared using a const variable forward declaration.  When accessed through the forward declaration, the variable will be considered const (not constexpr).</p>
+<p class="cpp-section cpp-topline" style="clear: both">What the heck is a storage class specifier?</p>
+<p>When used as part of an identifier declaration, the <code>static</code> and <code>extern</code> keywords are called <strong>storage class specifiers</strong>.  In this context, they set the storage duration and linkage of the identifier.</p>
+<p>C++ supports 4 active storage class specifiers:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Specifier</th>
+<th>Meaning</th>
+<th>Note</th>
+</tr>
+<tr>
+<td>extern</td>
+<td>static (or thread_local) storage duration and external linkage</td>
+<td></td>
+</tr>
+<tr>
+<td>static</td>
+<td>static (or thread_local) storage duration and internal linkage</td>
+<td></td>
+</tr>
+<tr>
+<td>thread_local</td>
+<td>thread storage duration</td>
+<td></td>
+</tr>
+<tr>
+<td>mutable</td>
+<td>object allowed to be modified even if containing class is const</td>
+<td></td>
+</tr>
+<tr>
+<td>auto</td>
+<td>automatic storage duration</td>
+<td>Deprecated in C++11</td>
+</tr>
+<tr>
+<td>register</td>
+<td>automatic storage duration and hint to the compiler to place in a register</td>
+<td>Deprecated in C++17</td>
+</tr>
+<p></p></table></div>
+<p>The term <em>storage class specifier</em> is typically only used in formal documentation.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="static-local-variables.html"><span class="nav-kicker">← Previous lesson</span>7.11 · Static local variables</a><a class="next" href="using-declarations-and-using-directives.html"><span class="nav-kicker">Next lesson →</span>7.13 · Using declarations and using directives</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

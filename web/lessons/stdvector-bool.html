@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson O.1 -- Bit flags and bit manipulation via std::bitset, we discussed how std::bitset has the capability to compact 8 Boolean values into a byte. T">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.12 — std::vector&lt;bool&gt; · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stdvector-bool/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html" aria-current="page"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.12 — std::vector&lt;bool&gt;</h1>
+        <div class="article-meta"><span>Updated: 2024-01-10 19:23</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="bit-flags-and-bit-manipulation-via-stdbitset.html">O.1 -- Bit flags and bit manipulation via std::bitset</a>, we discussed how <code>std::bitset</code> has the capability to compact 8 Boolean values into a byte.  Those bits can then be modified via the member functions of <code>std::bitset</code>.</p>
+<p><code>std::vector</code> has an interesting trick up its sleeves.  There is a special implementation for <code>std::vector&lt;bool&gt;</code> that may be more space efficient for Boolean values by similarly compacting 8 Boolean values into a byte.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>When a template class has a different implementation for a particular template type argument, this is called <strong>class template specialization</strong>.  We discuss this topic further in lesson <a href="class-template-specialization.html">26.4 -- Class template specialization</a>.
+</p></div>
+<p>Unlike <code>std::bitset</code>, which was designed for bit manipulation, <code>std::vector&lt;bool&gt;</code> lacks bit manipulation member functions.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using <code>std::vector&lt;bool&gt;</code></p>
+<p>For the most part, <code>std::vector&lt;bool&gt;</code> works just like a normal <code>std::vector</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;bool&gt; v { true, false, false, true, true };
+    
+    for (int i : v)
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    std::cout &lt;&lt; '\n';
+
+    // Change the Boolean value with index 4 to false
+    v[4] = false;
+
+    for (int i : v)
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>On the author’s 64-bit machine, this prints:</p>
+<pre>
+1 0 0 1 1
+1 0 0 1 0
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both"><code>std::vector&lt;bool&gt;</code> tradeoffs</p>
+<p>However, <code>std::vector&lt;bool&gt;</code> has some tradeoffs that users should be aware of.</p>
+<p>First, <code>std::vector&lt;bool&gt;</code> has a fairly high amount of overhead (<code>sizeof(std::vector&lt;bool&gt;)</code> is 40 bytes on the author’s machine), so you won’t save memory unless you’re allocating more Boolean values than the overhead for your architecture.</p>
+<p>Second, the performance of <code>std::vector&lt;bool&gt;</code> is highly dependent upon the implementation (as implementations aren’t even required to do optimization, let alone do it well).  Per <a href="https://isocpp.org/blog/2012/11/on-vectorbool" target="_blank" rel="noopener noreferrer">this article</a>, a highly optimized implementation can be significantly faster than alternatives.  However, a poorly optimized implementation will be slower.</p>
+<p>Third and most importantly, <code>std::vector&lt;bool&gt;</code> is not a vector (it is not required to be contiguous in memory), nor does it hold <code>bool</code> values (it holds a collection of bits), nor does it meet C++’s definition of a container.  </p>
+<p>Although <code>std::vector&lt;bool&gt;</code> behaves like a vector in most cases, it is not fully compatible with the rest of the standard library.  Code that works with other element types may not work with <code>std::vector&lt;bool&gt;</code>.</p>
+<p>For example, the following code works when <code>T</code> is any type except <code>bool</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template&lt;typename T&gt;
+void foo( std::vector&lt;T&gt;&amp; v )
+{
+    T&amp; first = v[0]; // get a reference to the first element
+    // Do something with first
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Avoid <code>std::vector&lt;bool&gt;</code></p>
+<p>The modern consensus is that <code>std::vector&lt;bool&gt;</code> should generally be avoided, as the performance gains are unlikely to be worth the incompatibility headaches due to it not being a proper container.</p>
+<p>Unfortunately, this optimizing version of <code>std::vector&lt;bool&gt;</code> is enabled by default, and there is no way to disable it in favor of a non-optimized version that is actually a container.  There have been calls to deprecate <code>std::vector&lt;bool&gt;</code>, and work is underway to determine what a replacement compacted vector of <code>bool</code> might look like (perhaps as a future <code>std::dynamic_bitset</code>).</p>
+<p>Our recommendation is as follows:</p>
+<ul>
+<li>Use (constexpr) <code>std::bitset</code> when the number of bits you need is known at compile-time, you don’t have more than a moderate number of Boolean values to store (e.g. under 64k), and the limited set of operators and member functions (e.g. lack of iterator support) meets your requirements.
+</li>
+<li>Prefer <code>std::vector&lt;char&gt;</code> when you need a resizable container of Boolean values and space-savings isn’t a necessity.  This type behaves like a normal container.
+</li>
+<li>Favor a 3rd party implementation of a dynamic bitset (such as <code>boost::dynamic_bitset</code>) when you need a dynamic bitset to do bit operations on.  Such types won’t pretend to be standard library containers when they aren’t.
+</li>
+</ul>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Favor <code>constexpr std::bitset</code>, <code>std::vector&lt;char&gt;</code>, or 3rd party dynamic bitsets over <code>std::vector&lt;bool&gt;</code>.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdvector-and-stack-behavior.html"><span class="nav-kicker">← Previous lesson</span>16.11 · std::vector and stack behavior</a><a class="next" href="chapter-16-summary-and-quiz.html"><span class="nav-kicker">Next lesson →</span>16.x · Chapter 16 summary and quiz</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

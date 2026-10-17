@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Consider the following program: #include &lt;iostream&gt; #include &lt;string_view&gt; class Base { public: std::string_view getName() const { return &quot;Base&quot;; } // not ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>25.6 — The virtual table · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/the-virtual-table/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 25 · Virtual Functions</summary><div class="sidebar-title"><small>Chapter 25</small><strong>Virtual Functions</strong></div>
+<ol class="sidebar-lessons"><li><a href="pointers-and-references-to-the-base-class-of-derived-objects.html"><span class="lesson-number">25.1</span><span>Pointers and references to the base class of derived objects</span></a></li><li><a href="virtual-functions.html"><span class="lesson-number">25.2</span><span>Virtual functions and polymorphism</span></a></li><li><a href="the-override-and-final-specifiers-and-covariant-return-types.html"><span class="lesson-number">25.3</span><span>The override and final specifiers, and covariant return types</span></a></li><li><a href="virtual-destructors-virtual-assignment-and-overriding-virtualization.html"><span class="lesson-number">25.4</span><span>Virtual destructors, virtual assignment, and overriding virtualization</span></a></li><li><a href="early-binding-and-late-binding.html"><span class="lesson-number">25.5</span><span>Early binding and late binding</span></a></li><li><a href="the-virtual-table.html" aria-current="page"><span class="lesson-number">25.6</span><span>The virtual table</span></a></li><li><a href="pure-virtual-functions-abstract-base-classes-and-interface-classes.html"><span class="lesson-number">25.7</span><span>Pure virtual functions, abstract base classes, and interface classes</span></a></li><li><a href="virtual-base-classes.html"><span class="lesson-number">25.8</span><span>Virtual base classes</span></a></li><li><a href="object-slicing.html"><span class="lesson-number">25.9</span><span>Object slicing</span></a></li><li><a href="dynamic-casting.html"><span class="lesson-number">25.10</span><span>Dynamic casting</span></a></li><li><a href="printing-inherited-classes-using-operator.html"><span class="lesson-number">25.11</span><span>Printing inherited classes using operator&lt;&lt;</span></a></li><li><a href="chapter-25-summary-and-quiz.html"><span class="lesson-number">25.x</span><span>Chapter 25 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 25</div>
+        <h1>25.6 — The virtual table</h1>
+        <div class="article-meta"><span>Updated: 2024-12-07 03:18</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+class Base
+{
+public:
+    std::string_view getName() const { return "Base"; }                // not virtual
+    virtual std::string_view getNameVirtual() const { return "Base"; } // virtual
+};
+
+class Derived: public Base
+{
+public:
+    std::string_view getName() const { return "Derived"; }
+    virtual std::string_view getNameVirtual() const override { return "Derived"; }
+};
+
+int main()
+{
+    Derived derived {};
+    Base&amp; base { derived };
+
+    std::cout &lt;&lt; "base has static type " &lt;&lt; base.getName() &lt;&lt; '\n';
+    std::cout &lt;&lt; "base has dynamic type " &lt;&lt; base.getNameVirtual() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>First, let’s look at the call to <code>base.getName()</code>.  Because this is a non-virtual function, the compiler can use the actual type of <code>base</code> (<code>Base</code>) to determine (at compile-time) that this should resolve to <code>Base::getName()</code>.</p>
+<p>Although it looks almost identical, the call to <code>base.getNameVirtual()</code> must be resolved differently.  Because this is a virtual function call, the compiler must use the dynamic type of <code>base</code> to resolve the call, and the dynamic type of <code>base</code> is not knowable until runtime.  Therefore, only at runtime will it be determined that this particular call to <code>base.getNameVirtual()</code> resolves to <code>Derived::getNameVirtual()</code>, not <code>Base::getNameVirtual()</code>.</p>
+<p>So how do virtual functions actually work?</p>
+<p class="cpp-section cpp-topline" style="clear: both">The virtual table</p>
+<p>The C++ standard does not specify how virtual functions should be implemented (this detail is left up to the implementation).</p>
+<p>However, C++ implementations typically implement virtual functions using a form of late binding known as the virtual table.</p>
+<p>The <strong>virtual table</strong> is a lookup table of functions used to resolve function calls in a dynamic/late binding manner.  The virtual table sometimes goes by other names, such as “vtable”, “virtual function table”, “virtual method table”, or “dispatch table”.  In C++, virtual function resolution is sometimes called <strong>dynamic dispatch</strong>.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Nomenclature</p>
+<p>Here’s an easier way of thinking about it in C++:<br>
+Early binding/static dispatch = direct function call overload resolution<br>
+Late binding = indirect function call resolution<br>
+Dynamic dispatch = virtual function override resolution
+</p></div>
+<p>Because knowing how the virtual table works is not necessary to use virtual functions, this section can be considered optional reading.</p>
+<p>The virtual table is actually quite simple, though it’s a little complex to describe in words.  First, every class that uses virtual functions (or is derived from a class that uses virtual functions) has a corresponding virtual table.  This table is simply a static array that the compiler sets up at compile time.  A virtual table contains one entry for each virtual function that can be called by objects of the class.  Each entry in this table is simply a function pointer that points to the most-derived function accessible by that class.</p>
+<p>Second, the compiler also adds a hidden pointer that is a member of the base class, which we will call <code>*__vptr</code>.  <code>*__vptr</code> is set (automatically) when a class object is created so that it points to the virtual table for that class.  Unlike the <code>this</code> pointer, which is actually a function parameter used by the compiler to resolve self-references, <code>*__vptr</code> is a real pointer member.  Consequently, it makes each class object allocated bigger by the size of one pointer.  It also means that <code>*__vptr</code> is inherited by derived classes, which is important.</p>
+<p>By now, you’re probably confused as to how these things all fit together, so let’s take a look at a simple example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Base
+{
+public:
+    virtual void function1() {};
+    virtual void function2() {};
+};
+
+class D1: public Base
+{
+public:
+    void function1() override {};
+};
+
+class D2: public Base
+{
+public:
+    void function2() override {};
+};</code></pre>
+<p>Because there are 3 classes here, the compiler will set up 3 virtual tables: one for Base, one for D1, and one for D2.</p>
+<p>The compiler also adds a hidden pointer member to the most base class that uses virtual functions.  Although the compiler does this automatically, we’ll put it in the next example just to show where it’s added:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Base
+{
+public:
+    VirtualTable* __vptr;
+    virtual void function1() {};
+    virtual void function2() {};
+};
+
+class D1: public Base
+{
+public:
+    void function1() override {};
+};
+
+class D2: public Base
+{
+public:
+    void function2() override {};
+};</code></pre>
+<p>When a class object is created, <code>*__vptr</code> is set to point to the virtual table for that class.  For example, when an object of type Base is created, <code>*__vptr</code> is set to point to the virtual table for Base.  When objects of type D1 or D2 are constructed, <code>*__vptr</code> is set to point to the virtual table for D1 or D2 respectively.</p>
+<p>Now, let’s talk about how these virtual tables are filled out.  Because there are only two virtual functions here, each virtual table will have two entries (one for function1() and one for function2()).  Remember that when these virtual tables are filled out, each entry is filled out with the most-derived function an object of that class type can call.</p>
+<p>The virtual table for Base objects is simple.  An object of type Base can only access the members of Base.  Base has no access to D1 or D2 functions.  Consequently, the entry for function1 points to Base::function1() and the entry for function2 points to Base::function2().</p>
+<p>The virtual table for D1 is slightly more complex.  An object of type D1 can access members of both D1 and Base.  However, D1 has overridden function1(), making D1::function1() more derived than Base::function1().  Consequently, the entry for function1 points to D1::function1().  D1 hasn’t overridden function2(), so the entry for function2 will point to Base::function2().</p>
+<p>The virtual table for D2 is similar to D1, except the entry for function1 points to Base::function1(), and the entry for function2 points to D2::function2().</p>
+<p>Here’s a picture of this graphically:</p>
+<p><img src="../assets/media/0d09c63c111514dc.gif" loading="lazy" alt=""></p>
+<p>Although this diagram is kind of crazy looking, it’s really quite simple: the <code>*__vptr</code> in each class points to the virtual table for that class.  The entries in the virtual table point to the most-derived version of the function that objects of that class are allowed to call.</p>
+<p>So consider what happens when we create an object of type D1:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    D1 d1 {};
+}</code></pre>
+<p>Because d1 is a D1 object, d1 has its *__vptr set to the D1 virtual table.</p>
+<p>Now, let’s set a base pointer to D1:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    D1 d1 {};
+    Base* dPtr = &amp;d1;
+
+    return 0;
+}</code></pre>
+<p>Note that because dPtr is a base pointer, it only points to the Base portion of d1.  However, also note that <code>*__vptr</code> is in the Base portion of the class, so dPtr has access to this pointer.  Finally, note that <code>dPtr-&gt;__vptr</code> points to the D1 virtual table!  Consequently, even though dPtr is of type <code>Base*</code>, it still has access to D1’s virtual table (through <code>__vptr</code>).</p>
+<p>So what happens when we try to call dPtr-&gt;function1()?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    D1 d1 {};
+    Base* dPtr = &amp;d1;
+    dPtr-&gt;function1();
+
+    return 0;
+}</code></pre>
+<p>First, the program recognizes that function1() is a virtual function.  Second, the program uses <code>dPtr-&gt;__vptr</code> to get to D1’s virtual table.  Third, it looks up which version of function1() to call in D1’s virtual table.  This has been set to D1::function1().  Therefore, <code>dPtr-&gt;function1()</code> resolves to D1::function1()!</p>
+<p>Now, you might be saying, “But what if dPtr really pointed to a Base object instead of a D1 object.  Would it still call D1::function1()?”.  The answer is no.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    Base b {};
+    Base* bPtr = &amp;b;
+    bPtr-&gt;function1();
+
+    return 0;
+}</code></pre>
+<p>In this case, when b is created, b.__vptr points to Base’s virtual table, not D1’s virtual table.  Since bPtr is pointing to b, <code>bPtr-&gt;__vptr</code> points to Base’s virtual table as well.  Base’s virtual table entry for function1() points to Base::function1().  Thus, <code>bPtr-&gt;function1()</code> resolves to Base::function1(), which is the most-derived version of function1() that a Base object should be able to call.</p>
+<p>By using these tables, the compiler and program are able to ensure function calls resolve to the appropriate virtual function, even if you’re only using a pointer or reference to a base class!</p>
+<p>Calling a virtual function is slower than calling a non-virtual function for a couple of reasons: First, we have to use the <code>*__vptr</code> to get to the appropriate virtual table.  Second, we have to index the virtual table to find the correct function to call.  Only then can we call the function.  As a result, we have to do 3 operations to find the function to call, as opposed to 2 operations for a normal indirect function call, or one operation for a direct function call.  However, with modern computers, this added time is usually fairly insignificant.</p>
+<p>Also as a reminder, any class that uses virtual functions has a <code>*__vptr</code>, and thus each object of that class will be bigger by one pointer.  Virtual functions are powerful, but they do have a performance cost.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="early-binding-and-late-binding.html"><span class="nav-kicker">← Previous lesson</span>25.5 · Early binding and late binding</a><a class="next" href="pure-virtual-functions-abstract-base-classes-and-interface-classes.html"><span class="nav-kicker">Next lesson →</span>25.7 · Pure virtual functions, abstract base classes, and interface classes</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

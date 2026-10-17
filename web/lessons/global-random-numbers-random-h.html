@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="What happens if we want to use a random number generator in multiple functions or files? One way is to create (and seed) our PRNG in our main() function, a">
+  <meta name="robots" content="noindex,nofollow">
+  <title>8.15 — Global random numbers (Random.h) · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/global-random-numbers-random-h/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 8 · Control Flow</summary><div class="sidebar-title"><small>Chapter 8</small><strong>Control Flow</strong></div>
+<ol class="sidebar-lessons"><li><a href="control-flow-introduction.html"><span class="lesson-number">8.1</span><span>Control flow introduction</span></a></li><li><a href="if-statements-and-blocks.html"><span class="lesson-number">8.2</span><span>If statements and blocks</span></a></li><li><a href="common-if-statement-problems.html"><span class="lesson-number">8.3</span><span>Common if statement problems</span></a></li><li><a href="constexpr-if-statements.html"><span class="lesson-number">8.4</span><span>Constexpr if statements</span></a></li><li><a href="switch-statement-basics.html"><span class="lesson-number">8.5</span><span>Switch statement basics</span></a></li><li><a href="switch-fallthrough-and-scoping.html"><span class="lesson-number">8.6</span><span>Switch fallthrough and scoping</span></a></li><li><a href="goto-statements.html"><span class="lesson-number">8.7</span><span>Goto statements</span></a></li><li><a href="introduction-to-loops-and-while-statements.html"><span class="lesson-number">8.8</span><span>Introduction to loops and while statements</span></a></li><li><a href="do-while-statements.html"><span class="lesson-number">8.9</span><span>Do while statements</span></a></li><li><a href="for-statements.html"><span class="lesson-number">8.10</span><span>For statements</span></a></li><li><a href="break-and-continue.html"><span class="lesson-number">8.11</span><span>Break and continue</span></a></li><li><a href="halts-exiting-your-program-early.html"><span class="lesson-number">8.12</span><span>Halts (exiting your program early)</span></a></li><li><a href="introduction-to-random-number-generation.html"><span class="lesson-number">8.13</span><span>Introduction to random number generation</span></a></li><li><a href="generating-random-numbers-using-mersenne-twister.html"><span class="lesson-number">8.14</span><span>Generating random numbers using Mersenne Twister</span></a></li><li><a href="global-random-numbers-random-h.html" aria-current="page"><span class="lesson-number">8.15</span><span>Global random numbers (Random.h)</span></a></li><li><a href="chapter-8-summary-and-quiz.html"><span class="lesson-number">8.x</span><span>Chapter 8 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 8</div>
+        <h1>8.15 — Global random numbers (Random.h)</h1>
+        <div class="article-meta"><span>Updated: 2025-01-29 17:49</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>What happens if we want to use a random number generator in multiple functions or files?  One way is to create (and seed) our PRNG in our <code>main()</code> function, and then pass it everywhere we need it.  But that’s a lot of passing for something we may only use sporadically, and in many different places.  It would add a lot of clutter to our code to pass such an object around.</p>
+<p>Alternately, you could create a static local <code>std::mt19937</code> variable in each function that needs it (static so that it only gets seeded once).  However, it’s overkill to have every function that uses a random number generator define and seed its own local generator, and the low volume of calls to each generator may lead to lower quality results.</p>
+<p>What we really want is a single PRNG object that we can share and access anywhere, across all of our functions and files.  The best option here is to create a global random number generator object (inside a namespace!).  Remember how we told you to avoid non-const global variables?  This is an exception.</p>
+<p>Here’s a simple, header-only solution that you can #include in any code file that needs access to a randomized, self-seeded <code>std::mt19937</code>:</p>
+<p>Random.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef RANDOM_MT_H
+#define RANDOM_MT_H
+
+#include &lt;chrono&gt;
+#include &lt;random&gt;
+
+// This header-only Random namespace implements a self-seeding Mersenne Twister.
+// Requires C++17 or newer.
+// It can be #included into as many code files as needed (The inline keyword avoids ODR violations)
+// Freely redistributable, courtesy of learncpp.com (https://www.learncpp.com/cpp-tutorial/global-random-numbers-random-h/)
+namespace Random
+{
+	// Returns a seeded Mersenne Twister
+	// Note: we'd prefer to return a std::seed_seq (to initialize a std::mt19937), but std::seed can't be copied, so it can't be returned by value.
+	// Instead, we'll create a std::mt19937, seed it, and then return the std::mt19937 (which can be copied).
+	inline std::mt19937 generate()
+	{
+		std::random_device rd{};
+
+		// Create seed_seq with clock and 7 random numbers from std::random_device
+		std::seed_seq ss{
+			static_cast&lt;std::seed_seq::result_type&gt;(std::chrono::steady_clock::now().time_since_epoch().count()),
+				rd(), rd(), rd(), rd(), rd(), rd(), rd() };
+
+		return std::mt19937{ ss };
+	}
+
+	// Here's our global std::mt19937 object.
+	// The inline keyword means we only have one global instance for our whole program.
+	inline std::mt19937 mt{ generate() }; // generates a seeded std::mt19937 and copies it into our global object
+
+	// Generate a random int between [min, max] (inclusive)
+        // * also handles cases where the two arguments have different types but can be converted to int
+	inline int get(int min, int max)
+	{
+		return std::uniform_int_distribution{min, max}(mt);
+	}
+
+	// The following function templates can be used to generate random numbers in other cases
+
+	// See https://www.learncpp.com/cpp-tutorial/function-template-instantiation/
+	// You can ignore these if you don't understand them
+
+	// Generate a random value between [min, max] (inclusive)
+	// * min and max must have the same type
+	// * return value has same type as min and max
+	// * Supported types:
+	// *    short, int, long, long long
+	// *    unsigned short, unsigned int, unsigned long, or unsigned long long
+	// Sample call: Random::get(1L, 6L);             // returns long
+	// Sample call: Random::get(1u, 6u);             // returns unsigned int
+	template &lt;typename T&gt;
+	T get(T min, T max)
+	{
+		return std::uniform_int_distribution&lt;T&gt;{min, max}(mt);
+	}
+
+	// Generate a random value between [min, max] (inclusive)
+	// * min and max can have different types
+        // * return type must be explicitly specified as a template argument
+	// * min and max will be converted to the return type
+	// Sample call: Random::get&lt;std::size_t&gt;(0, 6);  // returns std::size_t
+	// Sample call: Random::get&lt;std::size_t&gt;(0, 6u); // returns std::size_t
+	// Sample call: Random::get&lt;std::int&gt;(0, 6u);    // returns int
+	template &lt;typename R, typename S, typename T&gt;
+	R get(S min, T max)
+	{
+		return get&lt;R&gt;(static_cast&lt;R&gt;(min), static_cast&lt;R&gt;(max));
+	}
+}
+
+#endif</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Using Random.h</p>
+<p>Generating random numbers using the above is as simple as following these three steps:</p>
+<ol start="1">
+<li>Copy/paste the above code into a file named <code>Random.h</code> in your project directory and save it.  Optionally add Random.h to your project.
+</li>
+<li><code>#include "Random.h"</code> from any .cpp file in your project that needs to generate random numbers.
+</li>
+<li>Call <code>Random::get(min, max)</code> to generate a random number between <code>min</code> and <code>max</code> (inclusive).  No initialization or setup is required.
+</li>
+</ol>
+<p>Here is a sample program demonstrating different uses of Random.h:</p>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "Random.h" // defines Random::mt, Random::get(), and Random::generate()
+#include &lt;cstddef&gt; // for std::size_t
+#include &lt;iostream&gt;
+
+int main()
+{
+	// We can call Random::get() to generate random integral values
+	// If the two arguments have the same type, the returned value will have that same type.
+	std::cout &lt;&lt; Random::get(1, 6) &lt;&lt; '\n';   // returns int between 1 and 6
+	std::cout &lt;&lt; Random::get(1u, 6u) &lt;&lt; '\n'; // returns unsigned int between 1 and 6
+
+        // In cases where we have two arguments with different types
+        // and/or if we want the return type to be different than the argument types
+        // We must specify the return type using a template type argument (between the angled brackets)
+	// See https://www.learncpp.com/cpp-tutorial/function-template-instantiation/
+	std::cout &lt;&lt; Random::get&lt;std::size_t&gt;(1, 6u) &lt;&lt; '\n'; // returns std::size_t between 1 and 6
+
+	// If we have our own distribution, we can access Random::mt directly
+
+	// Let's create a reusable random number generator that generates uniform numbers between 1 and 6
+	std::uniform_int_distribution die6{ 1, 6 }; // for C++14, use std::uniform_int_distribution&lt;&gt; die6{ 1, 6 };
+	for (int count{ 1 }; count &lt;= 10; ++count)
+	{
+		std::cout &lt;&lt; die6(Random::mt) &lt;&lt; '\t'; // generate a roll of the die here
+	}
+
+	std::cout &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">A few notes about the implementation of Random.h <span class="cpp-section-pill cpp-section-optional">Optional</span></p>
+<p>Normally, defining variables and functions in a header file would cause violations of the one-definition rule (ODR) when that header file was included into more than one source file.  However, we’ve made our <code>mt</code> variable and supporting functions <code>inline</code>, which allows us to have duplicate definitions without violating the ODR so long as those definitions are all identical.  Because we’re #including those definitions from a header file (rather than typing them manually, or copy/pasting them), we can ensure they are identical.  Inline functions and variables were added to the language largely to make doing this kind of header-only functionality possible.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover inline functions and variables in lesson <a href="inline-functions-and-variables.html">7.9 -- Inline functions and variables</a>.
+</p></div>
+<p>The other challenge that we have to overcome is in how we initialize our global <code>Random::mt</code> object, as we want it to be self-seeding so that we don’t have to remember to explicitly call an initialization function for it to work correctly.  Our initializer must be an expression.  But in order to initialize a <code>std::mt19937</code>, we need several helper objects (a <code>std::random_device</code> and a <code>std::seed_seq</code>) which must be defined as statements.   This is where a helper function comes in handy.  A function call is an expression, so we can use the return value of a function as an initializer.  And inside the function itself, we can have any combination of statements that we need.  Thus, our <code>generate()</code> function creates and returns a fully-seeded <code>std::mt19937</code> object (seeded using both the system clock and <code>std::random_device</code>) that we use as the initializer to our global <code>Random::mt</code> object.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="generating-random-numbers-using-mersenne-twister.html"><span class="nav-kicker">← Previous lesson</span>8.14 · Generating random numbers using Mersenne Twister</a><a class="next" href="chapter-8-summary-and-quiz.html"><span class="nav-kicker">Next lesson →</span>8.x · Chapter 8 summary and quiz</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

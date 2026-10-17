@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="C++ contains many useful fundamental and compound data types (which we introduced in lessons 4.1 -- Introduction to fundamental data types and 12.1 -- Intr">
+  <meta name="robots" content="noindex,nofollow">
+  <title>13.2 — Unscoped enumerations · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/unscoped-enumerations/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 13 · Compound Types: Enums and Structs</summary><div class="sidebar-title"><small>Chapter 13</small><strong>Compound Types: Enums and Structs</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-program-defined-user-defined-types.html"><span class="lesson-number">13.1</span><span>Introduction to program-defined (user-defined) types</span></a></li><li><a href="unscoped-enumerations.html" aria-current="page"><span class="lesson-number">13.2</span><span>Unscoped enumerations</span></a></li><li><a href="unscoped-enumerator-integral-conversions.html"><span class="lesson-number">13.3</span><span>Unscoped enumerator integral conversions</span></a></li><li><a href="converting-an-enumeration-to-and-from-a-string.html"><span class="lesson-number">13.4</span><span>Converting an enumeration to and from a string</span></a></li><li><a href="introduction-to-overloading-the-i-o-operators.html"><span class="lesson-number">13.5</span><span>Introduction to overloading the I/O operators</span></a></li><li><a href="scoped-enumerations-enum-classes.html"><span class="lesson-number">13.6</span><span>Scoped enumerations (enum classes)</span></a></li><li><a href="introduction-to-structs-members-and-member-selection.html"><span class="lesson-number">13.7</span><span>Introduction to structs, members, and member selection</span></a></li><li><a href="struct-aggregate-initialization.html"><span class="lesson-number">13.8</span><span>Struct aggregate initialization</span></a></li><li><a href="default-member-initialization.html"><span class="lesson-number">13.9</span><span>Default member initialization</span></a></li><li><a href="passing-and-returning-structs.html"><span class="lesson-number">13.10</span><span>Passing and returning structs</span></a></li><li><a href="struct-miscellany.html"><span class="lesson-number">13.11</span><span>Struct miscellany</span></a></li><li><a href="member-selection-with-pointers-and-references.html"><span class="lesson-number">13.12</span><span>Member selection with pointers and references</span></a></li><li><a href="class-templates.html"><span class="lesson-number">13.13</span><span>Class templates</span></a></li><li><a href="class-template-argument-deduction-ctad-and-deduction-guides.html"><span class="lesson-number">13.14</span><span>Class template argument deduction (CTAD) and deduction guides</span></a></li><li><a href="alias-templates.html"><span class="lesson-number">13.15</span><span>Alias templates</span></a></li><li><a href="chapter-13-summary-and-quiz.html"><span class="lesson-number">13.x</span><span>Chapter 13 summary and quiz</span></a></li><li><a href="using-a-language-reference.html"><span class="lesson-number">13.y</span><span>Using a language reference</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 13</div>
+        <h1>13.2 — Unscoped enumerations</h1>
+        <div class="article-meta"><span>Updated: 2024-10-28 16:43</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>C++ contains many useful fundamental and compound data types (which we introduced in lessons <a href="introduction-to-fundamental-data-types.html">4.1 -- Introduction to fundamental data types</a> and <a href="introduction-to-compound-data-types.html">12.1 -- Introduction to compound data types</a>).  But these types aren’t always sufficient for the kinds of things we want to do.</p>
+<p>For example, let’s say you’re writing a program that needs to keep track of whether an apple is red, yellow, or green, or what color a shirt is (from a preset list of colors).  If only fundamental types were available, how might you do this?</p>
+<p>You might store the color as an integer value, using some kind of implicit mapping (0 = red , 1 = green, 2 = blue):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int appleColor{ 0 }; // my apple is red
+    int shirtColor{ 1 }; // my shirt is green
+
+    return 0;
+}</code></pre>
+<p>But this isn’t at all intuitive, and we’ve already discussed why magic numbers are bad (<a href="literals.html">5.2 -- Literals</a>).  We can get rid of the magic numbers by using symbolic constants:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr int red{ 0 };
+constexpr int green{ 1 };
+constexpr int blue{ 2 };
+
+int main()
+{
+    int appleColor{ red };
+    int shirtColor{ green };
+
+    return 0;
+}</code></pre>
+<p>While this is a bit better for reading, the programmer is still left to deduce that <code>appleColor</code> and <code>shirtColor</code> (which are of type <code>int</code>) are meant to hold one of the values defined in the set of color symbolic constants (which are likely defined elsewhere, probably in a separate file).</p>
+<p>We can make this program a little more clear by using a type alias:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">using Color = int; // define a type alias named Color
+
+// The following color values should be used for a Color
+constexpr Color red{ 0 };
+constexpr Color green{ 1 };
+constexpr Color blue{ 2 };
+
+int main()
+{
+    Color appleColor{ red };
+    Color shirtColor{ green };
+
+    return 0;
+}</code></pre>
+<p>We’re getting closer.  Someone reading this code still has to understand that these color symbolic constants are meant to be used with variables of type <code>Color</code>, but at least the type has a unique name now so someone searching for <code>Color</code> would be able to find the set of associated symbolic constants.</p>
+<p>However, because <code>Color</code> is just an alias for an <code>int</code>, we still have the problem that nothing enforces proper usage of these color symbolic constants.  We can still do something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">Color eyeColor{ 8 }; // syntactically valid, semantically meaningless</code></pre>
+<p>Also, if we debug any of these variables in our debugger, we’ll only see the integer value of the color (e.g. <code>0</code>), not the symbolic meaning (<code>red</code>), which can make it harder to tell if our program is correct.</p>
+<p>Fortunately, we can do better.</p>
+<p>As inspiration, consider the <code>bool</code> type.  What makes <code>bool</code> particularly interesting is that it only has two defined values: <code>true</code> and <code>false</code>.  We can use <code>true</code> or <code>false</code> directly (as literals), or we can instantiate a <code>bool</code> object and have it hold either one of those values.  Additionally, the compiler is able to differentiate <code>bool</code> from other types.  This means we can overload functions, and customize how those functions behave when passed a <code>bool</code> value.</p>
+<p>If we had the ability to define our own custom types, where <em>we</em> could define the set of named values associated with that type, then we would have the perfect tool to elegantly solve the challenge above…</p>
+<p class="cpp-section cpp-topline" style="clear: both">Enumerations</p>
+<p>An <strong>enumeration</strong> (also called an <strong>enumerated type</strong> or an <strong>enum</strong>) is a compound data type whose values are restricted to a set of named symbolic constants (called <strong>enumerators</strong>).</p>
+<p>C++ supports two kinds of enumerations: unscoped enumerations (which we’ll cover now) and scoped enumerations (which we’ll cover later in this chapter).</p>
+<p>Because enumerations are program-defined types <a href="introduction-to-program-defined-user-defined-types.html">13.1 -- Introduction to program-defined (user-defined) types</a>, each enumeration needs to be fully defined before we can use it (a forward declaration is not sufficient).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Unscoped enumerations</p>
+<p>Unscoped enumerations are defined via the <code>enum</code> keyword.</p>
+<p>Enumerated types are best taught by example, so let’s define an unscoped enumeration that can hold some color values.  We’ll explain how it all works below.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// Define a new unscoped enumeration named Color
+enum Color
+{
+    // Here are the enumerators
+    // These symbolic constants define all the possible values this type can hold
+    // Each enumerator is separated by a comma, not a semicolon
+    red,
+    green,
+    blue, // trailing comma optional but recommended
+}; // the enum definition must end with a semicolon
+
+int main()
+{
+    // Define a few variables of enumerated type Color
+    Color apple { red };   // my apple is red
+    Color shirt { green }; // my shirt is green
+    Color cup { blue };    // my cup is blue
+
+    Color socks { white }; // error: white is not an enumerator of Color
+    Color hat { 2 };       // error: 2 is not an enumerator of Color
+
+    return 0;
+}</code></pre>
+<p>We start our example by using the <code>enum</code> keyword to tell the compiler that we are defining an unscoped enumeration, which we’ve named <code>Color</code>.</p>
+<p>Inside a pair of curly braces, we define the enumerators for the <code>Color</code> type: <code>red</code>, <code>green</code>, and <code>blue</code>.  These enumerators define the specific values that type <code>Color</code> is restricted to.  Each enumerator must be separated by a comma (not a semicolon) -- a trailing comma after the last enumerator is optional but recommended for consistency.</p>
+<p>It is most common to define one enumerator per line, but in simple cases (where there are a small number of enumerators and no comments are needed), they may all be defined on a single line.</p>
+<p>The type definition for <code>Color</code> ends with a semicolon.  We’ve now fully defined what enumerated type <code>Color</code> is!  </p>
+<p>Inside <code>main()</code>, we instantiate three variables of type <code>Color</code>: <code>apple</code> is initialized with the color <code>red</code>, <code>shirt</code> is initialized with the color <code>green</code>, and <code>cup</code> is initialized with the color <code>blue</code>.  Memory is allocated for each of these objects.  Note that the initializer for an enumerated type must be one of the defined enumerators for that type.  The variables <code>socks</code> and <code>hat</code> cause compile errors because the initializers <code>white</code> and <code>2</code> are not enumerators of <code>Color</code>.</p>
+<p>Enumerators are implicitly constexpr.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>To quickly recap on nomenclature:</p>
+<ul>
+<li>An <em>enumeration</em> or <em>enumerated type</em> is the program-defined type itself (e.g. <code>Color</code>).
+</li>
+<li>An <em>enumerator</em> is a specific named value belonging to the enumeration (e.g. <code>red</code>).
+</li>
+</ul>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Naming enumerations and enumerators</p>
+<p>By convention, the names of enumerated types start with a capital letter (as do all program-defined types).</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Enumerations don’t have to be named, but unnamed enumerations should be avoided in modern C++.
+</p></div>
+<p>Enumerators must be given names.  Unfortunately, there is no common naming convention for enumerator names.  Common choices include starting with lower case (e.g. red), starting with caps (Red), all caps (RED), all caps with a prefix (COLOR_RED), or prefixed with a “k” and intercapped (kColorRed).  </p>
+<p>Modern C++ guidelines typically recommend avoiding the all caps naming conventions, as all caps is typically used for preprocessor macros and may conflict.  We recommend also avoiding the conventions starting with a capital letter, as names beginning with a capital letter are typically reserved for program-defined types.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Name your enumerated types starting with a capital letter.  Name your enumerators starting with a lower case letter.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Enumerated types are distinct types</p>
+<p>Each enumerated type you create is considered to be a <strong>distinct type</strong>, meaning the compiler can distinguish it from other types (unlike typedefs or type aliases, which are considered non-distinct from the types they are aliasing).</p>
+<p>Because enumerated types are distinct, enumerators defined as part of one enumerated type can’t be used with objects of another enumerated type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Pet
+{
+    cat,
+    dog,
+    pig,
+    whale,
+};
+
+enum Color
+{
+    black,
+    red,
+    blue,
+};
+
+int main()
+{
+    Pet myPet { black }; // compile error: black is not an enumerator of Pet
+    Color shirt { pig }; // compile error: pig is not an enumerator of Color
+
+    return 0;
+}</code></pre>
+<p>You probably didn’t want a pig shirt anyway.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Putting enumerations to use</p>
+<p>Because enumerators are descriptive, they are useful for enhancing code documentation and readability.  Enumerated types are best used when you have a smallish set of related constants, and objects only need to hold one of those values at a time.  </p>
+<p>Commonly defined enumerations include days of the week, the cardinal directions, and the suits in a deck of cards:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum DaysOfWeek
+{
+    sunday,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+};
+
+enum CardinalDirections
+{
+    north,
+    east,
+    south,
+    west,
+};
+
+enum CardSuits
+{
+    clubs,
+    diamonds,
+    hearts,
+    spades,
+};</code></pre>
+<p>Sometimes functions will return a status code to the caller to indicate whether the function executed successfully or encountered an error.  Traditionally, small negative numbers were used to represent different possible error codes.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int readFileContents()
+{
+    if (!openFile())
+        return -1;
+    if (!readFile())
+        return -2;
+    if (!parseFile())
+        return -3;
+
+    return 0; // success
+}</code></pre>
+<p>However, using magic numbers like this isn’t very descriptive.  A better method would be to use an enumerated type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum FileReadResult
+{
+    readResultSuccess,
+    readResultErrorFileOpen,
+    readResultErrorFileRead,
+    readResultErrorFileParse,
+};
+
+FileReadResult readFileContents()
+{
+    if (!openFile())
+        return readResultErrorFileOpen;
+    if (!readFile())
+        return readResultErrorFileRead;
+    if (!parseFile())
+        return readResultErrorFileParse;
+
+    return readResultSuccess;
+}</code></pre>
+<p>Then the caller can test the function’s return value against the appropriate enumerator, which is easier to understand than testing the return result for a specific integer value.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (readFileContents() == readResultSuccess)
+{
+    // do something
+}
+else
+{
+    // print error message
+}</code></pre>
+<p>Enumerated types can also be put to good use in games, to identify different types of items, or monsters, or terrain.  Basically, anything that is a small set of related objects.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum ItemType
+{
+	sword,
+	torch,
+	potion,
+};
+
+int main()
+{
+	ItemType holding{ torch };
+
+	return 0;
+}</code></pre>
+<p>Enumerated types can also make for useful function parameters when the user needs to make a choice between two or more options:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum SortOrder
+{
+    alphabetical,
+    alphabeticalReverse,
+    numerical,
+};
+
+void sortData(SortOrder order)
+{
+    switch (order)
+    {
+        case alphabetical:
+            // sort data in forwards alphabetical order
+            break;
+        case alphabeticalReverse:
+            // sort data in backwards alphabetical order
+            break;
+        case numerical:
+            // sort data numerically
+            break;
+    }
+}</code></pre>
+<p>Many languages use enumerations to define Booleans -- after all, a Boolean is essentially just an enumeration with 2 enumerators: <code>false</code> and <code>true</code>!  However, in C++, <code>true</code> and <code>false</code> are defined as keywords instead of enumerators.</p>
+<p>Because enumerations are small and inexpensive to copy, it is fine to pass (and return) them by value.</p>
+<p>In lesson <a href="bit-flags-and-bit-manipulation-via-stdbitset.html">O.1 -- Bit flags and bit manipulation via std::bitset</a>, we discussed bit flags.  Enums can also be used to define a collection of related bit flag positions for use with <code>std::bitset</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;bitset&gt;
+#include &lt;iostream&gt;
+
+namespace Flags
+{
+    enum State
+    {
+        isHungry,
+        isSad,
+        isMad,
+        isHappy,
+        isLaughing,
+        isAsleep,
+        isDead,
+        isCrying,
+    };
+}
+
+int main()
+{
+    std::bitset&lt;8&gt; me{};
+    me.set(Flags::isHappy);
+    me.set(Flags::isLaughing);
+
+    std::cout &lt;&lt; std::boolalpha; // print bool as true/false
+
+    // Query a few states (we use the any() function to see if any bits remain set)
+    std::cout &lt;&lt; "I am happy? " &lt;&lt; me.test(Flags::isHappy) &lt;&lt; '\n';
+    std::cout &lt;&lt; "I am laughing? " &lt;&lt; me.test(Flags::isLaughing) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>If you’re wondering how we can use an enumerator where an integral value is expected, unscoped enumerators will implicitly convert to integral values.  We will explore this further in the next lesson (<a href="unscoped-enumerator-integral-conversions.html">13.3 -- Unscoped enumerator integral conversions</a>).</p>
+<p class="cpp-section cpp-topline" style="clear: both">The scope of unscoped enumerations</p>
+<p>Unscoped enumerations are named such because they put their enumerator names into the same scope as the enumeration definition itself (as opposed to creating a new scope region like a namespace does).</p>
+<p>For example, given this program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Color // this enum is defined in the global namespace
+{
+    red, // so red is put into the global namespace
+    green,
+    blue, 
+};
+
+int main()
+{
+    Color apple { red }; // my apple is red
+
+    return 0;
+}</code></pre>
+<p>The <code>Color</code> enumeration is defined in the global scope.  Therefore, all the enumeration names (<code>red</code>, <code>green</code>, and <code>blue</code>) also go into the global scope.  This pollutes the global scope and significantly raises the chance of naming collisions.</p>
+<p>One consequence of this is that an enumerator name can’t be used in multiple enumerations within the same scope:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Color
+{
+    red,
+    green,
+    blue, // blue is put into the global namespace
+};
+
+enum Feeling
+{
+    happy,
+    tired,
+    blue, // error: naming collision with the above blue
+};
+
+int main()
+{
+    Color apple { red }; // my apple is red
+    Feeling me { happy }; // I'm happy right now (even though my program doesn't compile)
+
+    return 0;
+}</code></pre>
+<p>In the above example, both unscoped enumerations (<code>Color</code> and <code>Feeling</code>) put enumerators with the same name <code>blue</code> into the global scope.  This leads to a naming collision and subsequent compile error.</p>
+<p>Unscoped enumerations also provide a named scope region for their enumerators (much like a namespace acts as a named scope region for the names declared within).  This means we can access the enumerators of an unscoped enumeration as follows:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Color
+{
+    red,
+    green,
+    blue, // blue is put into the global namespace
+};
+
+int main()
+{
+    Color apple { red }; // okay, accessing enumerator from global namespace
+    Color raspberry { Color::red }; // also okay, accessing enumerator from scope of Color
+
+    return 0;
+}</code></pre>
+<p>Most often, unscoped enumerators are accessed without using the scope resolution operator.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Avoiding enumerator naming collisions</p>
+<p>There are quite a few common ways to prevent unscoped enumerator naming collisions.</p>
+<p>One option is to prefix each enumerator with the name of the enumeration itself:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Color
+{
+    color_red,
+    color_blue,
+    color_green,
+};
+
+enum Feeling
+{
+    feeling_happy,
+    feeling_tired,
+    feeling_blue, // no longer has a naming collision with color_blue
+};
+
+int main()
+{
+    Color paint { color_blue };
+    Feeling me { feeling_blue };
+
+    return 0;
+}</code></pre>
+<p>This still pollutes the namespace but reduces the chance for naming collisions by making the names longer and more unique.</p>
+<p>A better option is to put the enumerated type inside something that provides a separate scope region, such as a namespace:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">namespace Color
+{
+    // The names Color, red, blue, and green are defined inside namespace Color
+    enum Color
+    {
+        red,
+        green,
+        blue,
+    };
+}
+
+namespace Feeling
+{
+    enum Feeling
+    {
+        happy,
+        tired,
+        blue, // Feeling::blue doesn't collide with Color::blue
+    };
+}
+
+int main()
+{
+    Color::Color paint{ Color::blue };
+    Feeling::Feeling me{ Feeling::blue };
+
+    return 0;
+}</code></pre>
+<p>This means we now have to prefix our enumeration and enumerator names with the name of the scoped region.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Classes also provide a scope region, and it’s common to put enumerated types related to a class inside the scope region of the class.  We discuss this in lesson <a href="nested-types-member-types.html">15.3 -- Nested types (member types)</a>.
+</p></div>
+<p>A related option is to use a scoped enumeration (which defines its own scope region).  We’ll discuss scoped enumerations shortly (<a href="scoped-enumerations-enum-classes.html">13.6 -- Scoped enumerations (enum classes)</a>).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer putting your enumerations inside a named scope region (such as a namespace or class) so the enumerators don’t pollute the global namespace.
+</p></div>
+<p>Alternatively, if an enumeration is only used within the body of a single function, the enumeration should be defined inside the function.  This limits the scope of the enumeration and its enumerators to just that function.  The enumerators of such an enumeration will shadow identically named enumerators defined in the global scope.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Comparing against enumerators</p>
+<p>We can use the equality operators (<code>operator==</code> and <code>operator!=</code>) to test whether an enumeration has the value of a particular enumerator or not.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+enum Color
+{
+    red,
+    green,
+    blue,
+};
+
+int main()
+{
+    Color shirt{ blue };
+
+    if (shirt == blue) // if the shirt is blue
+        std::cout &lt;&lt; "Your shirt is blue!";
+    else
+        std::cout &lt;&lt; "Your shirt is not blue!";
+
+    return 0;
+}</code></pre>
+<p>In the above example, we use an if-statement to test whether <code>shirt</code> is equal to the enumerator <code>blue</code>.  This gives us a way to conditionalize our program’s behavior based on what enumerator our enumeration is holding.</p>
+<p>We’ll make more use of this in the next lesson.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Define an unscoped enumerated type named MonsterType to choose between the following monster races: orc, goblin, troll, ogre, and skeleton.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum MonsterType
+{
+    orc,
+    goblin,
+    troll,
+    ogre,
+    skeleton,
+};</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Put the MonsterType enumeration inside a namespace.  Then, create a main() function and instantiate a troll.  The program should compile.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">namespace Monster
+{
+    enum MonsterType
+    {
+        orc,
+        goblin,
+        troll,
+        ogre,
+        skeleton,
+    };
+}
+
+int main()
+{
+    // We use [[maybe_unused]] to avoid warnings about unused variables
+    // You could also output the monster instead
+    [[maybe_unused]] Monster::MonsterType monster{ Monster::troll };
+
+    return 0;
+}</code></pre>
+<p>Because <code>MonsterType</code> is an unscoped enumeration, its enumerators (e.g. <code>troll</code>) are placed into namespace of the enumeration itself (which in this case is <code>namespace Monster</code>).  Thus, we can access <code>troll</code> as <code>Monster::troll</code>.</p>
+<p>Because unscoped enumerations also put their enumerators into their own namespace, <code>troll</code> can also be accessed as <code>Monster::MonsterType::troll</code>.  However, there is no real benefit to doing so.</p>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-program-defined-user-defined-types.html"><span class="nav-kicker">← Previous lesson</span>13.1 · Introduction to program-defined (user-defined) types</a><a class="next" href="unscoped-enumerator-integral-conversions.html"><span class="nav-kicker">Next lesson →</span>13.3 · Unscoped enumerator integral conversions</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

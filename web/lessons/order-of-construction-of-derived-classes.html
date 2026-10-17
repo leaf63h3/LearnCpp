@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous lesson on basic inheritance in C++, you learned that classes can inherit members and functions from other classes. In this lesson, we’re go">
+  <meta name="robots" content="noindex,nofollow">
+  <title>24.3 — Order of construction of derived classes · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/order-of-construction-of-derived-classes/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 24 · Inheritance</summary><div class="sidebar-title"><small>Chapter 24</small><strong>Inheritance</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-inheritance.html"><span class="lesson-number">24.1</span><span>Introduction to inheritance</span></a></li><li><a href="basic-inheritance-in-c.html"><span class="lesson-number">24.2</span><span>Basic inheritance in C++</span></a></li><li><a href="order-of-construction-of-derived-classes.html" aria-current="page"><span class="lesson-number">24.3</span><span>Order of construction of derived classes</span></a></li><li><a href="constructors-and-initialization-of-derived-classes.html"><span class="lesson-number">24.4</span><span>Constructors and initialization of derived classes</span></a></li><li><a href="inheritance-and-access-specifiers.html"><span class="lesson-number">24.5</span><span>Inheritance and access specifiers</span></a></li><li><a href="adding-new-functionality-to-a-derived-class.html"><span class="lesson-number">24.6</span><span>Adding new functionality to a derived class</span></a></li><li><a href="calling-inherited-functions-and-overriding-behavior.html"><span class="lesson-number">24.7</span><span>Calling inherited functions and overriding behavior</span></a></li><li><a href="hiding-inherited-functionality.html"><span class="lesson-number">24.8</span><span>Hiding inherited functionality</span></a></li><li><a href="multiple-inheritance.html"><span class="lesson-number">24.9</span><span>Multiple inheritance</span></a></li><li><a href="chapter-24-summary-and-quiz.html"><span class="lesson-number">24.x</span><span>Chapter 24 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 24</div>
+        <h1>24.3 — Order of construction of derived classes</h1>
+        <div class="article-meta"><span>Updated: 2024-04-30 12:16</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous lesson on <a href="http://www.learncpp.com/cpp-tutorial/112-basic-inheritance-in-c/" target="_blank" rel="noopener noreferrer">basic inheritance in C++</a>, you learned that classes can inherit members and functions from other classes.  In this lesson, we’re going to take a closer look at the order of construction that happens when a derived class is instantiated.</p>
+<p>First, let’s introduce some new classes that will help us illustrate some important points.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Base
+{
+public:
+    int m_id {};
+
+    Base(int id=0)
+        : m_id { id }
+    {
+    }
+
+    int getId() const { return m_id; }
+};
+
+class Derived: public Base
+{
+public:
+    double m_cost {};
+
+    Derived(double cost=0.0)
+        : m_cost { cost }
+    {
+    }
+
+    double getCost() const { return m_cost; }
+};</code></pre>
+<p>In this example, class Derived is derived from class Base.</p>
+<p><img src="../assets/media/a4815274463246f7.gif" loading="lazy" alt=""></p>
+<p>Because Derived inherits functions and variables from Base, you may assume that the members of Base are copied into Derived.  However, this is not true.  Instead, we can consider Derived as a two part class: one part Derived, and one part Base.</p>
+<p><img src="../assets/media/f8594b0c58de4ab2.gif" loading="lazy" alt=""></p>
+<p>You’ve already seen plenty examples of what happens when we instantiate a normal (non-derived) class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    Base base;
+
+    return 0;
+}</code></pre>
+<p>Base is a non-derived class because it does not inherit from any other classes.  C++ allocates memory for Base, then calls Base’s default constructor to do the initialization.  </p>
+<p>Now let’s take a look at what happens when we instantiate a derived class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    Derived derived;
+
+    return 0;
+}</code></pre>
+<p>If you were to try this yourself, you wouldn’t notice any difference from the previous example where we instantiate non-derived class Base.  But behind the scenes, things happen slightly differently.  As mentioned above, Derived is really two parts: a Base part, and a Derived part.  When C++ constructs derived objects, it does so in phases.  First, the most-base class (at the top of the inheritance tree) is constructed.  Then each child class is constructed in order, until the most-child class (at the bottom of the inheritance tree) is constructed last.</p>
+<p>So when we instantiate an instance of Derived, first the Base portion of Derived is constructed (using the Base default constructor).  Once the Base portion is finished, the Derived portion is constructed (using the Derived default constructor).  At this point, there are no more derived classes, so we are done.</p>
+<p>This process is actually easy to illustrate.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Base
+{
+public:
+    int m_id {};
+
+    Base(int id=0)
+        : m_id { id }
+    {
+        std::cout &lt;&lt; "Base\n";
+    }
+
+    int getId() const { return m_id; }
+};
+
+class Derived: public Base
+{
+public:
+    double m_cost {};
+
+    Derived(double cost=0.0)
+        : m_cost { cost }
+    {
+        std::cout &lt;&lt; "Derived\n";
+    }
+
+    double getCost() const { return m_cost; }
+};
+
+int main()
+{
+    std::cout &lt;&lt; "Instantiating Base\n";
+    Base base;
+
+    std::cout &lt;&lt; "Instantiating Derived\n";
+    Derived derived;
+
+    return 0;
+}</code></pre>
+<p>This program produces the following result:</p>
+<pre>
+Instantiating Base
+Base
+Instantiating Derived
+Base
+Derived
+</pre>
+<p>As you can see, when we constructed Derived, the Base portion of Derived got constructed first.  This makes sense: logically, a child can not exist without a parent.  It’s also the safe way to do things: the child class often uses variables and functions from the parent, but the parent class knows nothing about the child.  Instantiating the parent class first ensures those variables are already initialized by the time the derived class is created and ready to use them.</p>
+<p><strong>Order of construction for inheritance chains</strong></p>
+<p>It is sometimes the case that classes are derived from other classes, which are themselves derived from other classes.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class A
+{
+public:
+    A()
+    {
+        std::cout &lt;&lt; "A\n";
+    }
+};
+
+class B: public A
+{
+public:
+    B()
+    {
+        std::cout &lt;&lt; "B\n";
+    }
+};
+
+class C: public B
+{
+public:
+    C()
+    {
+        std::cout &lt;&lt; "C\n";
+    }
+};
+
+class D: public C
+{
+public:
+    D()
+    {
+        std::cout &lt;&lt; "D\n";
+    }
+};</code></pre>
+<p>Remember that C++ always constructs the “first” or “most base” class first.  It then walks through the inheritance tree in order and constructs each successive derived class.  </p>
+<p>Here’s a short program that illustrates the order of creation all along the inheritance chain.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    std::cout &lt;&lt; "Constructing A: \n";
+    A a;
+
+    std::cout &lt;&lt; "Constructing B: \n";
+    B b;
+
+    std::cout &lt;&lt; "Constructing C: \n";
+    C c;
+
+    std::cout &lt;&lt; "Constructing D: \n";
+    D d;
+}</code></pre>
+<p>This code prints the following:</p>
+<pre>
+Constructing A:
+A
+Constructing B:
+A
+B
+Constructing C:
+A
+B
+C
+Constructing D:
+A
+B
+C
+D
+</pre>
+<p><strong>Conclusion</strong></p>
+<p>C++ constructs derived classes in phases, starting with the most-base class (at the top of the inheritance tree) and finishing with the most-child class (at the bottom of the inheritance tree).  As each class is constructed, the appropriate constructor from that class is called to initialize that part of the class.</p>
+<p>You will note that our example classes in this section have all used base class default constructors (for simplicity).  In the next lesson, we will take a closer look at the role of constructors in the process of constructing derived classes (including how to explicitly choose which base class constructor you want your derived class to use).</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="basic-inheritance-in-c.html"><span class="nav-kicker">← Previous lesson</span>24.2 · Basic inheritance in C++</a><a class="next" href="constructors-and-initialization-of-derived-classes.html"><span class="nav-kicker">Next lesson →</span>24.4 · Constructors and initialization of derived classes</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

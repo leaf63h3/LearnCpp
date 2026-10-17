@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Stream states The ios_base class contains several state flags that are used to signal various conditions that may occur when using streams: Flag Meaning go">
+  <meta name="robots" content="noindex,nofollow">
+  <title>28.5 — Stream states and input validation · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stream-states-and-input-validation/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 28 · Input and Output (I/O)</summary><div class="sidebar-title"><small>Chapter 28</small><strong>Input and Output (I/O)</strong></div>
+<ol class="sidebar-lessons"><li><a href="input-and-output-io-streams.html"><span class="lesson-number">28.1</span><span>Input and output (I/O) streams</span></a></li><li><a href="input-with-istream.html"><span class="lesson-number">28.2</span><span>Input with istream</span></a></li><li><a href="output-with-ostream-and-ios.html"><span class="lesson-number">28.3</span><span>Output with ostream and ios</span></a></li><li><a href="stream-classes-for-strings.html"><span class="lesson-number">28.4</span><span>Stream classes for strings</span></a></li><li><a href="stream-states-and-input-validation.html" aria-current="page"><span class="lesson-number">28.5</span><span>Stream states and input validation</span></a></li><li><a href="basic-file-io.html"><span class="lesson-number">28.6</span><span>Basic file I/O</span></a></li><li><a href="random-file-io.html"><span class="lesson-number">28.7</span><span>Random file I/O</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 28</div>
+        <h1>28.5 — Stream states and input validation</h1>
+        <div class="article-meta"><span>Updated: 2024-09-09 22:06</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">Stream states</p>
+<p>The ios_base class contains several state flags that are used to signal various conditions that may occur when using streams:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+<tr>
+<td>goodbit</td>
+<td>Everything is okay</td>
+</tr>
+<tr>
+<td>badbit</td>
+<td>Some kind of fatal error occurred (e.g. the program tried to read past the end of a file)</td>
+</tr>
+<tr>
+<td>eofbit</td>
+<td>The stream has reached the end of a file</td>
+</tr>
+<tr>
+<td>failbit</td>
+<td>A non-fatal error occurred (e.g. the user entered letters when the program was expecting an integer)</td>
+</tr>
+<p></p></table></div>
+<p>Although these flags live in ios_base, because ios is derived from ios_base and ios takes less typing than ios_base, they are generally accessed through ios (e.g. as std::ios::failbit).</p>
+<p>ios also provides a number of member functions in order to conveniently access these states:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Member function</th>
+<th>Meaning</th>
+</tr>
+<tr>
+<td>good()</td>
+<td>Returns true if the goodbit is set (the stream is ok)</td>
+</tr>
+<tr>
+<td>bad()</td>
+<td>Returns true if the badbit is set (a fatal error occurred)</td>
+</tr>
+<tr>
+<td>eof()</td>
+<td>Returns true if the eofbit is set (the stream is at the end of a file)</td>
+</tr>
+<tr>
+<td>fail()</td>
+<td>Returns true if the failbit is set (a non-fatal error occurred)</td>
+</tr>
+<tr>
+<td>clear()</td>
+<td>Clears all flags and restores the stream to the goodbit state</td>
+</tr>
+<tr>
+<td>clear(state)</td>
+<td>Clears all flags and sets the state flag passed in</td>
+</tr>
+<tr>
+<td>rdstate()</td>
+<td>Returns the currently set flags</td>
+</tr>
+<tr>
+<td>setstate(state)</td>
+<td>Sets the state flag passed in</td>
+</tr>
+<p></p></table></div>
+<p>The most commonly dealt with bit is the failbit, which is set when the user enters invalid input.  For example, consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::cout &lt;&lt; "Enter your age: ";
+int age {};
+std::cin &gt;&gt; age;</code></pre>
+<p>Note that this program is expecting the user to enter an integer.  However, if the user enters non-numeric data, such as “Alex”, cin will be unable to extract anything to age, and the failbit will be set.</p>
+<p>If an error occurs and a stream is set to anything other than goodbit, further stream operations on that stream will be ignored.  This condition can be cleared by calling the clear() function.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Input validation</p>
+<p><strong>Input validation</strong> is the process of checking whether the user input meets some set of criteria.  Input validation can generally be broken down into two types: string and numeric.</p>
+<p>With string validation, we accept all user input as a string, and then accept or reject that string depending on whether it is formatted appropriately.  For example, if we ask the user to enter a telephone number, we may want to ensure the data they enter has ten digits.  In most languages (especially scripting languages like Perl and PHP), this is done via regular expressions. The C++ standard library has a <a href="https://en.cppreference.com/w/cpp/regex" target="_blank" rel="noopener noreferrer">regular expression library</a> as well. Because regular expressions are slow compared to manual string validation, they should only be used if performance (compile-time and run-time) is of no concern or manual validation is too cumbersome.</p>
+<p>With numerical validation, we are typically concerned with making sure the number the user enters is within a particular range (e.g. between 0 and 20).  However, unlike with string validation, it’s possible for the user to enter things that aren’t numbers at all -- and we need to handle these cases too.</p>
+<p>To help us out, C++ provides a number of useful functions that we can use to determine whether specific characters are numbers or letters.  The following functions live in the cctype header:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Function</th>
+<th>Meaning</th>
+</tr>
+<tr>
+<td>std::isalnum(int)</td>
+<td>Returns non-zero if the parameter is a letter or a digit</td>
+</tr>
+<tr>
+<td>std::isalpha(int)</td>
+<td>Returns non-zero if the parameter is a letter</td>
+</tr>
+<tr>
+<td>std::iscntrl(int)</td>
+<td>Returns non-zero if the parameter is a control character</td>
+</tr>
+<tr>
+<td>std::isdigit(int)</td>
+<td>Returns non-zero if the parameter is a digit</td>
+</tr>
+<tr>
+<td>std::isgraph(int)</td>
+<td>Returns non-zero if the parameter is printable character that is not whitespace</td>
+</tr>
+<tr>
+<td>std::isprint(int)</td>
+<td>Returns non-zero if the parameter is printable character (including whitespace)</td>
+</tr>
+<tr>
+<td>std::ispunct(int)</td>
+<td>Returns non-zero if the parameter is neither alphanumeric nor whitespace</td>
+</tr>
+<tr>
+<td>std::isspace(int)</td>
+<td>Returns non-zero if the parameter is whitespace</td>
+</tr>
+<tr>
+<td>std::isxdigit(int)</td>
+<td>Returns non-zero if the parameter is a hexadecimal digit (0-9, a-f, A-F)</td>
+</tr>
+<p></p></table></div>
+<p class="cpp-section cpp-topline" style="clear: both">String validation</p>
+<p>Let’s do a simple case of string validation by asking the user to enter their name.  Our validation criteria will be that the user enters only alphabetic characters or spaces.  If anything else is encountered, the input will be rejected.</p>
+<p>When it comes to variable length inputs, the best way to validate strings (besides using a regular expression library) is to step through each character of the string and ensure it meets the validation criteria.  That’s exactly what we’ll do here, or better, that’s what <code>std::all_of</code> does for us.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt; // std::all_of
+#include &lt;cctype&gt; // std::isalpha, std::isspace
+#include &lt;iostream&gt;
+#include &lt;ranges&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+bool isValidName(std::string_view name)
+{
+  return std::ranges::all_of(name, [](char ch) {
+    return std::isalpha(ch) || std::isspace(ch);
+  });
+
+  // Before C++20, without ranges
+  // return std::all_of(name.begin(), name.end(), [](char ch) {
+  //    return std::isalpha(ch) || std::isspace(ch);
+  // });
+}
+
+int main()
+{
+  std::string name{};
+
+  do
+  {
+    std::cout &lt;&lt; "Enter your name: ";
+    std::getline(std::cin, name); // get the entire line, including spaces
+  } while (!isValidName(name));
+
+  std::cout &lt;&lt; "Hello " &lt;&lt; name &lt;&lt; "!\n";
+}</code></pre>
+<p>Note that this code isn’t perfect: the user could say their name was “asf w jweo s di we ao” or some other bit of gibberish, or even worse, just a bunch of spaces.  We could address this somewhat by refining our validation criteria to only accept strings that contain at least one character and at most one space.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Reader “Waldo” provides a C++20 solution (using std::ranges) that addresses these shortcomings <a href="../index.html">here</a>
+</p></div>
+<p>Now let’s take a look at another example where we are going to ask the user to enter their phone number.  Unlike a user’s name, which is variable-length and where the validation criteria are the same for every character, a phone number is a fixed length but the validation criteria differ depending on the position of the character.  Consequently, we are going to take a different approach to validating our phone number input.  In this case, we’re going to write a function that will check the user’s input against a predetermined template to see whether it matches.  The template will work as follows:</p>
+<p>A # will match any digit in the user input.<br>
+A @ will match any alphabetic character in the user input.<br>
+A _ will match any whitespace.<br>
+A ? will match anything.<br>
+Otherwise, the characters in the user input and the template must match exactly.</p>
+<p>So, if we ask the function to match the template “(###) ###-####”, that means we expect the user to enter a ‘(‘ character, three numbers, a ‘)’ character, a space, three numbers, a dash, and four more numbers.  If any of these things doesn’t match, the input will be rejected.</p>
+<p>Here is the code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt; // std::equal
+#include &lt;cctype&gt; // std::isdigit, std::isspace, std::isalpha
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;ranges&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+bool inputMatches(std::string_view input, std::string_view pattern)
+{
+    if (input.length() != pattern.length())
+    {
+        return false;
+    }
+
+    // This table defines all special symbols that can match a range of user input
+    // Each symbol is mapped to a function that determines whether the input is valid for that symbol
+    static const std::map&lt;char, int (*)(int)&gt; validators{
+      { '#', &amp;std::isdigit },
+      { '_', &amp;std::isspace },
+      { '@', &amp;std::isalpha },
+      { '?', [](int) { return 1; } }
+    };
+
+    // Before C++20, use
+    // return std::equal(input.begin(), input.end(), pattern.begin(), [](char ch, char mask) -&gt; bool {
+    // ...
+
+    return std::ranges::equal(input, pattern, [](char ch, char mask) -&gt; bool {
+        auto found{ validators.find(mask) };
+        
+        if (found != validators.end())
+        {
+            // The pattern's current element was found in the validators. Call the
+            // corresponding function.
+            return (*found-&gt;second)(ch);
+        }
+
+        // The pattern's current element was not found in the validators. The
+        // characters have to be an exact match.
+        return ch == mask;
+        }); // end of lambda
+}
+
+int main()
+{
+    std::string phoneNumber{};
+
+    do
+    {
+        std::cout &lt;&lt; "Enter a phone number (###) ###-####: ";
+        std::getline(std::cin, phoneNumber);
+    } while (!inputMatches(phoneNumber, "(###) ###-####"));
+
+    std::cout &lt;&lt; "You entered: " &lt;&lt; phoneNumber &lt;&lt; '\n';
+}</code></pre>
+<p>Using this function, we can force the user to match our specific format exactly.  However, this function is still subject to several constraints: if #, @, _, and ? are valid characters in the user input, this function won’t work, because those symbols have been given special meanings.  Also, unlike with regular expressions, there is no template symbol that means “a variable number of characters can be entered”.  Thus, such a template could not be used to ensure the user enters two words separated by a whitespace, because it can not handle the fact that the words are of variable lengths.  For such problems, the non-template approach is generally more appropriate.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Numeric validation</p>
+<p>When dealing with numeric input, the obvious way to proceed is to use the extraction operator to extract input to a numeric type.  By checking the failbit, we can then tell whether the user entered a number or not.</p>
+<p>Let’s try this approach:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+
+int main()
+{
+    int age{};
+
+    while (true)
+    {
+        std::cout &lt;&lt; "Enter your age: ";
+        std::cin &gt;&gt; age;
+
+        if (std::cin.fail()) // no extraction took place
+        {
+            std::cin.clear(); // reset the state bits back to goodbit so we can use ignore()
+            std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // clear out the bad input from the stream
+            continue; // try again
+        }
+
+        if (age &lt;= 0) // make sure age is positive
+            continue;
+
+        break;
+    }
+
+    std::cout &lt;&lt; "You entered: " &lt;&lt; age &lt;&lt; '\n';
+}</code></pre>
+<p>If the user enters an integer, the extraction will succeed.  std::cin.fail() will evaluate to false, skipping the conditional, and (assuming the user entered a positive number), we will hit the break statement, exiting the loop.</p>
+<p>If the user instead enters input starting with a letter, the extraction will fail.  std::cin.fail() will evaluate to true, and we will go into the conditional.  At the end of the conditional block, we will hit the continue statement, which will jump back to the top of the while loop, and the user will be asked to enter input again.</p>
+<p>However, there’s one more case we haven’t tested for, and that’s when the user enters a string that starts with numbers but then contains letters (e.g. “34abcd56”).  In this case, the starting numbers (34) will be extracted into age, the remainder of the string (“abcd56”) will be left in the input stream, and the failbit will NOT be set.  This causes two potential problems:</p>
+<ol start="1">
+<li>If you want this to be valid input, you now have garbage in your stream.
+</li>
+<li>If you don’t want this to be valid input, it is not rejected (and you have garbage in your stream).
+</li>
+</ol>
+<p>Let’s fix the first problem.  This is easy:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+
+int main()
+{
+    int age{};
+
+    while (true)
+    {
+        std::cout &lt;&lt; "Enter your age: ";
+        std::cin &gt;&gt; age;
+
+        if (std::cin.fail()) // no extraction took place
+        {
+            std::cin.clear(); // reset the state bits back to goodbit so we can use ignore()
+            std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // clear out the bad input from the stream
+            continue; // try again
+        }
+
+        std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // clear out any additional input from the stream
+
+        if (age &lt;= 0) // make sure age is positive
+            continue;
+
+      break;
+    }
+
+    std::cout &lt;&lt; "You entered: " &lt;&lt; age &lt;&lt; '\n';
+}</code></pre>
+<p>If you don’t want such input to be valid, we’ll have to do a little extra work.  Fortunately, the previous solution gets us half way there.  We can use the gcount() function to determine how many characters were ignored.  If our input was valid, gcount() should return 1 (the newline character that was discarded).  If it returns more than 1, the user entered something that wasn’t extracted properly, and we should ask them for new input.  Here’s an example of this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+
+int main()
+{
+    int age{};
+
+    while (true)
+    {
+        std::cout &lt;&lt; "Enter your age: ";
+        std::cin &gt;&gt; age;
+
+        if (std::cin.fail()) // no extraction took place
+        {
+            std::cin.clear(); // reset the state bits back to goodbit so we can use ignore()
+            std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // clear out the bad input from the stream
+            continue; // try again
+        }
+
+        std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // clear out any additional input from the stream
+        if (std::cin.gcount() &gt; 1) // if we cleared out more than one additional character
+        {
+            continue; // we'll consider this input to be invalid
+        }
+
+        if (age &lt;= 0) // make sure age is positive
+        {
+            continue;
+        }
+
+        break;
+    }
+
+    std::cout &lt;&lt; "You entered: " &lt;&lt; age &lt;&lt; '\n';
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Numeric validation as a string</p>
+<p>The above example was quite a bit of work simply to get a simple value!  Another way to process numeric input is to read it in as a string, then try to convert it to a numeric type.  The following program makes use of that methodology:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;charconv&gt; // std::from_chars
+#include &lt;iostream&gt;
+#include &lt;limits&gt;
+#include &lt;optional&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+// std::optional&lt;int&gt; returns either an int or nothing
+std::optional&lt;int&gt; extractAge(std::string_view age)
+{
+    int result{};
+    const auto end{ age.data() + age.length() }; // get end iterator of underlying C-style string
+
+    // Try to parse an int from age
+    // If we got an error of some kind...
+    if (std::from_chars(age.data(), end, result).ec != std::errc{})
+    {
+        return {}; // return nothing
+    }
+
+    if (result &lt;= 0) // make sure age is positive
+    {
+        return {}; // return nothing
+    }
+
+    return result; // return an int value
+}
+
+int main()
+{
+    int age{};
+
+    while (true)
+    {
+        std::cout &lt;&lt; "Enter your age: ";
+        std::string strAge{};
+
+        // Try to get a line of input
+        if (!std::getline(std::cin &gt;&gt; std::ws, strAge))
+        {
+            // If we failed, clean up and try again
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n');    
+            continue;
+        }
+
+        // Try to extract the age
+        auto extracted{ extractAge(strAge) };
+
+        // If we failed, try again
+        if (!extracted)
+            continue;
+
+        age = *extracted; // get the value
+        break;
+    }
+
+  std::cout &lt;&lt; "You entered: " &lt;&lt; age &lt;&lt; '\n';
+}</code></pre>
+<p>Whether this approach is more or less work than straight numeric extraction depends on your validation parameters and restrictions.</p>
+<p>As you can see, doing input validation in C++ is a lot of work.  Fortunately, many such tasks (e.g. doing numeric validation as a string) can be easily turned into functions that can be reused in a wide variety of situations.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stream-classes-for-strings.html"><span class="nav-kicker">← Previous lesson</span>28.4 · Stream classes for strings</a><a class="next" href="basic-file-io.html"><span class="nav-kicker">Next lesson →</span>28.6 · Basic file I/O</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

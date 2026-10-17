@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="When writing your code, sometimes you’ll run across cases where you’re not sure whether one method or another will be more performant. So how do you tell? ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>18.4 — Timing your code · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/timing-your-code/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 18 · Iterators and Algorithms (under construction)</summary><div class="sidebar-title"><small>Chapter 18</small><strong>Iterators and Algorithms (under construction)</strong></div>
+<ol class="sidebar-lessons"><li><a href="sorting-an-array-using-selection-sort.html"><span class="lesson-number">18.1</span><span>Sorting an array using selection sort</span></a></li><li><a href="introduction-to-iterators.html"><span class="lesson-number">18.2</span><span>Introduction to iterators</span></a></li><li><a href="introduction-to-standard-library-algorithms.html"><span class="lesson-number">18.3</span><span>Introduction to standard library algorithms</span></a></li><li><a href="timing-your-code.html" aria-current="page"><span class="lesson-number">18.4</span><span>Timing your code</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 18</div>
+        <h1>18.4 — Timing your code</h1>
+        <div class="article-meta"><span>Updated: 2023-10-31 13:08</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>When writing your code, sometimes you’ll run across cases where you’re not sure whether one method or another will be more performant.  So how do you tell?</p>
+<p>One easy way is to time your code to see how long it takes to run.  C++11 comes with some functionality in the chrono library to do just that.  However, using the chrono library is a bit arcane.  The good news is that we can easily encapsulate all the timing functionality we need into a class that we can then use in our own programs.</p>
+<p>Here’s the class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;chrono&gt; // for std::chrono functions
+
+class Timer
+{
+private:
+	// Type aliases to make accessing nested type easier
+	using Clock = std::chrono::steady_clock;
+	using Second = std::chrono::duration&lt;double, std::ratio&lt;1&gt; &gt;;
+	
+	std::chrono::time_point&lt;Clock&gt; m_beg { Clock::now() };
+
+public:
+	void reset()
+	{
+		m_beg = Clock::now();
+	}
+	
+	double elapsed() const
+	{
+		return std::chrono::duration_cast&lt;Second&gt;(Clock::now() - m_beg).count();
+	}
+};</code></pre>
+<p>That’s it!  To use it, we instantiate a Timer object at the top of our main function (or wherever we want to start timing), and then call the elapsed() member function whenever we want to know how long the program took to run to that point.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    Timer t;
+
+    // Code to time goes here
+
+    std::cout &lt;&lt; "Time elapsed: " &lt;&lt; t.elapsed() &lt;&lt; " seconds\n";
+
+    return 0;
+}</code></pre>
+<p>Now, let’s use this in an actual example where we sort an array of 10000 elements.  First, let’s use the selection sort algorithm we developed in a previous chapter:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;chrono&gt; // for std::chrono functions
+#include &lt;cstddef&gt; // for std::size_t
+#include &lt;iostream&gt;
+#include &lt;numeric&gt; // for std::iota
+
+const int g_arrayElements { 10000 };
+
+class Timer
+{
+private:
+    // Type aliases to make accessing nested type easier
+    using Clock = std::chrono::steady_clock;
+    using Second = std::chrono::duration&lt;double, std::ratio&lt;1&gt; &gt;;
+
+    std::chrono::time_point&lt;Clock&gt; m_beg{ Clock::now() };
+
+public:
+
+    void reset()
+    {
+        m_beg = Clock::now();
+    }
+
+    double elapsed() const
+    {
+        return std::chrono::duration_cast&lt;Second&gt;(Clock::now() - m_beg).count();
+    }
+};
+
+void sortArray(std::array&lt;int, g_arrayElements&gt;&amp; array)
+{
+
+    // Step through each element of the array
+    // (except the last one, which will already be sorted by the time we get there)
+    for (std::size_t startIndex{ 0 }; startIndex &lt; (g_arrayElements - 1); ++startIndex)
+    {
+        // smallestIndex is the index of the smallest element we’ve encountered this iteration
+        // Start by assuming the smallest element is the first element of this iteration
+        std::size_t smallestIndex{ startIndex };
+
+        // Then look for a smaller element in the rest of the array
+        for (std::size_t currentIndex{ startIndex + 1 }; currentIndex &lt; g_arrayElements; ++currentIndex)
+        {
+            // If we've found an element that is smaller than our previously found smallest
+            if (array[currentIndex] &lt; array[smallestIndex])
+            {
+                // then keep track of it
+                smallestIndex = currentIndex;
+            }
+        }
+
+        // smallestIndex is now the smallest element in the remaining array
+        // swap our start element with our smallest element (this sorts it into the correct place)
+        std::swap(array[startIndex], array[smallestIndex]);
+    }
+}
+
+int main()
+{
+    std::array&lt;int, g_arrayElements&gt; array;
+    std::iota(array.rbegin(), array.rend(), 1); // fill the array with values 10000 to 1
+
+    Timer t;
+
+    sortArray(array);
+
+    std::cout &lt;&lt; "Time taken: " &lt;&lt; t.elapsed() &lt;&lt; " seconds\n";
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, three runs produced timings of 0.0507, 0.0506, and 0.0498.  So we can say around 0.05 seconds.</p>
+<p>Now, let’s do the same test using std::sort from the standard library.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt; // for std::sort
+#include &lt;array&gt;
+#include &lt;chrono&gt; // for std::chrono functions
+#include &lt;cstddef&gt; // for std::size_t
+#include &lt;iostream&gt;
+#include &lt;numeric&gt; // for std::iota
+
+const int g_arrayElements { 10000 };
+
+class Timer
+{
+private:
+    // Type aliases to make accessing nested type easier
+    using Clock = std::chrono::steady_clock;
+    using Second = std::chrono::duration&lt;double, std::ratio&lt;1&gt; &gt;;
+
+    std::chrono::time_point&lt;Clock&gt; m_beg{ Clock::now() };
+
+public:
+
+    void reset()
+    {
+        m_beg = Clock::now();
+    }
+
+    double elapsed() const
+    {
+        return std::chrono::duration_cast&lt;Second&gt;(Clock::now() - m_beg).count();
+    }
+};
+
+int main()
+{
+    std::array&lt;int, g_arrayElements&gt; array;
+    std::iota(array.rbegin(), array.rend(), 1); // fill the array with values 10000 to 1
+
+    Timer t;
+
+    std::ranges::sort(array); // Since C++20
+    // If your compiler isn't C++20-capable
+    // std::sort(array.begin(), array.end());
+
+    std::cout &lt;&lt; "Time taken: " &lt;&lt; t.elapsed() &lt;&lt; " seconds\n";
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this produced results of: 0.000693, 0.000692, and 0.000699.  So basically right around 0.0007.</p>
+<p>In other words, in this case, std::sort is 100 times faster than the selection sort we wrote ourselves!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Things that can impact the performance of your program</p>
+<p>Timing a run of your program is fairly straightforward, but your results can be significantly impacted by a number of things, and it’s important to be aware of how to properly measure and what things can impact timing.</p>
+<p>First, make sure you’re using a release build target, not a debug build target.  Debug build targets typically turn optimization off, and that optimization can have a significant impact on the results.  For example, using a debug build target, running the above std::sort example on the author’s machine took 0.0235 seconds -- 33 times as long!</p>
+<p>Second, your timing results may be influenced by other things your system may be doing in the background.  Make sure your system isn’t doing anything CPU, memory, or hard drive intensive (e.g. playing a game, searching for a file, running an antivirus scan, or installing a update in the background).  Seemingly innocent things, like idle web browsers, can temporarily spike your CPU to 100% utilization when the active tab rotates in a new ad banner and has to parse a bunch of javascript.  The more apps you can shut down before measuring, the less variance in your results you are likely to have.</p>
+<p>Third, if your program uses a random number generator, the particular sequence of random numbers generated may impact timing.  For example, if you’re sorting an array filled with random numbers, the results will likely vary from run to run because the number of swaps required to sort the array will vary from run to run.  To get more consistent results across multiple runs of your program, you can temporarily seed your random number generator with a literal value (rather than std::random_device or the system clock), so that it generates the same sequence of numbers with each run.  However, if your program’s performance is highly dependent on the particular random sequence generated, this can also lead to misleading results overall.</p>
+<p>Fourth, make sure you’re not timing waiting for user input, as how long the user takes to input something should not be part of your timing considerations.  If user input is required, consider adding some way to provide that input that does not wait on the user (e.g. command line, from a file, having a code path that routes around the input).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Measuring performance</p>
+<p>When measuring the performance of your program, gather at least 3 results.  If the results are all similar, these likely represent the actual performance of your program on that machine.  Otherwise, continue to take measurements until you have a cluster of similar results (and understand which other results are outliers).  It’s not uncommon to have one or more outliers due to your system doing something in the background during some of those runs.</p>
+<p>If your results have a lot of variance (and aren’t clustering well), your program is likely either being significantly affected by other things happening on the system, or by the effects of randomization within your application.</p>
+<p>Because performance measurements are impacted by so many things (particularly hardware speed, but also OS, apps running, etc…), absolute performance measurements (e.g. “the program runs in 10 seconds”) are generally not that useful outside of understanding how well the program runs on one particular machine you care about.  On a different machine, that same program may run in 1 second, 10 seconds, or 1 minute.  It’s hard to know without actually measuring across a spectrum of different hardware.</p>
+<p>However, on a single machine, relative performance measurements can be useful.  We can gather performance results from several different variants of a program to determine which variant is the most performant.  For example, if variant 1 runs in 10 seconds and variant 2 runs in 8 seconds, variant 2 is probably going to be faster on all similar machines regardless of the absolute speed of that machine.</p>
+<p>After measuring the second variant, a good sanity check is to measure the first variant again.  If the results of the first variant are consistent with your initial measurements for that variant, then the result of both variants should be reasonably comparable.  For example, if variant 1 runs in 10 seconds, and variant 2 runs in 8 seconds, and then we measure variant 1 again and get 10 seconds, then we can reasonably conclude that the measurements for both variants were fairly measured, and that variant 2 is faster.</p>
+<p>However, if the results of the first variant are no longer consistent with your initial measurements for that variant, then something has happened on the machine that is now affecting performance, and it will be hard to tell whether differences in measurement are due to the variant or due to the machine itself.  In this case, it’s best to discard the existing results and re-measure.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-standard-library-algorithms.html"><span class="nav-kicker">← Previous lesson</span>18.3 · Introduction to standard library algorithms</a><a class="next" href="dynamic-memory-allocation-with-new-and-delete.html"><span class="nav-kicker">Next lesson →</span>19.1 · Dynamic memory allocation with new and delete</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

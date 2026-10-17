@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In previous lesson 14.5 -- Public and private members and access specifiers, we discussed the public and private access levels. As a reminder, classes typi">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.6 — Access functions · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/access-functions/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html" aria-current="page"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.6 — Access functions</h1>
+        <div class="article-meta"><span>Updated: 2024-12-29 18:16</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In previous lesson <a href="public-and-private-members-and-access-specifiers.html">14.5 -- Public and private members and access specifiers</a>, we discussed the public and private access levels.  As a reminder, classes typically make their data members private, and private members can not be directly accessed by the public.</p>
+<p>Consider the following <code>Date</code> class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Date
+{
+private:
+    int m_year{ 2020 };
+    int m_month{ 10 };
+    int m_day{ 14 };
+
+public:
+    void print() const
+    {
+        std::cout &lt;&lt; m_year &lt;&lt; '/' &lt;&lt; m_month &lt;&lt; '/' &lt;&lt; m_day &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Date d{};  // create a Date object
+    d.print(); // print the date
+
+    return 0;
+}</code></pre>
+<p>While this class provides a <code>print()</code> member function to print the entire date, this may not be sufficient for what the user wants to do.  For example, what if the user of a <code>Date</code> object wanted to get the year?  Or to change the year to a different value?  They would be unable to do so, as <code>m_year</code> is private (and thus can’t be directly accessed by the public).</p>
+<p>For some classes, it can be appropriate (in the context of what the class does) for us to be able to get or set the value of a private member variable.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Access functions</p>
+<p>An <strong>access function</strong> is a trivial public member function whose job is to retrieve or change the value of a private member variable.  </p>
+<p>Access functions come in two flavors: getters and setters.  <strong>Getters</strong> (also sometimes called <strong>accessors</strong>) are public member functions that return the value of a private member variable. <strong>Setters</strong> (also sometimes called <strong>mutators</strong>) are public member functions that set the value of a private member variable.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Nomenclature</p>
+<p>The term “mutator” is often used interchangably with “setter”.  But more broadly, a <strong>mutator</strong> is any member function that modifies (mutates) the state of the object.  Under this definition, a setter is a specific kind of mutator.  However, it is also possible to have non-setter functions that qualify as mutators.
+</p></div>
+<p>Getters are usually made const, so they can be called on both const and non-const objects.  Setters should be non-const, so they can modify the data members.</p>
+<p>For illustrative purposes, let’s update our <code>Date</code> class to have a full set of getters and setters:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Date
+{
+private:
+    int m_year { 2020 };
+    int m_month { 10 };
+    int m_day { 14 };
+
+public:
+    void print()
+    {
+        std::cout &lt;&lt; m_year &lt;&lt; '/' &lt;&lt; m_month &lt;&lt; '/' &lt;&lt; m_day &lt;&lt; '\n';
+    }
+
+    int getYear() const { return m_year; }        // getter for year
+    void setYear(int year) { m_year = year; }     // setter for year
+
+    int getMonth() const  { return m_month; }     // getter for month
+    void setMonth(int month) { m_month = month; } // setter for month
+
+    int getDay() const { return m_day; }          // getter for day
+    void setDay(int day) { m_day = day; }         // setter for day
+};
+
+int main()
+{
+    Date d{};
+    d.setYear(2021);
+    std::cout &lt;&lt; "The year is: " &lt;&lt; d.getYear() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+The year is: 2021
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Access function naming</p>
+<p>There is no common convention for naming access functions.  However, there are a few naming conventions that are more popular than others.</p>
+<ul>
+<li>Prefixed with “get” and “set”:
+</li>
+</ul>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    int getDay() const { return m_day; }  // getter
+    void setDay(int day) { m_day = day; } // setter</code></pre>
+<p>The advantage of using “get” and “set” prefixes is that it makes it clear that these are access functions (and should be inexpensive to call).</p>
+<ul>
+<li>No prefix:
+</li>
+</ul>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    int day() const { return m_day; }  // getter
+    void day(int day) { m_day = day; } // setter</code></pre>
+<p>This style is more concise, and uses the same name for both the getter and setter (relying on function overloading to differentiate the two).  The C++ standard library uses this convention.</p>
+<p>The downside of the no-prefix convention is that it is not particularly obvious that this is setting the value of the day member:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">d.day(5); // does this look like it's setting the day member to 5?</code></pre>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>One of the best reasons to prefix private data members with “m_” is to avoid having data members and getters with the same name (something C++ doesn’t support, although other languages like Java do).
+</p></div>
+<ul>
+<li>“set” prefix only:
+</li>
+</ul>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    int day() const { return m_day; }     // getter
+    void setDay(int day) { m_day = day; } // setter</code></pre>
+<p>Which of the above you choose is a matter of personal preference.  However, we highly recommend using the “set” prefix for setters.  Getters can use either a “get” prefix or no prefix.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Use a “set” prefix on your setters to make it more obvious that they are changing the state of the object.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Getters should return by value or by const lvalue reference</p>
+<p>Getters should provide “read-only” access to data.  Therefore, the best practice is that they should return by either value (if making a copy of the member is inexpensive) or by const lvalue reference (if making a copy of the member is expensive).</p>
+<p>Because returning data members by reference is a non-trivial topic, we’ll cover that topic in more detail in lesson <a href="member-functions-returning-references-to-data-members.html">14.7 -- Member functions returning references to data members</a>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Access functions concerns</p>
+<p>There is a fair bit of discussion around cases in which access functions should be used or avoided.  Many developers would argue that use of access functions violates good class design (a topic that could easily fill an entire book).</p>
+<p>For now, we’ll recommend a pragmatic approach.  As you create your classes, consider the following:</p>
+<ul>
+<li>If your class has no invariants and requires a lot of access functions, consider using a struct (whose data members are public) and providing direct access to members instead.
+</li>
+<li>Prefer implementing behaviors or actions instead of access functions.  For example, instead of a <code>setAlive(bool)</code> setter, implement a <code>kill()</code> and a <code>revive()</code> function.
+</li>
+<li>Only provide access functions in cases where the public would reasonably need to get or set the value of an individual member.
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">Why make data private if we’re going to provide a public access function to it?</p>
+<p>So glad you asked.  We’ll answer this question in upcoming lesson <a href="the-benefits-of-data-hiding-encapsulation.html">14.8 -- The benefits of data hiding (encapsulation)</a>.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="public-and-private-members-and-access-specifiers.html"><span class="nav-kicker">← Previous lesson</span>14.5 · Public and private members and access specifiers</a><a class="next" href="member-functions-returning-references-to-data-members.html"><span class="nav-kicker">Next lesson →</span>14.7 · Member functions returning references to data members</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

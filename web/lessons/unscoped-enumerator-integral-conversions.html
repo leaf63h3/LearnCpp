@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the prior lesson (13.2 -- Unscoped enumerations), we mentioned that enumerators are symbolic constants. What we didn’t tell you then is that these enume">
+  <meta name="robots" content="noindex,nofollow">
+  <title>13.3 — Unscoped enumerator integral conversions · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/unscoped-enumerator-integral-conversions/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 13 · Compound Types: Enums and Structs</summary><div class="sidebar-title"><small>Chapter 13</small><strong>Compound Types: Enums and Structs</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-program-defined-user-defined-types.html"><span class="lesson-number">13.1</span><span>Introduction to program-defined (user-defined) types</span></a></li><li><a href="unscoped-enumerations.html"><span class="lesson-number">13.2</span><span>Unscoped enumerations</span></a></li><li><a href="unscoped-enumerator-integral-conversions.html" aria-current="page"><span class="lesson-number">13.3</span><span>Unscoped enumerator integral conversions</span></a></li><li><a href="converting-an-enumeration-to-and-from-a-string.html"><span class="lesson-number">13.4</span><span>Converting an enumeration to and from a string</span></a></li><li><a href="introduction-to-overloading-the-i-o-operators.html"><span class="lesson-number">13.5</span><span>Introduction to overloading the I/O operators</span></a></li><li><a href="scoped-enumerations-enum-classes.html"><span class="lesson-number">13.6</span><span>Scoped enumerations (enum classes)</span></a></li><li><a href="introduction-to-structs-members-and-member-selection.html"><span class="lesson-number">13.7</span><span>Introduction to structs, members, and member selection</span></a></li><li><a href="struct-aggregate-initialization.html"><span class="lesson-number">13.8</span><span>Struct aggregate initialization</span></a></li><li><a href="default-member-initialization.html"><span class="lesson-number">13.9</span><span>Default member initialization</span></a></li><li><a href="passing-and-returning-structs.html"><span class="lesson-number">13.10</span><span>Passing and returning structs</span></a></li><li><a href="struct-miscellany.html"><span class="lesson-number">13.11</span><span>Struct miscellany</span></a></li><li><a href="member-selection-with-pointers-and-references.html"><span class="lesson-number">13.12</span><span>Member selection with pointers and references</span></a></li><li><a href="class-templates.html"><span class="lesson-number">13.13</span><span>Class templates</span></a></li><li><a href="class-template-argument-deduction-ctad-and-deduction-guides.html"><span class="lesson-number">13.14</span><span>Class template argument deduction (CTAD) and deduction guides</span></a></li><li><a href="alias-templates.html"><span class="lesson-number">13.15</span><span>Alias templates</span></a></li><li><a href="chapter-13-summary-and-quiz.html"><span class="lesson-number">13.x</span><span>Chapter 13 summary and quiz</span></a></li><li><a href="using-a-language-reference.html"><span class="lesson-number">13.y</span><span>Using a language reference</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 13</div>
+        <h1>13.3 — Unscoped enumerator integral conversions</h1>
+        <div class="article-meta"><span>Updated: 2024-07-31 16:18</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the prior lesson (<a href="unscoped-enumerations.html">13.2 -- Unscoped enumerations</a>), we mentioned that enumerators are symbolic constants.  What we didn’t tell you then is that these enumerators have values that are of an integral type.</p>
+<p>This is similar to the case with chars (<a href="chars.html">4.11 -- Chars</a>).  Consider:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">char ch { 'A' };</code></pre>
+<p>A char is really just a 1-byte integral value, and the character <code>'A'</code> gets converted to an integral value (in this case, <code>65</code>) and stored.</p>
+<p>When we define an enumeration, each enumerator is automatically associated with an integer value based on its position in the enumerator list.  By default, the first enumerator is given the integral value <code>0</code>, and each subsequent enumerator has a value one greater than the previous enumerator:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Color
+{
+    black,   // 0
+    red,     // 1
+    blue,    // 2
+    green,   // 3
+    white,   // 4
+    cyan,    // 5
+    yellow,  // 6
+    magenta, // 7
+};
+
+int main()
+{
+    Color shirt{ blue }; // shirt actually stores integral value 2
+
+    return 0;
+}</code></pre>
+<p>It is possible to explicitly define the value of enumerators.  These integral values can be positive or negative, and can share the same value as other enumerators.  Any non-defined enumerators are given a value one greater than the previous enumerator.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Animal
+{
+    cat = -3,    // values can be negative
+    dog,         // -2
+    pig,         // -1
+    horse = 5,
+    giraffe = 5, // shares same value as horse
+    chicken,     // 6 
+};</code></pre>
+<p>Note in this case, <code>horse</code> and <code>giraffe</code> have been given the same value.  When this happens, the enumerators become non-distinct -- essentially, <code>horse</code> and <code>giraffe</code> are interchangeable.  Although C++ allows it, assigning the same value to two enumerators in the same enumeration should generally be avoided.</p>
+<p>Most of the time, the default values for enumerators will be exactly what you want, so do not provide your own values unless you have a specific reason to do so.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Avoid assigning explicit values to your enumerators unless you have a compelling reason to do so.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Value-initializing an enumeration</p>
+<p>If an enumeration is zero-initialized (which happens when we use value-initialization), the enumeration will be given value <code>0</code>, even if there is no corresponding enumerator with that value.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+enum Animal
+{
+    cat = -3,    // -3
+    dog,         // -2
+    pig,         // -1
+    // note: no enumerator with value 0 in this list
+    horse = 5,   // 5
+    giraffe = 5, // 5
+    chicken,     // 6 
+};
+
+int main()
+{
+    Animal a {}; // value-initialization zero-initializes a to value 0
+    std::cout &lt;&lt; a; // prints 0
+
+    return 0;
+}</code></pre>
+<p>This has two semantic consequences:</p>
+<ul>
+<li>If there is an enumerator with value 0, value-initialization defaults the enumeration to the meaning of that enumerator.  For example, using the prior <code>enum Color</code> example, a value-initialized <code>Color</code> will default to <code>black</code>).  For this reason, it is a good idea to consider making the enumerator with value 0 the one that represents the best default meaning for your enumeration.
+</li>
+</ul>
+<p>Something like this is likely to cause problems:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum UniverseResult
+{
+    destroyUniverse, // default value (0)
+    saveUniverse
+};</code></pre>
+<ul>
+<li>If there is no enumerator with value 0, value-initialization makes it easy to create a semantically invalid enumeration.  In such cases, we recommend adding an “invalid” or “unknown” enumerator with value 0 so that you have documentation for the meaning of that state, and a name for that state that you can explicitly handle.
+</li>
+</ul>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Winner
+{
+    winnerUnknown, // default value (0)
+    player1,
+    player2,
+};
+
+// somewhere later in your code
+if (w == winnerUnknown) // handle case appropriately</code></pre>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Make the enumerator representing 0 the one that is the best default meaning for your enumeration.  If no good default meaning exists, consider adding an “invalid” or “unknown” enumerator that has value 0, so that state is explicitly documented and can be explicitly handled where appropriate.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Unscoped enumerations will implicitly convert to integral values</p>
+<p>Even though enumerations store integral values, they are not considered to be an integral type (they are a compound type).  However, an unscoped enumeration will implicitly convert to an integral value.  Because enumerators are compile-time constants, this is a constexpr conversion (we cover these in lesson <a href="narrowing-conversions-list-initialization-and-constexpr-initializers.html">10.4 -- Narrowing conversions, list initialization, and constexpr initializers</a>).</p>
+<p>Consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+enum Color
+{
+    black, // assigned 0
+    red, // assigned 1
+    blue, // assigned 2
+    green, // assigned 3
+    white, // assigned 4
+    cyan, // assigned 5
+    yellow, // assigned 6
+    magenta, // assigned 7
+};
+
+int main()
+{
+    Color shirt{ blue };
+
+    std::cout &lt;&lt; "Your shirt is " &lt;&lt; shirt &lt;&lt; '\n'; // what does this do?
+
+    return 0;
+}</code></pre>
+<p>Since enumerated types hold integral values, as you might expect, this prints:</p>
+<pre>
+Your shirt is 2
+</pre>
+<p>When an enumerated type is used in a function call or with an operator, the compiler will first try to find a function or operator that matches the enumerated type.  For example, when the compiler tries to compile <code>std::cout &lt;&lt; shirt</code>, the compiler will first look to see if <code>operator&lt;&lt;</code> knows how to print an object of type <code>Color</code> (because <code>shirt</code> is of type <code>Color</code>) to <code>std::cout</code>.  It doesn’t.</p>
+<p>Since the compiler can’t find a match, it will then then check if <code>operator&lt;&lt;</code> knows how to print an object of the integral type that the unscoped enumeration converts to.  Since it does, the value in <code>shirt</code> gets converted to an integral value and printed as integral value <code>2</code>.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We show how to convert an enumeration into a string in lesson <a href="converting-an-enumeration-to-and-from-a-string.html">13.4 -- Converting an enumeration to and from a string</a>.<br>
+We teach <code>std::cout</code> how to print an enumerator in lesson <a href="introduction-to-overloading-the-i-o-operators.html">13.5 -- Introduction to overloading the I/O operators</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="base"></a>Enumeration size and underlying type (base) <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p>Enumerators have values that are of an integral type.  But what integral type?  The specific integral type used to represent the value of enumerators is called the enumeration’s <strong>underlying type</strong> (or <strong>base</strong>).</p>
+<p>For unscoped enumerations, the C++ standard does not specify which specific integral type should be used as the underlying type, so the choice is implementation-defined.  Most compilers will use <code>int</code> as the underlying type (meaning an unscoped enum will be the same size as an <code>int</code>), unless a larger type is required to store the enumerator values.  But you shouldn’t assume this will hold true for every compiler or platform.</p>
+<p>It is possible to explicitly specify an underlying type for an enumeration.  The underlying type must be an integral type.  For example, if you are working in some bandwidth-sensitive context (e.g. sending data over a network) you may want to specify a smaller type for your enumeration:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstdint&gt;  // for std::int8_t
+#include &lt;iostream&gt;
+
+// Use an 8-bit integer as the enum underlying type
+enum Color : std::int8_t
+{
+    black,
+    red,
+    blue,
+};
+
+int main()
+{
+    Color c{ black };
+    std::cout &lt;&lt; sizeof(c) &lt;&lt; '\n'; // prints 1 (byte)
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Specify the base type of an enumeration only when necessary.
+</p></div>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Because <code>std::int8_t</code> and <code>std::uint8_t</code> are usually type aliases for char types, using either of these types as the enum base will most likely cause the enumerators to print as char values rather than int values.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Integer to unscoped enumerator conversion</p>
+<p>While the compiler will implicitly convert an unscoped enumeration to an integer, it will <em>not</em> implicitly convert an integer to an unscoped enumeration.  The following will produce a compiler error:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Pet // no specified base
+{
+    cat, // assigned 0
+    dog, // assigned 1
+    pig, // assigned 2
+    whale, // assigned 3
+};
+
+int main()
+{
+    Pet pet { 2 }; // compile error: integer value 2 won't implicitly convert to a Pet
+    pet = 3;       // compile error: integer value 3 won't implicitly convert to a Pet
+
+    return 0;
+}</code></pre>
+<p>There are two ways to work around this.</p>
+<p>First, you can explicitly convert an integer to an unscoped enumerator using <code>static_cast</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Pet // no specified base
+{
+    cat, // assigned 0
+    dog, // assigned 1
+    pig, // assigned 2
+    whale, // assigned 3
+};
+
+int main()
+{
+    Pet pet { static_cast&lt;Pet&gt;(2) }; // convert integer 2 to a Pet
+    pet = static_cast&lt;Pet&gt;(3);       // our pig evolved into a whale!
+
+    return 0;
+}</code></pre>
+<p>We’ll see an example in lesson <a href="converting-an-enumeration-to-and-from-a-string.html">13.4 -- Converting an enumeration to and from a string</a> where we make use of this.</p>
+<p>It is safe to static_cast any integral value that is represented by an enumerator of the target enumeration.  Since our <code>Pet</code> enumeration has enumerators with values <code>0</code>, <code>1</code>, <code>2</code>, and <code>3</code>, static_casting integral values <code>0</code>, <code>1</code>, <code>2</code>, and <code>3</code> to a <code>Pet</code> is valid.</p>
+<p>It is also safe to static_cast any integral value that is in range of the target enumeration’s underlying type, even if there are no enumerators representing that value.  Static casting a value outside the range of the underlying type will result in undefined behavior.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>If the enumeration has an explicitly defined underlying type, the range of the enumeration is identical to the range of the underlying type.</p>
+<p>If the enumeration does not have an explicit underlying type, things are a bit more complicated.  In this case, the compiler gets to pick the underlying type, and it can pick any signed or unsigned type so long as the value of all enumerators fit in that type.  Given this, it is only safe to static_cast integral values that fit in the range of the smallest number of bits that can hold the value of all enumerators.</p>
+<p>Let’s do two examples to illustrate this:</p>
+<ul>
+<li>With enumerators that have values 2, 9, and 12, these enumerators could minimally fit in an unsigned 4-bit integral type with range 0 to 15.  Therefore, it is only safe to static_cast integral values 0 through 15 to this enumerated type.
+</li>
+<li>With enumerators that have values -28, 2, and 6, these enumerators could minimally fit in a signed 6-bit integral type with range -32 to 31.  Therefore, it is only safe to static_cast integral values -32 through 31 to this enumerated type.
+</li>
+</ul>
+</div>
+<p>Second, as of C++17, if an unscoped enumeration has an explicitly specified base, then the compiler will allow you to list initialize an unscoped enumeration using an integral value:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">enum Pet: int // we've specified a base
+{
+    cat, // assigned 0
+    dog, // assigned 1
+    pig, // assigned 2
+    whale, // assigned 3
+};
+
+int main()
+{
+    Pet pet1 { 2 }; // ok: can brace initialize unscoped enumeration with specified base with integer (C++17)
+    Pet pet2 (2);   // compile error: cannot direct initialize with integer
+    Pet pet3 = 2;   // compile error: cannot copy initialize with integer
+
+    pet1 = 3;       // compile error: cannot assign with integer
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>True or false. Enumerators can be:</p>
+<ul>
+<li>Given an integer value
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p>True
+</p></div>
+<ul>
+<li>Given no explicit value
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<p>True.  Enumerators not explicitly assigned a value will be implicitly assigned the integer value of the previous enumerator + 1.  If there is no previous enumerator, the enumerator will assume value 0.
+</p></div>
+<ul>
+<li>Given a floating point value
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<p>False
+</p></div>
+<ul>
+<li>Given a negative value
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<p>True
+</p></div>
+<ul>
+<li>Given a non-unique value
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_4" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_4" hidden="hidden">
+<p>True
+</p></div>
+<ul>
+<li>Given the value of a prior enumerator (e.g. magenta = red)
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_5" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_5" hidden="hidden">
+<p>True.  Enumerators need not be unique.  Since enumerators implicitly convert to integers, and integers can be given to enumerators, enumerators can be initialized with other enumerators (though there is typically little reason to do so!).
+</p></div>
+<ul>
+<li>Given a non-constexpr value
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_6" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_6" hidden="hidden">
+<p>False.  Since enumerators are constexpr, their values must also be constexpr.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="unscoped-enumerations.html"><span class="nav-kicker">← Previous lesson</span>13.2 · Unscoped enumerations</a><a class="next" href="converting-an-enumeration-to-and-from-a-string.html"><span class="nav-kicker">Next lesson →</span>13.4 · Converting an enumeration to and from a string</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

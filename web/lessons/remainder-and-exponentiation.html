@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The remainder operator (operator%) The remainder operator (also commonly called the modulo operator or modulus operator) is an operator that returns the re">
+  <meta name="robots" content="noindex,nofollow">
+  <title>6.3 — Remainder and Exponentiation · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/remainder-and-exponentiation/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 6 · Operators</summary><div class="sidebar-title"><small>Chapter 6</small><strong>Operators</strong></div>
+<ol class="sidebar-lessons"><li><a href="operator-precedence-and-associativity.html"><span class="lesson-number">6.1</span><span>Operator precedence and associativity</span></a></li><li><a href="arithmetic-operators.html"><span class="lesson-number">6.2</span><span>Arithmetic operators</span></a></li><li><a href="remainder-and-exponentiation.html" aria-current="page"><span class="lesson-number">6.3</span><span>Remainder and Exponentiation</span></a></li><li><a href="increment-decrement-operators-and-side-effects.html"><span class="lesson-number">6.4</span><span>Increment/decrement operators, and side effects</span></a></li><li><a href="the-comma-operator.html"><span class="lesson-number">6.5</span><span>The comma operator</span></a></li><li><a href="the-conditional-operator.html"><span class="lesson-number">6.6</span><span>The conditional operator</span></a></li><li><a href="relational-operators-and-floating-point-comparisons.html"><span class="lesson-number">6.7</span><span>Relational operators and floating point comparisons</span></a></li><li><a href="logical-operators.html"><span class="lesson-number">6.8</span><span>Logical operators</span></a></li><li><a href="chapter-6-summary-and-quiz.html"><span class="lesson-number">6.x</span><span>Chapter 6 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 6</div>
+        <h1>6.3 — Remainder and Exponentiation</h1>
+        <div class="article-meta"><span>Updated: 2024-12-30 19:40</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">The remainder operator (<code>operator%</code>)</p>
+<p>The <strong>remainder operator</strong> (also commonly called the <strong>modulo operator</strong> or <strong>modulus operator</strong>) is an operator that returns the remainder after doing an integer division.  For example, 7 / 4 = 1 remainder 3.  Therefore, 7 % 4 = 3.  As another example, 25 / 7 = 3 remainder 4, thus 25 % 7 = 4.  The remainder operator only works with integer operands.</p>
+<p>This is most useful for testing whether a number is evenly divisible by another number (meaning that after division, there is no remainder): if <em>x % y</em> evaluates to 0, then we know that <em>x</em> is evenly divisible by <em>y</em>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+	std::cout &lt;&lt; "Enter an integer: ";
+	int x{};
+	std::cin &gt;&gt; x;
+
+	std::cout &lt;&lt; "Enter another integer: ";
+	int y{};
+	std::cin &gt;&gt; y;
+
+	std::cout &lt;&lt; "The remainder is: " &lt;&lt; x % y &lt;&lt; '\n';
+
+	if ((x % y) == 0)
+		std::cout &lt;&lt; x &lt;&lt; " is evenly divisible by " &lt;&lt; y &lt;&lt; '\n';
+	else
+		std::cout &lt;&lt; x &lt;&lt; " is not evenly divisible by " &lt;&lt; y &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>Here are a couple runs of this program:</p>
+<pre>
+Enter an integer: 6
+Enter another integer: 3
+The remainder is: 0
+6 is evenly divisible by 3
+</pre>
+<pre>
+Enter an integer: 6
+Enter another integer: 4
+The remainder is: 2
+6 is not evenly divisible by 4
+</pre>
+<p>Now let’s try an example where the second number is bigger than the first:</p>
+<pre>
+Enter an integer: 2
+Enter another integer: 4
+The remainder is: 2
+2 is not evenly divisible by 4
+</pre>
+<p>A remainder of 2 might be a little non-obvious at first, but it’s simple: 2 / 4 is 0 (using integer division) remainder 2.  Whenever the second number is larger than the first, the second number will divide the first 0 times, so the first number will be the remainder.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Remainder with negative numbers</p>
+<p>The remainder operator can also work with negative operands.  <code>x % y</code> always returns results with the sign of <em>x</em>.</p>
+<p>Running the above program:</p>
+<pre>
+Enter an integer: -6
+Enter another integer: 4
+The remainder is: -2
+-6 is not evenly divisible by 4
+</pre>
+<pre>
+Enter an integer: 6
+Enter another integer: -4
+The remainder is: 2
+6 is not evenly divisible by -4
+</pre>
+<p>In both cases, you can see the remainder takes the sign of the first operand.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Nomenclature</p>
+<p>The C++ standard does not actually give a name to <code>operator%</code>.  However, the C++20 standard does say, “the binary % operator yields the remainder from the division of the first expression by the second”.</p>
+<p>Although <code>operator%</code> is often called the “modulo” or “modulus” operator, this can be confusing, because modulo in mathematics is often defined in a way that yields a different result to what <code>operator%</code> in C++ produces when one (and only one) of the operands is negative.</p>
+<p>For example, in mathematics:<br>
+-21 modulo 4 = 3<br>
+-21 remainder 4 = -1</p>
+<p>For this reason, we believe the name “remainder” is a more accurate name for <code>operator%</code> than “modulo”.
+</p></div>
+<p>In cases where the first operand can be negative, one must take care to note that the remainder can also be negative.  For example, you might think to write a function that returns whether a number is odd like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool isOdd(int x)
+{
+    return (x % 2) == 1; // fails when x is -5
+}</code></pre>
+<p>However, this will fail when x is a negative odd number, such as <code>-5</code>, because <code>-5 % 2</code> is -1, and -1 != 1.</p>
+<p>For this reason, if you’re going to compare the result of a remainder operation, it’s better to compare against 0, which does not have positive/negative number issues:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool isOdd(int x)
+{
+    return (x % 2) != 0; // could also write return (x % 2)
+}</code></pre>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer to compare the result of the remainder operator (<code>operator%</code>) against 0 if possible.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Where’s the exponent operator?</p>
+<p>You’ll note that the <em>^</em> operator (commonly used to denote exponentiation in mathematics) is a <em>Bitwise XOR</em> operation in C++ (covered in lesson <a href="bit-manipulation-with-bitwise-operators-and-bit-masks.html">O.3 -- Bit manipulation with bitwise operators and bit masks</a>).  C++ does not include an exponent operator.</p>
+<p>To do exponents in C++, #include the &lt;cmath&gt; header, and use the pow() function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cmath&gt;
+
+double x{ std::pow(3.0, 4.0) }; // 3 to the 4th power</code></pre>
+<p>Note that the parameters (and return value) of function pow() are of type double.  Due to rounding errors in floating point numbers, the results of pow() may not be precise (even if you pass it integers or whole numbers).</p>
+<p>If you want to do integer exponentiation, you’re best off using your own function to do so.  The following function implements integer exponentiation (using the non-intuitive “exponentiation by squaring” algorithm for efficiency):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cassert&gt; // for assert
+#include &lt;cstdint&gt; // for std::int64_t
+#include &lt;iostream&gt;
+
+// note: exp must be non-negative
+// note: does not perform range/overflow checking, use with caution
+constexpr std::int64_t powint(std::int64_t base, int exp)
+{
+	assert(exp &gt;= 0 &amp;&amp; "powint: exp parameter has negative value");
+
+	// Handle 0 case
+	if (base == 0)
+		return (exp == 0) ? 1 : 0;
+
+	std::int64_t result{ 1 };
+	while (exp &gt; 0)
+	{
+		if (exp &amp; 1)  // if exp is odd
+			result *= base;
+		exp /= 2;
+		base *= base;
+	}
+
+	return result;
+}
+
+int main()
+{
+	std::cout &lt;&lt; powint(7, 12) &lt;&lt; '\n'; // 7 to the 12th power
+
+	return 0;
+}</code></pre>
+<p>Produces:</p>
+<pre>
+13841287201
+</pre>
+<p>Don’t worry if you don’t understand how this function works -- you don’t need to understand it in order to call it.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover asserts in lesson <a href="assert-and-static_assert.html">9.6 -- Assert and static_assert</a>, and constexpr functions in lesson <a href="constexpr-functions.html">F.1 -- Constexpr functions</a>.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>The <code>constexpr</code> specifier allows a function to be evaluated at compile-time if used in a constant expression; otherwise, it behaves like a regular function and is evaluated at runtime.
+</p></div>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>In the vast majority of cases, integer exponentiation will overflow the integral type.  This is likely why such a function wasn’t included in the standard library in the first place.
+</p></div>
+<p>Here is a safer version of the exponentiation function above that checks for overflow:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cassert&gt; // for assert
+#include &lt;cstdint&gt; // for std::int64_t
+#include &lt;iostream&gt;
+#include &lt;limits&gt; // for std::numeric_limits
+
+// A safer (but slower) version of powint() that checks for overflow
+// note: exp must be non-negative
+// Returns std::numeric_limits&lt;std::int64_t&gt;::max() if overflow occurs
+constexpr std::int64_t powint_safe(std::int64_t base, int exp)
+{
+    assert(exp &gt;= 0 &amp;&amp; "powint_safe: exp parameter has negative value");
+
+    // Handle 0 case
+    if (base == 0)
+        return (exp == 0) ? 1 : 0;
+
+    std::int64_t result { 1 };
+
+    // To make the range checks easier, we'll ensure base is positive
+    // We'll flip the result at the end if needed
+    bool negativeResult{ false };
+
+    if (base &lt; 0)
+    {
+        base = -base;
+        negativeResult = (exp &amp; 1);
+    }
+
+    while (exp &gt; 0)
+    {
+        if (exp &amp; 1) // if exp is odd
+        {
+            // Check if result will overflow when multiplied by base
+            if (result &gt; std::numeric_limits&lt;std::int64_t&gt;::max() / base)
+            {
+                std::cerr &lt;&lt; "powint_safe(): result overflowed\n";
+                return std::numeric_limits&lt;std::int64_t&gt;::max();
+            }
+
+            result *= base;
+        }
+
+        exp /= 2;
+
+        // If we're done, get out here
+        if (exp &lt;= 0)
+            break;
+
+        // The following only needs to execute if we're going to iterate again
+
+        // Check if base will overflow when multiplied by base
+        if (base &gt; std::numeric_limits&lt;std::int64_t&gt;::max() / base)
+        {
+            std::cerr &lt;&lt; "powint_safe(): base overflowed\n";
+            return std::numeric_limits&lt;std::int64_t&gt;::max();
+        }
+
+        base *= base;
+    }
+
+    if (negativeResult)
+        return -result;
+
+    return result;
+}
+
+int main()
+{
+	std::cout &lt;&lt; powint_safe(7, 12) &lt;&lt; '\n'; // 7 to the 12th power
+	std::cout &lt;&lt; powint_safe(70, 12) &lt;&lt; '\n'; // 70 to the 12th power (will return the max 64-bit int value)
+
+	return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<div class="quiz" style="clear: both">
+<p class="quiz-header">Question #1</p>
+<p>What does the following expression evaluate to?  <code>6 + 5 * 4 % 3</code></p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+Because * and % have higher precedence than +, the + will evaluate last.  We can rewrite our expression as 6 + (5 * 4 % 3).  Operators * and % have the same precedence, so we have to look at the associativity to resolve them.  The associativity for operators * and % is left to right, so we resolve the left operator first.  We can rewrite our expression like this: 6 + ((5 * 4) % 3).
+<p>6 + ((5 * 4) % 3) = 6 + (20 % 3) = 6 + 2 = 8</p></div>
+
+</div>
+<div class="quiz" style="clear: both">
+<p class="quiz-header">Question #2</p>
+<p>Write a program that asks the user to input an integer, and tells the user whether the number is even or odd.  Write a constexpr function called <code>isEven()</code> that returns true if an integer passed to it is even, and false otherwise.  Use the remainder operator to test whether the integer parameter is even.  Make sure <code>isEven()</code> works with both positive and negative numbers.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_hint_id_0" data-show-label="Show Hint" data-hide-label="Hide Hint" aria-expanded="false">Show Hint</button></p>
+<div class="wphint" id="cpp_hint_id_0" style="margin-bottom: 1em" hidden="hidden">Hint: You may need to use if-statements and the comparison operator (==) for this program.  See lesson <a href="boolean-values.html">4.9 -- Boolean values</a> if you need a refresher on how to do this.</div>
+<p>Your program should match the following output:</p>
+<pre>
+Enter an integer: 5
+5 is odd
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+constexpr bool isEven(int x)
+{
+    // if x % 2 == 0, 2 divides evenly into our number, which means it must be an even number
+    return (x % 2) == 0;
+}
+
+int main()
+{
+    std::cout &lt;&lt; "Enter an integer: ";
+    int x{};
+    std::cin &gt;&gt; x;
+
+    if (isEven(x))
+        std::cout &lt;&lt; x &lt;&lt; " is even\n";
+    else
+        std::cout &lt;&lt; x &lt;&lt; " is odd\n";
+
+    return 0;
+}</code></pre>
+<p>Note: You may have been tempted to write function isEven() like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr bool isEven(int x)
+{
+    if ((x % 2) == 0)
+        return true;
+    else
+        return false;
+}</code></pre>
+<p>While this works, it’s more complicated than it needs to be.  Let’s take a look at how we can simplify it.  First, let’s pull out the if statement conditional and assign it to a separate boolean:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr bool isEven(int x)
+{
+    bool isEven = (x % 2) == 0;
+    if (isEven) // isEven is true
+        return true;
+    else // isEven is false
+        return false;
+}</code></pre>
+<p>Now, note that the if statement above essentially says “if isEven is true, return true, otherwise if isEven is false, return false”.  If that’s the case, we can just return isEven:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr bool isEven(int x)
+{
+    bool isEven = (x % 2) == 0;
+    return isEven;
+}</code></pre>
+<p>And in this case, since we only use variable isEven once, we might as well eliminate the variable:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr bool isEven(int x)
+{
+    return (x % 2) == 0;
+}</code></pre>
+</div>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="arithmetic-operators.html"><span class="nav-kicker">← Previous lesson</span>6.2 · Arithmetic operators</a><a class="next" href="increment-decrement-operators-and-side-effects.html"><span class="nav-kicker">Next lesson →</span>6.4 · Increment/decrement operators, and side effects</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

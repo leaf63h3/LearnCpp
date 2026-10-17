@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="New programmers typically spend a lot of time writing custom loops to perform relatively simple tasks, such as sorting or counting or searching arrays. The">
+  <meta name="robots" content="noindex,nofollow">
+  <title>18.3 — Introduction to standard library algorithms · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-standard-library-algorithms/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 18 · Iterators and Algorithms (under construction)</summary><div class="sidebar-title"><small>Chapter 18</small><strong>Iterators and Algorithms (under construction)</strong></div>
+<ol class="sidebar-lessons"><li><a href="sorting-an-array-using-selection-sort.html"><span class="lesson-number">18.1</span><span>Sorting an array using selection sort</span></a></li><li><a href="introduction-to-iterators.html"><span class="lesson-number">18.2</span><span>Introduction to iterators</span></a></li><li><a href="introduction-to-standard-library-algorithms.html" aria-current="page"><span class="lesson-number">18.3</span><span>Introduction to standard library algorithms</span></a></li><li><a href="timing-your-code.html"><span class="lesson-number">18.4</span><span>Timing your code</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 18</div>
+        <h1>18.3 — Introduction to standard library algorithms</h1>
+        <div class="article-meta"><span>Updated: 2024-09-04 13:09</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>New programmers typically spend a lot of time writing custom loops to perform relatively simple tasks, such as sorting or counting or searching arrays.  These loops can be problematic, both in terms of how easy it is to make an error, and in terms of overall maintainability, as loops can be hard to understand.</p>
+<p>Because searching, counting, and sorting are such common operations to do, the C++ standard library comes with a bunch of functions to do these things in just a few lines of code.  Additionally, these standard library functions come pre-tested, are efficient, work on a variety of different container types, and many support parallelization (the ability to devote multiple CPU threads to the same task in order to complete it faster).</p>
+<p>The functionality provided in the algorithms library generally fall into one of three categories:</p>
+<ul>
+<li><strong>Inspectors</strong> -- Used to view (but not modify) data in a container.  Examples include searching and counting.</li>
+<li><strong>Mutators</strong> -- Used to modify data in a container.  Examples include sorting and shuffling.</li>
+<li><strong>Facilitators</strong> -- Used to generate a result based on values of the data members.  Examples include objects that multiply values, or objects that determine what order pairs of elements should be sorted in.
+</li></ul>
+<p>These algorithms live in the <a href="https://en.cppreference.com/w/cpp/algorithm" target="_blank" rel="noopener noreferrer">algorithms</a> library.  In this lesson, we’ll explore some of the more common algorithms -- but there are many more, and we encourage you to read through the linked reference to see everything that’s available!</p>
+<p>Note: All of these make use of iterators, so if you’re not familiar with basic iterators, please review lesson <a href="introduction-to-iterators.html">18.2 -- Introduction to iterators</a>.</p>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="std_find"></a>Using std::find to find an element by value <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p><a href="https://en.cppreference.com/w/cpp/algorithm/find" target="_blank" rel="noopener noreferrer"><code>std::find</code></a> searches for the first occurrence of a value in a container.  <code>std::find</code> takes 3 parameters: an iterator to the starting element in the sequence, an iterator to the ending element in the sequence, and a value to search for.  It returns an iterator pointing to the element (if it is found) or the end of the container (if the element is not found).</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array arr{ 13, 90, 99, 5, 40, 80 };
+
+    std::cout &lt;&lt; "Enter a value to search for and replace with: ";
+    int search{};
+    int replace{};
+    std::cin &gt;&gt; search &gt;&gt; replace;
+
+    // Input validation omitted
+
+    // std::find returns an iterator pointing to the found element (or the end of the container)
+    // we'll store it in a variable, using type inference to deduce the type of
+    // the iterator (since we don't care)
+    auto found{ std::find(arr.begin(), arr.end(), search) };
+
+    // Algorithms that don't find what they were looking for return the end iterator.
+    // We can access it by using the end() member function.
+    if (found == arr.end())
+    {
+        std::cout &lt;&lt; "Could not find " &lt;&lt; search &lt;&lt; '\n';
+    }
+    else
+    {
+        // Override the found element.
+        *found = replace;
+    }
+
+    for (int i : arr)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Sample run when the element is found</p>
+<pre>
+Enter a value to search for and replace with: 5 234
+13 90 99 234 40 80
+</pre>
+<p>Sample run when the element isn’t found</p>
+<pre>
+Enter a value to search for and replace with: 0 234
+Could not find 0
+13 90 99 5 40 80
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Using std::find_if to find an element that matches some condition</p>
+<p>Sometimes we want to see if there is a value in a container that matches some condition (e.g. a string that contains a specific substring) rather than an exact value.  In such cases, <code>std::find_if</code> is perfect.</p>
+<p>The <code>std::find_if</code> function works similarly to <code>std::find</code>, but instead of passing in a specific value to search for, we pass in a callable object, such as a function pointer (or a lambda, which we’ll cover later).  For each element being iterated over, <code>std::find_if</code> will call this function (passing the element as an argument to the function), and the function can return <code>true</code> if a match is found, or <code>false</code> otherwise.</p>
+<p>Here’s an example where we use <code>std::find_if</code> to check if any elements contain the substring “nut”:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+// Our function will return true if the element matches
+bool containsNut(std::string_view str)
+{
+    // std::string_view::find returns std::string_view::npos if it doesn't find
+    // the substring. Otherwise it returns the index where the substring occurs
+    // in str.
+    return str.find("nut") != std::string_view::npos;
+}
+
+int main()
+{
+    std::array&lt;std::string_view, 4&gt; arr{ "apple", "banana", "walnut", "lemon" };
+
+    // Scan our array to see if any elements contain the "nut" substring
+    auto found{ std::find_if(arr.begin(), arr.end(), containsNut) };
+
+    if (found == arr.end())
+    {
+        std::cout &lt;&lt; "No nuts\n";
+    }
+    else
+    {
+        std::cout &lt;&lt; "Found " &lt;&lt; *found &lt;&lt; '\n';
+    }
+
+    return 0;
+}</code></pre>
+<p>Output</p>
+<pre>
+Found walnut
+</pre>
+<p>If you were to write the above example by hand, you’d need at least three loops (one to loop through the array, and two to match the substring).  The standard library functions allow us to do the same thing in just a few lines of code!</p>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="std_count"></a>Using std::count and std::count_if to count how many occurrences there are <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p><a href="https://en.cppreference.com/w/cpp/algorithm/count" target="_blank" rel="noopener noreferrer"><code>std::count</code></a> and <code>std::count_if</code> search for all occurrences of an element or an element fulfilling a condition.</p>
+<p>In the following example, we’ll count how many elements contain the substring “nut”:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+bool containsNut(std::string_view str)
+{
+	return str.find("nut") != std::string_view::npos;
+}
+
+int main()
+{
+	std::array&lt;std::string_view, 5&gt; arr{ "apple", "banana", "walnut", "lemon", "peanut" };
+
+	auto nuts{ std::count_if(arr.begin(), arr.end(), containsNut) };
+
+	std::cout &lt;&lt; "Counted " &lt;&lt; nuts &lt;&lt; " nut(s)\n";
+
+	return 0;
+}</code></pre>
+<p>Output</p>
+<pre>
+Counted 2 nut(s)
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="std_sort"></a>Using std::sort to custom sort <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p>We previously used <a href="https://en.cppreference.com/w/cpp/algorithm/sort" target="_blank" rel="noopener noreferrer"><code>std::sort</code></a> to sort an array in ascending order, but std::sort can do more than that.  There’s a version of <code>std::sort</code> that takes a function as its third parameter that allows us to sort however we like.  The function takes two parameters to compare, and returns true if the first argument should be ordered before the second. By default, <code>std::sort</code> sorts the elements in ascending order.</p>
+<p>Let’s use <code>std::sort</code> to sort an array in reverse order using a custom comparison function named <code>greater</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+bool greater(int a, int b)
+{
+    // Order @a before @b if @a is greater than @b.
+    return (a &gt; b);
+}
+
+int main()
+{
+    std::array arr{ 13, 90, 99, 5, 40, 80 };
+
+    // Pass greater to std::sort
+    std::sort(arr.begin(), arr.end(), greater);
+
+    for (int i : arr)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Output</p>
+<pre>
+99 90 80 40 13 5
+</pre>
+<p>Once again, instead of writing our own custom loop functions, we can sort our array however we like in just a few lines of code!</p>
+<p>Our <code>greater</code> function needs 2 arguments, but we’re not passing it any, so where do they come from? When we use a function without parentheses (), it’s only a function pointer, not a call. You might remember this from when we tried to print a function without parentheses and <code>std::cout</code> printed “1”. <code>std::sort</code> uses this pointer and calls the actual <code>greater</code> function with any 2 elements of the array. We don’t know which elements <code>greater</code> will be called with, because it’s not defined which sorting algorithm <code>std::sort</code> is using under the hood. We talk more about function pointers in a later chapter.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Because sorting in descending order is so common, C++ provides a custom type (named <code>std::greater</code>) for that too (which is part of the <a href="https://en.cppreference.com/w/cpp/header/functional" target="_blank" rel="noopener noreferrer">functional</a> header).  In the above example, we can replace:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">  std::sort(arr.begin(), arr.end(), greater); // call our custom greater function</code></pre>
+<p>with:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">  std::sort(arr.begin(), arr.end(), std::greater{}); // use the standard library greater comparison
+  // Before C++17, we had to specify the element type when we create std::greater
+  std::sort(arr.begin(), arr.end(), std::greater&lt;int&gt;{}); // use the standard library greater comparison</code></pre>
+<p>Note that the <code>std::greater{}</code> needs the curly braces because it is not a callable function.  It’s a type, and in order to use it, we need to instantiate an object of that type.  The curly braces instantiate an anonymous object of that type (which then gets passed as an argument to std::sort).
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>To further explain how <code>std::sort</code> uses the comparison function, we’ll have to take a step back to a modified version of the selection sort example from lesson <a href="sorting-an-array-using-selection-sort.html">18.1 -- Sorting an array using selection sort</a>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;utility&gt;
+
+void sort(int* begin, int* end)
+{
+    for (auto startElement{ begin }; startElement != end-1; ++startElement)
+    {
+        auto smallestElement{ startElement };
+
+        // std::next returns a pointer to the next element, just like (startElement + 1) would.
+        for (auto currentElement{ std::next(startElement) }; currentElement != end; ++currentElement)
+        {
+            if (*currentElement &lt; *smallestElement)
+            {
+                smallestElement = currentElement;
+            }
+        }
+
+        std::swap(*startElement, *smallestElement);
+    }
+}
+
+int main()
+{
+    int array[]{ 2, 1, 9, 4, 5 };
+
+    sort(std::begin(array), std::end(array));
+
+    for (auto i : array)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>So far, this is nothing new and <code>sort</code> always sorts elements from low to high. To add a comparison function, we have to use a new type, <code>std::function&lt;bool(int, int)&gt;</code>, to store a function that takes 2 int parameters and returns a bool. Treat this type as magic for now, we will explain it in <a href="../index.html">chapter 20</a>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void sort(int* begin, int* end, std::function&lt;bool(int, int)&gt; compare)</code></pre>
+<p>We can now pass a comparison function like <code>greater</code> to <code>sort</code>, but how does <code>sort</code> use it?  All we need to do is replace the line</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (*currentElement &lt; *smallestElement)</code></pre>
+<p>with</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (compare(*currentElement, *smallestElement))</code></pre>
+<p>Now the caller of <code>sort</code> can choose how to compare two elements.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;functional&gt; // std::function
+#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;utility&gt;
+
+// sort accepts a comparison function
+void sort(int* begin, int* end, std::function&lt;bool(int, int)&gt; compare)
+{
+    for (auto startElement{ begin }; startElement != end-1; ++startElement)
+    {
+        auto smallestElement{ startElement };
+
+        for (auto currentElement{ std::next(startElement) }; currentElement != end; ++currentElement)
+        {
+            // the comparison function is used to check if the current element should be ordered
+            // before the currently "smallest" element.
+            if (compare(*currentElement, *smallestElement))
+            {
+                smallestElement = currentElement;
+            }
+        }
+
+        std::swap(*startElement, *smallestElement);
+    }
+}
+
+int main()
+{
+    int array[]{ 2, 1, 9, 4, 5 };
+
+    // use std::greater to sort in descending order
+    // (We have to use the global namespace selector to prevent a collision
+    // between our sort function and std::sort.)
+    ::sort(std::begin(array), std::end(array), std::greater{});
+
+    for (auto i : array)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="std_for_each"></a>Using std::for_each to do something to all elements of a container <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p><a href="https://en.cppreference.com/w/cpp/algorithm/for_each" target="_blank" rel="noopener noreferrer"><code>std::for_each</code></a> takes a list as input and applies a custom function to every element.  This is useful when we want to perform the same operation to every element in a list.</p>
+<p>Here’s an example where we use <code>std::for_each</code> to double all the numbers in an array:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+void doubleNumber(int&amp; i)
+{
+    i *= 2;
+}
+
+int main()
+{
+    std::array arr{ 1, 2, 3, 4 };
+
+    std::for_each(arr.begin(), arr.end(), doubleNumber);
+
+    for (int i : arr)
+    {
+        std::cout &lt;&lt; i &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Output</p>
+<pre>
+2 4 6 8
+</pre>
+<p>This often seems like the most unnecessary algorithm to new developers, because equivalent code with a range-based for-loop is shorter and easier. But there are benefits to <code>std::for_each</code>. Let’s compare <code>std::for_each</code> to a range-based for-loop.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::ranges::for_each(arr, doubleNumber); // Since C++20, we don't have to use begin() and end().
+// std::for_each(arr.begin(), arr.end(), doubleNumber); // Before C++20
+
+for (auto&amp; i : arr)
+{
+    doubleNumber(i);
+}</code></pre>
+<p>With <code>std::for_each</code>, our intentions are clear. Call <code>doubleNumber</code> with each element of <code>arr</code>. In the range-based for-loop, we have to add a new variable, <code>i</code>. This leads to several mistakes that a programmer could do when they’re tired or not paying attention. For one, there could be an implicit conversion if we don’t use <code>auto</code>. We could forget the ampersand, and <code>doubleNumber</code> wouldn’t affect the array. We could accidentally pass a variable other than <code>i</code> to <code>doubleNumber</code>. These mistakes cannot happen with <code>std::for_each</code>.</p>
+<p>Additionally, <code>std::for_each</code> can skip elements at the beginning or end of a container, for example to skip the first element of <code>arr</code>, <a href="https://en.cppreference.com/w/cpp/iterator/next" target="_blank" rel="noopener noreferrer"><code>std::next</code></a> can be used to advance begin to the next element.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::for_each(std::next(arr.begin()), arr.end(), doubleNumber);
+// Now arr is [1, 4, 6, 8]. The first element wasn't doubled.</code></pre>
+<p>This isn’t possible with a range-based for-loop.</p>
+<p>Like many algorithms, <code>std::for_each</code> can be parallelized to achieve faster processing, making it better suited for large projects and big data than a range-based for-loop.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Performance and order of execution</p>
+<p>Many of the algorithms in the algorithms library make some kind of guarantee about how they will execute.  Typically these are either performance guarantees, or guarantees about the order in which they will execute.  For example, <code>std::for_each</code> guarantees that each element will only be accessed once, and that the elements will be accessed in forwards sequential order.</p>
+<p>While most algorithms provide some kind of performance guarantee, fewer have order of execution guarantees.  For such algorithms, we need to be careful not to make assumptions about the order in which elements will be accessed or processed.</p>
+<p>For example, if we were using a standard library algorithm to multiply the first value by 1, the second value by 2, the third by 3, etc… we’d want to avoid using any algorithms that didn’t guarantee a forwards sequential execution order!</p>
+<p>The following algorithms guarantee sequential execution: <code>std::for_each</code>, <code>std::copy</code>, <code>std::copy_backward</code>, <code>std::move</code>, and <code>std::move_backward</code>.  Many other algorithms (particular those that use a forward iterator) are implicitly sequential due to the forward iterator requirement.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Before using a particular algorithm, make sure performance and execution order guarantees work for your particular use case.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Ranges in C++20</p>
+<p>Having to explicitly pass <code>arr.begin()</code> and <code>arr.end()</code> to every algorithm is a bit annoying.  But fear not -- C++20 adds <em>ranges</em>, which allow us to simply pass <code>arr</code>.  This will make our code even shorter and more readable.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>The algorithms library has a ton of useful functionality that can make your code simpler and more robust.  We only cover a small subset in this lesson, but because most of these functions work very similarly, once you know how a few work, you can make use of most of them.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p><a href="https://www.youtube.com/watch?v=2olsGf6JIkU" target="_blank" rel="noopener noreferrer" class="external-video" title="External video — internet connection required">This video</a> does a good job explaining various algorithms in the library in a concise way.
+<span class="online-only">Online video</span></p></div>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Favor using functions from the algorithms library over writing your own functionality to do the same thing.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-iterators.html"><span class="nav-kicker">← Previous lesson</span>18.2 · Introduction to iterators</a><a class="next" href="timing-your-code.html"><span class="nav-kicker">Next lesson →</span>18.4 · Timing your code</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

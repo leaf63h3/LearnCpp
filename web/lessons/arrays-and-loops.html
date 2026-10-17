@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the introductory lesson for this chapter (16.1 -- Introduction to containers and arrays), we introduced the scalability challenges that occur when we ha">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.6 — Arrays and loops · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/arrays-and-loops/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html" aria-current="page"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.6 — Arrays and loops</h1>
+        <div class="article-meta"><span>Updated: 2024-12-14 16:26</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the introductory lesson for this chapter (<a href="introduction-to-containers-and-arrays.html">16.1 -- Introduction to containers and arrays</a>), we introduced the scalability challenges that occur when we have many related individual variables.  In this lesson, we’ll reintroduce the problem, and then discuss how arrays can help us elegantly solve problems such as these.</p>
+<p class="cpp-section cpp-topline" style="clear: both">The variable scalability challenge, revisited</p>
+<p>Consider the case where we want to find the average test score for a class of students.  To keep these examples concise, we’ll assume the class has only 5 students.</p>
+<p>Here’s how we might solve this using individual variables:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    // allocate 5 integer variables (each with a different name)
+    int testScore1{ 84 };
+    int testScore2{ 92 };
+    int testScore3{ 76 };
+    int testScore4{ 81 };
+    int testScore5{ 56 };
+
+    int average { (testScore1 + testScore2 + testScore3 + testScore4 + testScore5) / 5 };
+
+    std::cout &lt;&lt; "The class average is: " &lt;&lt; average &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>That’s a lot of variables and a lot of typing.  Imagine how much work we’d have to do for 30 students, or 600.  Furthermore, if a new test score is added, a new variable has to be declared, initialized, and added to the average calculation.  And did you remember to update the divisor?  If you forgot, you now have a semantic error.  Any time you have to modify existing code, you run the risk of introducing errors.</p>
+<p>By now, you know that we should be using an array when we have a bunch of related variables.  So let’s replace our individual variables with a <code>std::vector</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector testScore { 84, 92, 76, 81, 56 };
+    std::size_t length { testScore.size() };
+    
+    int average { (testScore[0] + testScore[1] + testScore[2] + testScore[3] + testScore[4])
+        / static_cast&lt;int&gt;(length) };
+
+    std::cout &lt;&lt; "The class average is: " &lt;&lt; average &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This is better -- we’ve cut down on the number of variables defined significantly, and the divisor for the average calculation is now determined directly from the length of the array.</p>
+<p>But the average calculation is still a problem, as we’re having to manually list each element individually.  And because we have to list each element explicitly, our average calculation only works for arrays with exactly as many elements as we list.  If we also want to be able to average arrays of other lengths, we’ll need to write a new average calculation for each different array length.</p>
+<p>What we really need is some way to access each array element without having to explicitly list each one.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Arrays and loops</p>
+<p>In previous lessons, we noted that array subscripts do not need to be constant expressions -- they can be runtime expressions.  This means we can use the value of a variable as an index.</p>
+<p>Also note that the array indices used in the average calculation of the previous example are an ascending sequence: 0, 1, 2, 3, 4.  Therefore, if we had some way to set a variable to values 0, 1, 2, 3, and 4 in sequence, then we could just use that variable as our array index instead of literals.  And we already know how to do that -- with a for-loop.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We covered for loops in lesson <a href="for-statements.html">8.10 -- For statements</a>.
+</p></div>
+<p>Let’s rewrite the above example using a for-loop, where the loop variable is used as the array index:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector testScore { 84, 92, 76, 81, 56 };
+    std::size_t length { testScore.size() };
+
+    int average { 0 };
+    for (std::size_t index{ 0 }; index &lt; length; ++index) // index from 0 to length-1
+        average += testScore[index];                      // add the value of element with index `index`
+    average /= static_cast&lt;int&gt;(length);                  // calculate the average
+
+    std::cout &lt;&lt; "The class average is: " &lt;&lt; average &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This should be pretty straightforward.  <code>index</code> starts at <code>0</code>, <code>testScore[0]</code> is added to <code>average</code>, and <code>index</code> is incremeted to <code>1</code>.  <code>testScore[1]</code> is added to <code>average</code>, and <code>index</code> is incremented to <code>2</code>.  Eventually, when <code>index</code> is incremented to <code>5</code>, <code>index &lt; length</code> is false, and the loop terminates.</p>
+<p>At this point, the loop has added the values of <code>testScore[0]</code>, <code>testScore[1]</code>, <code>testScore[2]</code>, <code>testScore[3]</code>, and <code>testScore[4]</code> to <code>average</code>.</p>
+<p>Finally, we calculate our average by dividing the accumulated values by the array length.</p>
+<p>This solution is ideal in terms of maintainability.   The number of times the loop iterates is determined from the length of the array, and the loop variable is used to do all of the array indexing.  We no longer have to manually list each array element.</p>
+<p>If we want to add or remove a test score, we can just modify the number of array initializers, and the rest of the code will still work without further changes!</p>
+<p>Accessing each element of a container in some order is called <strong>traversal</strong>, or <strong>traversing</strong> the container.  Traversal is often called <strong>iteration</strong>, or <strong>iterating over</strong> or <strong>iterating through</strong> the container.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Since the container classes use type <code>size_t</code> for length and indices, in this lesson, we’ll do the same.  We’ll discuss using signed lengths and indices in upcoming lesson <a href="arrays-loops-and-sign-challenge-solutions.html">16.7 -- Arrays, loops, and sign challenge solutions</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Templates, arrays, and loops unlock scalability</p>
+<p>Arrays provide a way to store multiple objects without having to name each element.</p>
+<p>Loops provide a way to traverse an array without having to explicitly list each element.</p>
+<p>Templates provide a way to parameterize the element type.</p>
+<p>Together, templates, arrays, and loops allow us to write code that can operate on a container of elements, regardless of the element type or number of elements in the container!</p>
+<p>To illustrate this further, let’s rewrite the above example, refactoring the average calculation into a function template:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// Function template to calculate the average of the values in a std::vector
+template &lt;typename T&gt;
+T calculateAverage(const std::vector&lt;T&gt;&amp; arr)
+{
+    std::size_t length { arr.size() };
+    
+    T average { 0 };                                      // if our array has elements of type T, our average should have type T too
+    for (std::size_t index{ 0 }; index &lt; length; ++index) // iterate through all the elements
+        average += arr[index];                            // sum up all the elements
+    average /= static_cast&lt;int&gt;(length);                  // divide by count of items (integral in nature)
+    
+    return average;
+}
+
+int main()
+{
+    std::vector class1 { 84, 92, 76, 81, 56 };
+    std::cout &lt;&lt; "The class 1 average is: " &lt;&lt; calculateAverage(class1) &lt;&lt; '\n'; // calc average of 5 ints
+
+    std::vector class2 { 93.2, 88.6, 64.2, 81.0 };
+    std::cout &lt;&lt; "The class 2 average is: " &lt;&lt; calculateAverage(class2) &lt;&lt; '\n'; // calc average of 4 doubles
+    
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+The class 1 average is: 77
+The class 2 average is: 81.75
+</pre>
+<p>In the above example, we’ve created function template <code>calculateAverage()</code>, which takes a <code>std::vector</code> of any element type and any length, and returns the average.  In <code>main()</code>, we demonstrate that this function works equally well when called with an array of 5 <code>int</code> elements or an array of 4 <code>double</code> elements!</p>
+<p><code>calculateAverage()</code> will work for any type <code>T</code> that supports the operators used inside the function (<code>operator+=(T)</code>, <code>operator/=(int)</code>).  If you try to use a <code>T</code> that does not support these operators, the compiler will error when trying to compile the instantiated function template.</p>
+<p>You might be wondering why we cast <code>length</code> to an <code>int</code> rather than a <code>T</code>.  When we calculate the average, we divide the sum by the count of items.  The count of items is an integral value.  Therefore, semantically, it makes more sense to divide by an <code>int</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">What we can do with arrays and loops</p>
+<p>Now that we know how to traverse a container of elements using a loop, let’s look at the most common things that we can use container traversal for.  We typically traverse a container in order to do one of four things:</p>
+<ol start="1">
+<li>Calculate a new value based on the value of existing elements (e.g. average value, sum of values).
+</li>
+<li>Search for an existing element (e.g. has exact match, count number of matches, find highest value).
+</li>
+<li>Operate on each element (e.g. output each element, multiply all elements by 2).
+</li>
+<li>Reorder the elements (e.g. sort the elements in ascending order).
+</li>
+</ol>
+<p>The first three of these are fairly straightforward.  We can use a single loop to traverse the array, inspecting or modifying each element as appropriate.</p>
+<p>Reordering the elements of a container is quite a bit more tricky, as doing so typically involves using a loop inside another loop.  While we can do this manually, it’s usually better to use an existing algorithm from the standard library to do this.  We’ll cover this in more detail in a future chapter when we discuss algorithms.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Arrays and off-by-one errors</p>
+<p>When traversing a container using an index, you must take care to ensure the loop executes the proper number of times.  Off-by-one errors (where the loop body executes one too many or one too few times) are easy to make.</p>
+<p>Typically, when traversing a container using an index, we will start the index at <code>0</code> and loop until <code>index &lt; length</code>.</p>
+<p>New programmers sometimes accidentally use <code>index &lt;= length</code> as the loop condition.  This will cause the loop to execute when <code>index == length</code>, which will result in an out of bounds subscript and undefined behavior.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Write a short program that prints the elements of the following vector to the screen using a loop:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    // Add your code here
+
+    return 0;
+}</code></pre>
+<p>The output should look like this:</p>
+<pre>
+4 6 7 3 8 2 1 9
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    for (std::size_t index{ 0 }; index &lt; arr.size(); ++index)
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+    }
+
+    if (arr.size() &gt; 0)
+        std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Update your code for the prior quiz solution so that the following program compiles and has the same output:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// Implement printArray() here
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    printArray(arr); // use function template to print array
+
+    return 0;
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printArray(const std::vector&lt;T&gt;&amp; arr)
+{
+    for (std::size_t index{ 0 }; index &lt; arr.size(); ++index)
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+    }
+
+    if (arr.size() &gt; 0)
+        std::cout &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    printArray(arr);
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>Given the solution for quiz 2, do the following:</p>
+<ul>
+<li>Ask the user for a value between 1 and 9.  If the user does not enter a value between 1 and 9, repeatedly ask for an integer value until they do.  If the user enters a number followed by extraneous input, ignore the extraneous input.
+</li>
+<li>Print the array.
+</li>
+<li>Write a function template to search the array for the value that the user entered.  If the value is in the array, return the index of that element.  If the value is not in the array, return an appropriate value.
+</li>
+<li>If the value was found, print the value and index.  If the value was not found, print the value and that it was not found.
+</li>
+</ul>
+<p>We cover how to handle invalid input in lesson <a href="stdcin-and-handling-invalid-input.html">9.5 -- std::cin and handling invalid input</a>.</p>
+<p>Here are two sample runs of this program:</p>
+<pre>
+Enter a number between 1 and 9: d
+Enter a number between 1 and 9: 6
+4 6 7 3 8 2 1 9
+The number 6 has index 1
+</pre>
+<pre>
+Enter a number between 1 and 9: 5
+4 6 7 3 8 2 1 9
+The number 5 was not found
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printArray(const std::vector&lt;T&gt;&amp; arr)
+{
+    for (std::size_t index{ 0 }; index &lt; arr.size(); ++index)
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+    }
+   
+    if (arr.size() &gt; 0)
+        std::cout &lt;&lt; '\n';
+}
+
+template &lt;typename T&gt;
+int findIndex(const std::vector&lt;T&gt;&amp; arr, T val)
+{
+    for (std::size_t index{ 0 }; index &lt; arr.size(); ++index)
+    {
+        if (arr[index] == val)
+            return static_cast&lt;int&gt;(index);
+    }    
+
+    return -1; // -1 is not a valid index, so we can use it as an error return value
+}
+
+
+int getValidNumber()
+{
+    // First, read in valid input from user
+    int num {};
+    do
+    {
+        std::cout &lt;&lt; "Enter a number between 1 and 9: ";
+        std::cin &gt;&gt; num;
+
+        // if the user entered an invalid character
+        if (!std::cin)
+            std::cin.clear(); // reset any error flags
+
+        std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // ignore any extra characters in the input buffer (regardless of whether we had an error or not)
+
+    } while (num &lt; 1 || num &gt; 9);
+
+    return num;
+}
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    int num { getValidNumber() };
+    
+    printArray(arr);
+
+    int index { findIndex(arr, num) };
+
+    if (index != -1)
+        std::cout &lt;&lt; "The number " &lt;&lt; num &lt;&lt; " has index " &lt;&lt; index &lt;&lt; '\n';
+    else
+        std::cout &lt;&lt; "The number " &lt;&lt; num &lt;&lt; " was not found\n";
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #4</p>
+<p>Extra credit: Modify the prior program so that it can handle a <code>std::vector</code> containing non-int numeric values, such as <code>std::vector arr{ 4.4, 6.6, 7.7, 3.3, 8.8, 2.2, 1.1, 9.9 };</code>.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printArray(const std::vector&lt;T&gt;&amp; arr)
+{
+    for (std::size_t index{ 0 }; index &lt; arr.size(); ++index)
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+    }
+
+    if (arr.size() &gt; 0)
+        std::cout &lt;&lt; '\n';
+}
+
+template &lt;typename T&gt;
+int findIndex(const std::vector&lt;T&gt;&amp; arr, T val)
+{
+    for (std::size_t index{ 0 }; index &lt; arr.size(); ++index)
+    {
+        if (arr[index] == val)
+            return static_cast&lt;int&gt;(index);
+    }
+
+    return -1; // -1 is not a valid index, so we can use it as an error return value
+}
+
+// Passing in low and high allows the compiler to infer the type of the input we want
+template &lt;typename T&gt;
+T getValidNumber(std::string_view prompt, T low, T high)
+{
+    // First, read in valid input from user
+    T val {};
+    do
+    {
+        std::cout &lt;&lt; prompt;
+        std::cin &gt;&gt; val;
+
+        // if the user entered an invalid character
+        if (!std::cin)
+            std::cin.clear(); // reset any error flags
+
+        std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n'); // ignore any extra characters in the input buffer (regardless of whether we had an error or not)
+
+    } while (val &lt; low || val &gt; high);
+
+    return val;
+}
+
+int main()
+{
+    std::vector arr{ 4.4, 6.6, 7.7, 3.3, 8.8, 2.2, 1.1, 9.9 };
+    
+    auto num { getValidNumber("Enter a number between 1 and 9: ", 1.0, 9.0) };
+
+    printArray(arr);
+
+    int index { findIndex(arr, num) };
+
+    if (index != -1)
+        std::cout &lt;&lt; "The number " &lt;&lt; num &lt;&lt; " has index " &lt;&lt; index &lt;&lt; '\n';
+    else
+        std::cout &lt;&lt; "The number " &lt;&lt; num &lt;&lt; " was not found\n";
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #5</p>
+<p>Write a function template to find the largest value in a <code>std::vector</code>.  If the vector is empty, return the default value for the element type.</p>
+<p>The following code should execute:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    std::vector data1 { 84, 92, 76, 81, 56 };
+    std::cout &lt;&lt; findMax(data1) &lt;&lt; '\n';
+
+    std::vector data2 { -13.0, -26.7, -105.5, -14.8 };
+    std::cout &lt;&lt; findMax(data2) &lt;&lt; '\n';
+
+    std::vector&lt;int&gt; data3 { };
+    std::cout &lt;&lt; findMax(data3) &lt;&lt; '\n';
+    
+    return 0;
+}</code></pre>
+<p>And print the following result:</p>
+<pre>
+92
+-13
+0
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_hint_id_0" data-show-label="Show Hint" data-hide-label="Hide Hint" aria-expanded="false">Show Hint</button></p>
+<div class="wphint" id="cpp_hint_id_0" style="margin-bottom: 1em" hidden="hidden">Hint: Use a non-loop variable to keep track of the highest value you have seen so far.</div>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_4" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_4" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+T findMax(const std::vector&lt;T&gt;&amp; arr)
+{
+    std::size_t length { arr.size() };
+
+    if (length==0)
+        return T{};    
+
+    T max { arr[0] }; // Set the max seen to the first element
+
+    // Iterate through any remaining elements looking for a larger value
+    for (std::size_t index{ 1 }; index &lt; length; ++index)
+    {
+        if (arr[index] &gt; max)
+            max = arr[index];
+    }
+
+    return max;
+}
+
+int main()
+{
+    std::vector data1 { 84, 92, 76, 81, 56 };
+    std::cout &lt;&lt; findMax(data1) &lt;&lt; '\n';
+
+    std::vector data2 { -13.0, -26.7, -105.5, -14.8 };
+    std::cout &lt;&lt; findMax(data2) &lt;&lt; '\n';
+
+    std::vector&lt;int&gt; data3 { };
+    std::cout &lt;&lt; findMax(data3) &lt;&lt; '\n';
+    
+    return 0;
+}</code></pre>
+<p>In this example, we use a non-loop variable called <code>max</code> to keep track of the highest score we’ve seen.  We initialize <code>max</code> with the value of the first element so that it starts with a legitimate value.  Value initialization might be tempting, but will cause the function to return the wrong value if the array contains only negative values.</p>
+<p>We then iterate through each element of the array, and if we find a score that is higher than any we’ve seen before, we set <code>max</code> to that value.  Thus, <code>max</code> always represents the highest score out of all the elements we’ve searched so far.  By the time we reach the end of the array, <code>max</code> holds the highest score in the entire array, which we can then return to the caller.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #6</p>
+<p>In the quiz for lesson <a href="for-statements.html">8.10 -- For statements</a>, we implemented a game called FizzBuzz for the numbers three, five, and seven.</p>
+<p>In this quiz, implement the game as follows:</p>
+<ul>
+<li>Numbers divisible by only 3 should print “fizz”.
+</li>
+<li>Numbers divisible by only 5 should print “buzz”.
+</li>
+<li>Numbers divisible by only 7 should print “pop”.
+</li>
+<li>Numbers divisible by only 11 should print “bang”.
+</li>
+<li>Numbers divisible by only 13 should print “jazz”.
+</li>
+<li>Numbers divisible by only 17 should print “pow”.
+</li>
+<li>Numbers divisible by only 19 should print “boom”.
+</li>
+<li>Numbers divisible by more than one of the above should print each of the words associated with its divisors.
+</li>
+<li>Numbers not divisible by any of the above should just print the number.
+</li>
+</ul>
+<p>Use a <code>std::vector</code> to hold the divisors, and another <code>std::vector</code> to hold the words (as type <code>std::string_view</code>).  If the arrays do not have the same length, the program should assert.  Produce output for 150 numbers.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_hint_id_1" data-show-label="Show Hint" data-hide-label="Hide Hint" aria-expanded="false">Show Hint</button></p>
+<div class="wphint" id="cpp_hint_id_1" style="margin-bottom: 1em" hidden="hidden">Hint: Use the <code>sv</code> literal suffix to make the words of type <code>std::string_view</code>, so you can use CTAD to deduce the type of the array.</div>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_hint_id_2" data-show-label="Show Hint" data-hide-label="Hide Hint" aria-expanded="false">Show Hint</button></p>
+<div class="wphint" id="cpp_hint_id_2" style="margin-bottom: 1em" hidden="hidden">Hint: Use a nested for-loop to check the number against the divisors.  We discuss nested for-loops in lesson <a href="for-statements.html">8.10 -- For statements</a>.</div>
+<p>Here’s the expected output from the first 21 iterations:</p>
+<pre>
+1
+2
+fizz
+4
+buzz
+fizz
+pop
+8
+fizz
+buzz
+bang
+fizz
+jazz
+pop
+fizzbuzz
+16
+pow
+fizz
+boom
+buzz
+fizzpop
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_5" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_5" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// h/t to reader Waldo for suggesting this quiz
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+void fizzbuzz(int count)
+{
+	// We'll make these static so we only have to do initialization once
+	static const std::vector divisors                { 3, 5, 7, 11, 13, 17, 19 };
+	static const std::vector&lt;std::string_view&gt; words { "fizz", "buzz", "pop", "bang", "jazz", "pow", "boom" };
+	assert(std::size(divisors) == std::size(words) &amp;&amp; "fizzbuzz: array sizes don't match");
+
+	// Loop through each number between 1 and count (inclusive)
+	for (int i{ 1 }; i &lt;= count; ++i)
+	{
+		bool printed{ false };
+
+		// Check the current number against each possible divisor
+		for (std::size_t j{ 0 }; j &lt; divisors.size(); ++j)
+		{
+			if (i % divisors[j] == 0)
+			{
+				std::cout &lt;&lt; words[j];
+				printed = true;
+			}
+		}
+
+		// If there were no divisors
+		if (!printed)
+			std::cout &lt;&lt; i;
+
+		std::cout &lt;&lt; '\n';
+	}
+}
+
+int main()
+{
+	fizzbuzz(150);
+
+	return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Because <code>divisors</code> and <code>words</code> are constant arrays, it would be better to make them <code>constexpr</code> -- but we can’t do that with a <code>std::vector</code>.  It would be preferable to use a <code>constexpr std::array</code> here instead.  We cover <code>std::array</code> in lesson <a href="introduction-to-stdarray.html">17.1 -- Introduction to std::array</a>.
+</p></div>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="nav-kicker">← Previous lesson</span>16.5 · Returning std::vector, and an introduction to move semantics</a><a class="next" href="arrays-loops-and-sign-challenge-solutions.html"><span class="nav-kicker">Next lesson →</span>16.7 · Arrays, loops, and sign challenge solutions</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

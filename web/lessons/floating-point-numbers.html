@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Integers are great for counting whole numbers, but sometimes we need to store very large (positive or negative) numbers, or numbers with a fractional compo">
+  <meta name="robots" content="noindex,nofollow">
+  <title>4.8 — Floating point numbers · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/floating-point-numbers/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 4 · Fundamental Data Types</summary><div class="sidebar-title"><small>Chapter 4</small><strong>Fundamental Data Types</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-fundamental-data-types.html"><span class="lesson-number">4.1</span><span>Introduction to fundamental data types</span></a></li><li><a href="void.html"><span class="lesson-number">4.2</span><span>Void</span></a></li><li><a href="object-sizes-and-the-sizeof-operator.html"><span class="lesson-number">4.3</span><span>Object sizes and the sizeof operator</span></a></li><li><a href="signed-integers.html"><span class="lesson-number">4.4</span><span>Signed integers</span></a></li><li><a href="unsigned-integers-and-why-to-avoid-them.html"><span class="lesson-number">4.5</span><span>Unsigned integers, and why to avoid them</span></a></li><li><a href="fixed-width-integers-and-size-t.html"><span class="lesson-number">4.6</span><span>Fixed-width integers and size_t</span></a></li><li><a href="introduction-to-scientific-notation.html"><span class="lesson-number">4.7</span><span>Introduction to scientific notation</span></a></li><li><a href="floating-point-numbers.html" aria-current="page"><span class="lesson-number">4.8</span><span>Floating point numbers</span></a></li><li><a href="boolean-values.html"><span class="lesson-number">4.9</span><span>Boolean values</span></a></li><li><a href="introduction-to-if-statements.html"><span class="lesson-number">4.10</span><span>Introduction to if statements</span></a></li><li><a href="chars.html"><span class="lesson-number">4.11</span><span>Chars</span></a></li><li><a href="introduction-to-type-conversion-and-static_cast.html"><span class="lesson-number">4.12</span><span>Introduction to type conversion and static_cast</span></a></li><li><a href="chapter-4-summary-and-quiz.html"><span class="lesson-number">4.x</span><span>Chapter 4 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 4</div>
+        <h1>4.8 — Floating point numbers</h1>
+        <div class="article-meta"><span>Updated: 2024-11-24 23:41</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Integers are great for counting whole numbers, but sometimes we need to store <em>very</em> large (positive or negative) numbers, or numbers with a fractional component.  A <strong>floating point</strong> type variable is a variable that can hold a number with a fractional component, such as 4320.0, -3.33, or 0.01226.  The <em>floating</em> part of the name <em>floating point</em> refers to the fact that the decimal point can “float” -- that is, it can support a variable number of digits before and after the decimal point.  Floating point data types are always signed (can hold positive and negative values).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>When writing floating point numbers in your code, the decimal separator must be a decimal point.  If you’re from a country that uses a decimal comma, you’ll need to get used to using a decimal point instead.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">C++ floating point types</p>
+<p>C++ has three fundamental floating point data types: a single-precision <code>float</code>, a double-precision <code>double</code>, and an extended-precision <code>long double</code>.  As with integers, C++ does not define the actual size of these types.</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Category</th>
+<th>C++ Type</th>
+<th>Typical Size</th>
+</tr>
+<tr>
+<td>floating point</td>
+<td>float
+</td><td>4 bytes</td>
+</tr>
+<tr>
+<td></td>
+<td>double</td>
+<td>8 bytes</td>
+</tr>
+<tr>
+<td></td>
+<td>long double</td>
+<td>8, 12, or 16 bytes</td>
+</tr>
+<p></p></table></div>
+<p>On modern architectures, floating-point types are conventionally implemented using one of the floating-point formats defined in the IEEE 754 standard (see <a href="https://en.wikipedia.org/wiki/IEEE_754" target="_blank" rel="noopener noreferrer">https://en.wikipedia.org/wiki/IEEE_754</a>).  As a result, <code>float</code> is almost always 4 bytes, and <code>double</code> is almost always 8 bytes.</p>
+<p>On the other hand, <code>long double</code> is a strange type.  On different platforms, its size can vary between 8 and 16 bytes, and it may or may not use an IEEE 754 compliant format.  We recommend avoiding <code>long double</code>.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>This tutorial series assumes your compiler is using an IEEE 754 compatible format for <code>float</code> and <code>double</code>.</p>
+<p>You can see if your floating point types are IEEE 754 compatible with the following code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;limits&gt;
+
+int main()
+{
+    std::cout &lt;&lt; std::boolalpha; // print bool as true or false rather than 1 or 0
+    std::cout &lt;&lt; "float: " &lt;&lt; std::numeric_limits&lt;float&gt;::is_iec559 &lt;&lt; '\n';
+    std::cout &lt;&lt; "double: " &lt;&lt; std::numeric_limits&lt;double&gt;::is_iec559 &lt;&lt; '\n';
+    std::cout &lt;&lt; "long double: " &lt;&lt; std::numeric_limits&lt;long double&gt;::is_iec559 &lt;&lt; '\n';
+}</code></pre>
+</div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p><code>float</code> is almost always implemented using the 4-byte IEEE 754 single-precision format.<br>
+<code>double</code> is almost always implemented using the 8-byte IEEE 754 double-precision format.</p>
+<p>However, the format used to implement <code>long double</code> varies by platform.  Common choices include:</p>
+<ul>
+<li>8-byte IEEE 754 double-precision format (same as <code>double</code>).
+</li>
+<li>80-bit (often padded to 12 or 16 bytes) x87 extended-precision format (compatible with IEEE 754).
+</li>
+<li>16-byte IEEE 754 quadruple-precision format.
+</li>
+<li>16-byte double-double format (not compatible with IEEE 754).
+</li>
+</ul>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Floating point variables and literals</p>
+<p>Here are some definitions of floating point variables:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">float f;
+double d;
+long double ld;</code></pre>
+<p>When using floating point literals, always include at least one decimal place (even if the decimal is 0).  This helps the compiler understand that the number is a floating point number and not an integer.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int a { 5 };      // 5 means integer
+double b { 5.0 }; // 5.0 is a floating point literal (no suffix means double type by default)
+float c { 5.0f }; // 5.0 is a floating point literal, f suffix means float type
+
+int d { 0 };      // 0 is an integer
+double e { 0.0 }; // 0.0 is a double</code></pre>
+<p>Note that by default, floating point literals default to type double.  An <code>f</code> suffix is used to denote a literal of type float.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Always make sure the type of your literals match the type of the variables they’re being assigned to or used to initialize.  Otherwise an unnecessary conversion will result, possibly with a loss of precision.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Printing floating point numbers</p>
+<p>Now consider this simple program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+	std::cout &lt;&lt; 5.0 &lt;&lt; '\n';
+	std::cout &lt;&lt; 6.7f &lt;&lt; '\n';
+	std::cout &lt;&lt; 9876543.21 &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>The results of this seemingly simple program may surprise you:</p>
+<pre>
+5
+6.7
+9.87654e+06
+</pre>
+<p>In the first case, <code>std::cout</code> printed <code>5</code>, even though we typed in <code>5.0</code>.  By default, <code>std::cout</code> will not print the fractional part of a number if the fractional part is 0.</p>
+<p>In the second case, the number prints as we expect.</p>
+<p>In the third case, it printed the number in scientific notation (if you need a refresher on scientific notation, see lesson <a href="introduction-to-scientific-notation.html">4.7 -- Introduction to scientific notation</a>).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Floating point range</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Format</th>
+<th>Range</th>
+<th>Precision</th>
+</tr>
+<tr>
+<td>IEEE 754 single-precision (4 bytes)</td>
+<td>±1.18 x 10<sup>-38</sup> to ±3.4 x 10<sup>38</sup> and 0.0</td>
+<td>6-9 significant digits, typically 7</td>
+</tr>
+<tr>
+<td>IEEE 754 double-precision (8 bytes)</td>
+<td>±2.23 x 10<sup>-308</sup> to ±1.80 x 10<sup>308</sup> and 0.0</td>
+<td>15-18 significant digits, typically 16</td>
+</tr>
+<tr>
+<td>x87 extended-precision (80 bits)</td>
+<td>±3.36 x 10<sup>-4932</sup> to ±1.18 x 10<sup>4932</sup> and 0.0</td>
+<td>18-21 significant digits</td>
+</tr>
+<tr>
+<td>IEEE 754 quadruple-precision (16 bytes)</td>
+<td>±3.36 x 10<sup>-4932</sup> to ±1.18 x 10<sup>4932</sup> and 0.0</td>
+<td>33-36 significant digits</td>
+</tr>
+<p></p></table></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>The 80-bit x87 extended-precision floating point type is a bit of a historical anomaly.  On modern processors, objects of this type are typically padded to 12 or 16 bytes (which is a more natural size for processors to handle).  This means those objects have 80-bits of floating point data, and the remaining memory is filler.</p>
+<p>It may seem a little odd that the 80-bit floating point type has the same range as the 16-byte floating point type.  This is because they have the same number of bits dedicated to the exponent -- however, the 16-byte number can store more significant digits.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Floating point precision</p>
+<p>Consider the fraction 1/3.  The decimal representation of this number is 0.33333333333333… with 3’s going out to infinity.  If you were writing this number on a piece of paper, your arm would get tired at some point, and you’d eventually stop writing.  And the number you were left with would be close to 0.3333333333…. (with 3’s going out to infinity) but not exactly.</p>
+<p>On a computer, an infinite precision number would require infinite memory to store, and we typically only have 4 or 8 bytes per value.  This limited memory means floating point numbers can only store a certain number of significant digits -- any additional significant digits are either lost or represented imprecisely.  The number that is actually stored may be close to the desired number, but not exact.  We’ll show an example of this in the next section.</p>
+<p>The <strong>precision</strong> of a floating point type defines how many significant digits it can represent without information loss.  </p>
+<p>The number of digits of precision a floating point type has depends on both the size (floats have less precision than doubles) and the particular value being stored (some values can be represented more precisely than others).  </p>
+<p>For example, a float has 6 to 9 digits of precision.  This means that a float can exactly represent any number with up to 6 significant digits.  A number with 7 to 9 significant digits may or may not be represented exactly depending on the specific value.  And a number with more than 9 digits of precision will definitely not be represented exactly.</p>
+<p>Double values have between 15 and 18 digits of precision, with most double values having at least 16 significant digits.  Long double has a minimum precision of 15, 18, or 33 significant digits depending on how many bytes it occupies.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>A floating point type can only precisely represent a certain number of significant digits.  Using a value with more significant digits than the minimum may result in the value being stored inexactly.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Outputting floating point values</p>
+<p>When outputting floating point numbers, <code>std::cout</code> has a default precision of 6 -- that is, it assumes all floating point variables are only significant to 6 digits (the minimum precision of a float), and hence it will truncate anything after that.</p>
+<p>The following program shows <code>std::cout</code> truncating to 6 digits:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; 9.87654321f &lt;&lt; '\n';
+    std::cout &lt;&lt; 987.654321f &lt;&lt; '\n';
+    std::cout &lt;&lt; 987654.321f &lt;&lt; '\n';
+    std::cout &lt;&lt; 9876543.21f &lt;&lt; '\n';
+    std::cout &lt;&lt; 0.0000987654321f &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This program outputs:</p>
+<pre>
+9.87654
+987.654
+987654
+9.87654e+006
+9.87654e-005
+</pre>
+<p>Note that each of these only have 6 significant digits.</p>
+<p>Also note that std::cout will switch to outputting numbers in scientific notation in some cases.  Depending on the compiler, the exponent will typically be padded to a minimum number of digits.  Fear not, 9.87654e+006 is the same as 9.87654e6, just with some padding 0’s.  The minimum number of exponent digits displayed is compiler-specific (Visual Studio uses 3, some others use 2 as per the C99 standard).</p>
+<p>We can override the default precision that std::cout shows by using an <code>output manipulator</code> function named <code>std::setprecision()</code>.  <strong>Output manipulators</strong> alter how data is output, and are defined in the <em>iomanip</em> header.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iomanip&gt; // for output manipulator std::setprecision()
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; std::setprecision(17); // show 17 digits of precision
+    std::cout &lt;&lt; 3.33333333333333333333333333333333333333f &lt;&lt;'\n'; // f suffix means float
+    std::cout &lt;&lt; 3.33333333333333333333333333333333333333 &lt;&lt; '\n'; // no suffix means double
+
+    return 0;
+}</code></pre>
+<p>Outputs:</p>
+<pre>
+3.3333332538604736
+3.3333333333333335
+</pre>
+<p>Because we set the precision to 17 digits using <code>std::setprecision()</code>, each of the above numbers is printed with 17 digits.  But, as you can see, the numbers certainly aren’t precise to 17 digits!  And because floats are less precise than doubles, the float has more error.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Output manipulators (and input manipulators) are sticky -- meaning if you set them, they will remain set.</p>
+<p>The one exception is <code>std::setw</code>.  Some IO operations reset <code>std::setw</code>, so <code>std::setw</code> should be used every time it is needed.
+</p></div>
+<p>Precision issues don’t just impact fractional numbers, they impact any number with too many significant digits.  Let’s consider a big number:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iomanip&gt; // for std::setprecision()
+#include &lt;iostream&gt;
+
+int main()
+{
+    float f { 123456789.0f }; // f has 10 significant digits
+    std::cout &lt;&lt; std::setprecision(9); // to show 9 digits in f
+    std::cout &lt;&lt; f &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Output:</p>
+<pre>
+123456792
+</pre>
+<p>123456792 is greater than 123456789.  The value 123456789.0 has 10 significant digits, but float values typically have 7 digits of precision (and the result of 123456792 is precise only to 7 significant digits).  We lost some precision!  When precision is lost because a number can’t be stored precisely, this is called a <strong>rounding error</strong>.</p>
+<p>Consequently, one has to be careful when using floating point numbers that require more precision than the variables can hold.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Favor double over float unless space is at a premium, as the lack of precision in a float will often lead to inaccuracies.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Rounding errors make floating point comparisons tricky</p>
+<p>Floating point numbers are tricky to work with due to non-obvious differences between binary (how data is stored) and decimal (how we think) numbers.  Consider the fraction 1/10.  In decimal, this is easily represented as 0.1, and we are used to thinking of 0.1 as an easily representable number with 1 significant digit.  However, in binary, decimal value 0.1 is represented by the infinite sequence: 0.00011001100110011…  Because of this, when we assign 0.1 to a floating point number, we’ll run into precision problems.</p>
+<p>You can see the effects of this in the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iomanip&gt; // for std::setprecision()
+#include &lt;iostream&gt;
+
+int main()
+{
+    double d{0.1};
+    std::cout &lt;&lt; d &lt;&lt; '\n'; // use default cout precision of 6
+    std::cout &lt;&lt; std::setprecision(17);
+    std::cout &lt;&lt; d &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This outputs:</p>
+<pre>
+0.1
+0.10000000000000001
+</pre>
+<p>On the top line, <code>std::cout</code> prints 0.1, as we expect.</p>
+<p>On the bottom line, where we have <code>std::cout</code> show us 17 digits of precision, we see that <code>d</code> is actually <em>not quite</em> 0.1!  This is because the double had to truncate the approximation due to its limited memory.  The result is a number that is precise to 16 significant digits (which type double guarantees), but the number is not <em>exactly</em> 0.1.  Rounding errors may make a number either slightly smaller or slightly larger, depending on where the truncation happens.</p>
+<p>Rounding errors can have unexpected consequences:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iomanip&gt; // for std::setprecision()
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; std::setprecision(17);
+
+    double d1{ 1.0 };
+    std::cout &lt;&lt; d1 &lt;&lt; '\n';
+	
+    double d2{ 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 }; // should equal 1.0
+    std::cout &lt;&lt; d2 &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<pre>
+1
+0.99999999999999989
+</pre>
+<p>Although we might expect that <code>d1</code> and <code>d2</code> should be equal, we see that they are not.  If we were to compare <code>d1</code> and <code>d2</code> in a program, the program would probably not perform as expected.  Because floating point numbers tend to be inexact, comparing floating point numbers is generally problematic -- we discuss the subject more (and solutions) in lesson <a href="relational-operators-and-floating-point-comparisons.html">6.7 -- Relational operators and floating point comparisons</a>.</p>
+<p>One last note on rounding errors: mathematical operations (such as addition and multiplication) tend to make rounding errors grow.  So even though 0.1 has a rounding error in the 17th significant digit, when we add 0.1 ten times, the rounding error has crept into the 16th significant digit.  Continued operations would cause this error to become increasingly significant.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Rounding errors occur when a number can’t be stored precisely.  This can happen even with simple numbers, like 0.1.  Therefore, rounding errors can, and do, happen all the time.  Rounding errors aren’t the exception -- they’re the norm.  Never assume your floating point numbers are exact.</p>
+<p>A corollary of this rule is: be wary of using floating point numbers for financial or currency data.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>For more insight into how floating point numbers are stored in binary, check out the <a href="https://float.exposed/0x3dcccccd" target="_blank" rel="noopener noreferrer">float.exposed</a> tool.<br>
+To learn more about floating point numbers and rounding errors, <a href="https://floating-point-gui.de/" target="_blank" rel="noopener noreferrer">floating-point-gui.de</a> and <a href="https://fabiensanglard.net/floating_point_visually_explained/index.html" target="_blank" rel="noopener noreferrer">fabiensanglard.net</a> have approachable guides on the topic.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">NaN and Inf</p>
+<p>IEEE 754 compatible formats additionally support some special values:</p>
+<ul>
+<li><strong>Inf</strong>, which represents infinity.  Inf is signed, and can be positive (+Inf) or negative (-Inf).
+</li>
+<li><strong>NaN</strong>, which stands for “Not a Number”.  There are several different kinds of NaN (which we won’t discuss here).
+</li>
+<li>Signed zero, meaning there are separate representations for “positive zero” (+0.0) and “negative zero” (-0.0).
+</li>
+</ul>
+<p>Formats that are not compatible with IEEE 754 may not support some (or any) of these values.  In such cases, code that uses or generates these special values will produce implementation-defined behavior.</p>
+<p>Here’s a program showing all three:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    double zero { 0.0 };
+    
+    double posinf { 5.0 / zero }; // positive infinity
+    std::cout &lt;&lt; posinf &lt;&lt; '\n';
+
+    double neginf { -5.0 / zero }; // negative infinity
+    std::cout &lt;&lt; neginf &lt;&lt; '\n';
+
+    double z1 { 0.0 / posinf }; // positive zero
+    std::cout &lt;&lt; z1 &lt;&lt; '\n';
+
+    double z2 { -0.0 / posinf }; // negative zero
+    std::cout &lt;&lt; z2 &lt;&lt; '\n';
+
+    double nan { zero / zero }; // not a number (mathematically invalid)
+    std::cout &lt;&lt; nan &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>And the results using Clang:</p>
+<pre>
+inf
+-inf
+0
+-0
+nan
+</pre>
+<p>Note that the results of printing <code>Inf</code> and <code>NaN</code> are platform specific, so your results may vary (e.g. Visual Studio prints the last result as <code>-nan(ind)</code>).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Avoid division by <code>0.0</code>, even if your compiler supports it.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>To summarize, the two things you should remember about floating point numbers:</p>
+<ol start="1">
+<li>Floating point numbers are useful for storing very large or very small numbers, including those with fractional components.
+</li>
+<li>Floating point numbers often have small rounding errors, even when the number has fewer significant digits than the precision.  Many times these go unnoticed because they are so small, and because the numbers are truncated for output.  However, comparisons of floating point numbers may not give the expected results.  Performing mathematical operations on these values will cause the rounding errors to grow larger.
+</li>
+</ol>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-scientific-notation.html"><span class="nav-kicker">← Previous lesson</span>4.7 · Introduction to scientific notation</a><a class="next" href="boolean-values.html"><span class="nav-kicker">Next lesson →</span>4.9 · Boolean values</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Chapter Review A constant is a value that may not be changed during the program’s execution. C++ supports two types of constants: named constants, and lite">
+  <meta name="robots" content="noindex,nofollow">
+  <title>5.x — Chapter 5 summary and quiz · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/chapter-5-summary-and-quiz/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 5 · Constants and Strings</summary><div class="sidebar-title"><small>Chapter 5</small><strong>Constants and Strings</strong></div>
+<ol class="sidebar-lessons"><li><a href="constant-variables-named-constants.html"><span class="lesson-number">5.1</span><span>Constant variables (named constants)</span></a></li><li><a href="literals.html"><span class="lesson-number">5.2</span><span>Literals</span></a></li><li><a href="numeral-systems-decimal-binary-hexadecimal-and-octal.html"><span class="lesson-number">5.3</span><span>Numeral systems (decimal, binary, hexadecimal, and octal)</span></a></li><li><a href="the-as-if-rule-and-compile-time-optimization.html"><span class="lesson-number">5.4</span><span>The as-if rule and compile-time optimization</span></a></li><li><a href="constant-expressions.html"><span class="lesson-number">5.5</span><span>Constant expressions</span></a></li><li><a href="constexpr-variables.html"><span class="lesson-number">5.6</span><span>Constexpr variables</span></a></li><li><a href="introduction-to-stdstring.html"><span class="lesson-number">5.7</span><span>Introduction to std::string</span></a></li><li><a href="introduction-to-stdstring_view.html"><span class="lesson-number">5.8</span><span>Introduction to std::string_view</span></a></li><li><a href="stdstring_view-part-2.html"><span class="lesson-number">5.9</span><span>std::string_view (part 2)</span></a></li><li><a href="chapter-5-summary-and-quiz.html" aria-current="page"><span class="lesson-number">5.x</span><span>Chapter 5 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 5</div>
+        <h1>5.x — Chapter 5 summary and quiz</h1>
+        <div class="article-meta"><span>Updated: 2024-12-02 12:03</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">Chapter Review</p>
+<p>A <strong>constant</strong> is a value that may not be changed during the program’s execution.  C++ supports two types of constants: named constants, and literals.</p>
+<p>A <strong>named constant</strong> is a constant value that is associated with an identifier.  A <strong>Literal constant</strong> is a constant value not associated with an identifier.</p>
+<p>A variable whose value can not be changed is called a <strong>constant variable</strong>.  The <strong>const</strong> keyword can be used to make a variable constant.  Constant variables must be initialized.  Avoid using <code>const</code> when passing by value or returning by value.</p>
+<p>A <strong>type qualifier</strong> is a keyword that is applied to a type that modifies how that type behaves.  As of C++23, C++ only supports <code>const</code> and <code>volatile</code> as type qualifiers.</p>
+<p>A <strong>constant expression</strong> is an expression that can be evaluated at compile-time.  An expression that is not a constant expression is sometimes called a <strong>runtime expression</strong>.</p>
+<p>A <strong>compile-time constant</strong> is a constant whose value is known at compile-time.  A <strong>runtime constant</strong> is a constant whose initialization value isn’t known until runtime.</p>
+<p>A <strong>constexpr</strong> variable must be a compile-time constant, and initialized with a constant expression.  Function parameters cannot be constexpr.</p>
+<p><strong>Literals</strong> are values inserted directly into the code.  Literals have types, and literal suffixes can be used to change the type of a literal from the default type.</p>
+<p>A <strong>magic number</strong> is a literal (usually a number) that either has an unclear meaning or may need to be changed later.  Don’t use magic numbers in your code.  Instead, use symbolic constants.</p>
+<p>In everyday life, we count using <strong>decimal</strong> numbers, which have 10 digits.  Computers use <strong>binary</strong>, which only has 2 digits.  C++ also supports <strong>octal</strong> (base 8) and <strong>hexadecimal</strong> (base 16).  These are all examples of <strong>numeral systems</strong>, which are collections of symbols (digits) used to represent numbers.</p>
+<p>A <strong>string</strong> is a collection of sequential characters that is used to represent text (such as names, words, and sentences).  String literals are always placed between double quotes.  String literals in C++ are C-style strings, which have a strange type that is hard to work with.</p>
+<p><strong>std::string</strong> offers an easy and safe way to deal with text strings.  std::string lives in the &lt;string&gt; header.  <code>std::string</code> is expensive to initialize (or assign to) and copy.</p>
+<p><strong>std::string_view</strong> provides read-only access to an existing string (a C-style string literal, a std::string, or a char array) without making a copy.  A <code>std::string_view</code> that is viewing a string that has been destroyed is sometimes called a <strong>dangling</strong> view.  When a <code>std::string</code> is modified, all views into that <code>std::string</code> are <strong>invalidated</strong>, meaning those views are now invalid.  Using an invalidated view (other than to revalidate it) will produce undefined behavior.</p>
+<p>Because C-style string literals exist for the entire program, it is okay to set a <code>std::string_view</code> to a C-style string literal, and even return such a <code>std::string_view</code> from a function.</p>
+<p>A <strong>substring</strong> is a contiguous sequence of characters within an existing string.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Why are named constants often a better choice than literal constants?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p>Using literal constants (a.k.a. magic numbers) in your program makes your program harder to understand and harder to modify.  Symbolic constants help document what the numbers actually represent, and changing a symbolic constant at its declaration changes the value everywhere it is used.
+</p></div>
+<p>Why are const/constexpr variables usually a better choice than #defined symbolic constants?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<p>#define constants do not show up in the debugger and are more likely to have naming conflicts.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Find 3 issues in the following code:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstdint&gt; // for std::uint8_t
+#include &lt;iostream&gt;
+
+int main()
+{
+  std::cout &lt;&lt; "How old are you?\n";
+
+  std::uint8_t age{};
+  std::cin &gt;&gt; age;
+
+  std::cout &lt;&lt; "Allowed to drive a car in Texas: ";
+
+  if (age &gt;= 16)
+      std::cout &lt;&lt; "Yes";
+  else
+      std::cout &lt;&lt; "No";
+
+  std::cout &lt;&lt; '.\n';
+
+  return 0;
+}</code></pre>
+<p>Sample desired output:</p>
+<pre>
+How old are you?
+6
+Allowed to drive a car in Texas: No
+</pre>
+<pre>
+How old are you?
+19
+Allowed to drive a car in Texas: Yes
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<ol start="1">
+<li>On line 8, <code>age</code> is defined as a <code>std::uint8_t</code>.  Because <code>std::uint8_t</code> is typically defined as a char type, using it here will cause the program to behave as if we’re inputting and outputting a char value rather than a numeric value.  For example, if the user entered their age as “18”, only the character <code>'1'</code> would be extracted.  Because <code>1</code> has ASCII value <code>49</code>, the user would be treated as if they were 49 years old.  A regular <code>int</code> should be used to store the age, as the age doesn’t require a specific minimum integer width.  We can also remove <code>#include &lt;cstdint&gt;</code>.
+</li>
+<li>On line 13, we use the magic number <code>16</code>.  Although the meaning of <code>16</code> is clear from the context it is used in, using a <code>constexpr</code> variable with the value <code>16</code> should be preferred instead.
+</li>
+<li>On line 18, <code>'.\n'</code> is a multicharacter literal that will print the wrong value.  It should be double-quoted (<code>".\n"</code>).
+</li>
+</ol>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>What are the primary differences between <code>std::string</code> and <code>std::string_view</code>?</p>
+<p>What can go wrong when using a <code>std::string_view</code>?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<p><code>std::string</code> provides a modifiable string.  It is expensive to initialize and copy.</p>
+<p><code>std::string_view</code> provide a read-only view of a string that exists elsewhere.  It is inexpensive to initialize and copy.  <code>std::string_view</code> can be dangerous when the string being viewed is destroyed before the <code>std::string_view</code> that is viewing it.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #4</p>
+<p>Write a program that asks for the name and age of two people, then prints which person is older.</p>
+<p>Here is the sample output from one run of the program:</p>
+<pre>
+Enter the name of person #1: John Bacon
+Enter the age of John Bacon: 37
+Enter the name of person #2: David Jenkins
+Enter the age of David Jenkins: 44
+David Jenkins (age 44) is older than John Bacon (age 37).
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_hint_id_0" data-show-label="Show Hint" data-hide-label="Hide Hint" aria-expanded="false">Show Hint</button></p>
+<div class="wphint" id="cpp_hint_id_0" style="margin-bottom: 1em" hidden="hidden">Hint: Input the person’s name using <code>std::getline()</code></div>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_4" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_4" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+std::string getName(int num)
+{
+    std::cout &lt;&lt; "Enter the name of person #" &lt;&lt; num &lt;&lt; ": ";
+    std::string name{};
+    std::getline(std::cin &gt;&gt; std::ws, name); // read a full line of text into name
+
+    return name;
+}
+
+int getAge(std::string_view sv)
+{
+    std::cout &lt;&lt; "Enter the age of " &lt;&lt; sv &lt;&lt; ": ";
+    int age{};
+    std::cin &gt;&gt; age;
+
+    return age;
+}
+
+void printOlder(std::string_view name1, int age1, std::string_view name2, int age2)
+{
+    if (age1 &gt; age2)
+        std::cout &lt;&lt; name1 &lt;&lt; " (age " &lt;&lt; age1 &lt;&lt;") is older than " &lt;&lt; name2 &lt;&lt; " (age " &lt;&lt; age2 &lt;&lt;").\n";
+    else
+        std::cout &lt;&lt; name2 &lt;&lt; " (age " &lt;&lt; age2 &lt;&lt;") is older than " &lt;&lt; name1 &lt;&lt; " (age " &lt;&lt; age1 &lt;&lt;").\n";
+}
+
+int main()
+{
+    const std::string name1{ getName(1) };
+    const int age1 { getAge(name1) };
+    
+    const std::string name2{ getName(2) };
+    const int age2 { getAge(name2) };
+
+    printOlder(name1, age1, name2, age2);
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #5</p>
+<p>In the solution to the above quiz, why can’t variable <code>age1</code> in <code>main</code> be constexpr?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_5" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_5" hidden="hidden">
+<p>A constexpr variable requires a constant expression initializer, and the call to <code>getAge()</code> isn’t allowed in a constant expression.  Therefore, we can only make the variable const.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdstring_view-part-2.html"><span class="nav-kicker">← Previous lesson</span>5.9 · std::string_view (part 2)</a><a class="next" href="operator-precedence-and-associativity.html"><span class="nav-kicker">Next lesson →</span>6.1 · Operator precedence and associativity</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

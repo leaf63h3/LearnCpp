@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 16.6 -- Arrays and loops, we showed examples where we used a for-loop to iterate through each element of an array using a loop variable as an ind">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.8 — Range-based for loops (for-each) · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/range-based-for-loops-for-each/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html" aria-current="page"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.8 — Range-based for loops (for-each)</h1>
+        <div class="article-meta"><span>Updated: 2024-12-28 17:47</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="arrays-and-loops.html">16.6 -- Arrays and loops</a>, we showed examples where we used a for-loop to iterate through each element of an array using a loop variable as an index.  Here’s another example of such:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector fibonacci { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+
+    std::size_t length { fibonacci.size() };
+    for (std::size_t index { 0 }; index &lt; length; ++index)
+       std::cout &lt;&lt; fibonacci[index] &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Although for-loops provide a convenient and flexible way to iterate through an array, they are also easy to mess up, prone to off-by-one errors, and subject to array indexing sign problems (discussed in lesson <a href="arrays-loops-and-sign-challenge-solutions.html">16.7 -- Arrays, loops, and sign challenge solutions</a>).</p>
+<p>Because traversing (forwards) through an array is such a common thing to do, C++ supports another type of for-loop called a <strong>range-based for loop</strong> (also sometimes called a <strong>for-each loop</strong>) that allows traversal of a container without having to do explicit indexing.  Range-based for loops are simpler, safer, and work with all the common array types in C++ (including <code>std::vector</code>, <code>std::array</code>, and C-style arrays).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Range-based for loops</p>
+<p>The <em>range-based for</em> statement has a syntax that looks like this:</p>
+<pre>
+for (element_declaration : array_object)
+   statement;
+</pre>
+<p>When a range-based for loop is encountered, the loop will iterate through each element in <code>array_object</code>.  For each iteration, the value of the current array element will be assigned to the variable declared in <code>element_declaration</code>, and then <code>statement</code> will execute.</p>
+<p>For best results, <code>element_declaration</code> should have the same type as the array elements, otherwise type conversion will occur.</p>
+<p>Here’s a simple example that uses a <em>range-based for</em> loop to print all of the elements in an array named <code>fibonacci</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector fibonacci { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+
+    for (int num : fibonacci) // iterate over array fibonacci and copy each value into `num`
+       std::cout &lt;&lt; num &lt;&lt; ' '; // print the current value of `num`
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+0 1 1 2 3 5 8 13 21 34 55 89
+</pre>
+<p>Note that this example does not require us to use the array’s length, nor does it require us to index the array!</p>
+<p>Let’s take a closer look at how this works.  This range-based for loop will execute through all the elements of <code>fibonacci</code>.  For the first iteration, variable <code>num</code> is assigned the value of the first element (<code>0</code>).  Then the program executes the associated statement, which prints the value of <code>num</code> (<code>0</code>) to the console.  For the second iteration, <code>num</code> is assigned the value of the second element (<code>1</code>).  The associated statement executes again, which prints <code>1</code>.  The range-based for loop continues to iterate through each of the array elements in turn, executing the associated statement for each one, until there are no elements left in the array to iterate over.  At that point, the loop terminates, and the program continues execution (printing a newline and then returning <code>0</code> to the operating system).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>The declared element (<code>num</code> in the prior example) is not an array index.  Rather, it is assigned the value of the array element being iterated over.
+</p></div>
+<p>Because <code>num</code> is assigned the value of the array element, this does mean the array element is copied (which can be expensive for some types).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Favor range-based for loops over regular for-loops when traversing containers.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Range-based for loops and empty containers</p>
+<p>In cases where the container being traversed has no elements, the body of the range-based for-loop will simply not execute:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector empty { };
+
+    for (int num : empty)
+       std::cout &lt;&lt; "Hi mom!\n";
+
+    return 0;
+}</code></pre>
+<p>The above example does not print anything.  Sorry mom!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Range-based for loops and type deduction using the <code>auto</code> keyword</p>
+<p>Because <code>element_declaration</code> should have the same type as the array elements (to prevent type conversion from occurring), this is an ideal case in which to use the <code>auto</code> keyword, and let the compiler deduce the type of the array elements for us.  That way we don’t have to redundantly specify the type, and there’s no risk of accidentally mistyping (and “mis-typing”, ha!)</p>
+<p>Here’s the same example as above, but using <code>auto</code> as the type of <code>num</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector fibonacci { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+
+    for (auto num : fibonacci) // compiler will deduce type of num to be `int`
+       std::cout &lt;&lt; num &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Because <code>std::vector fibonacci</code> has elements of type <code>int</code>, <code>num</code> will be deduced to be an <code>int</code>.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use type deduction (<code>auto</code>) with range-based for loops to have the compiler deduce the type of the array element.
+</p></div>
+<p>Another benefit to using <code>auto</code> is that if the element type of the array is ever updated (e.g. from <code>int</code> to <code>long</code>), <code>auto</code> will automatically deduce the updated element type, ensuring they stay in sync (and preventing type conversion from occurring).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Avoid element copies using references</p>
+<p>Consider the following range-based for loop, which iterates over an array of <code>std::string</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;std::string&gt; words{ "peter", "likes", "frozen", "yogurt" };
+
+    for (auto word : words)
+        std::cout &lt;&lt; word &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>For each iteration of this loop, the next <code>std::string</code> element from the <code>words</code> array will be assigned (copied) into the variable <code>word</code>.  Copying a <code>std::string</code> is expensive, which is why we typically pass <code>std::string</code> to functions by const reference.  We want to avoid making copies of things that are expensive to copy unless we really need a copy.  In this case, we’re just printing the value of the copy and then the copy is destroyed.  It would be better if we could avoid making a copy and just reference the actual array element.</p>
+<p>Fortunately, we can do exactly that by making our <code>element_declaration</code> a (const) reference:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;std::string&gt; words{ "peter", "likes", "frozen", "yogurt" };
+
+    for (const auto&amp; word : words) // word is now a const reference
+        std::cout &lt;&lt; word &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>In the above example, <code>word</code> is now a const reference.  With each iteration of this loop, <code>word</code> will be bound to the next array element.  This allows us to access the array element’s value without having to make an expensive copy.</p>
+<p>If the reference is non-const, it can also be used to change the values in the array (something not possible if our <code>element_declaration</code> is a copy of the value).</p>
+<p class="cpp-section cpp-topline" style="clear: both">When to use <code>auto</code> vs <code>auto&amp;</code> vs <code>const auto&amp;</code></p>
+<p>Normally we’d use <code>auto</code> for cheap-to-copy types, <code>auto&amp;</code> when we want to modify the elements, and <code>const auto&amp;</code> for expensive-to-copy types.  But with range-based for loops, many developers believe it is preferable to always use <code>const auto&amp;</code> because it is more future-proof.</p>
+<p>For example, consider the following example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;std::string_view&gt; words{ "peter", "likes", "frozen", "yogurt" }; // elements are type std::string_view
+
+    for (auto word : words) // We normally pass string_view by value, so we'll use auto here
+        std::cout &lt;&lt; word &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>In this example, we have a <code>std::vector</code> containing <code>std::string_view</code> objects.  Since <code>std::string_view</code> is normally passed by value, using <code>auto</code> seems appropriate.</p>
+<p>But consider what happens if <code>words</code> is later updated to an array of <code>std::string</code> instead.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;std::string&gt; words{ "peter", "likes", "frozen", "yogurt" }; // obvious we should update this
+
+    for (auto word : words) // Probably not obvious we should update this too
+        std::cout &lt;&lt; word &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>The range-based for loop will compile and execute just fine, but <code>word</code> will now be deduced to be a <code>std::string</code>, and because we’re using <code>auto</code>, our loop will silently make expensive copies of <code>std::string</code> elements.  We just took a huge performance hit!</p>
+<p>There are a couple of reasonable ways to ensure this doesn’t happen:</p>
+<ul>
+<li>Don’t use type deduction in your range-based for loop.  If we’d explicitly specified the element type as <code>std::string_view</code>, then when the array was later updated to <code>std::string</code>, the <code>std::string</code> elements will implicitly convert to <code>std::string_view</code>, which is no problem.  If the array is updated to some other type that is not convertible, the compiler will error, and we can figure out what the appropriate thing to do is at that point.  But if the element type is convertible, then the compiler will silently perform the conversion and we may not realize we’re doing something suboptimal.
+</li>
+<li>Use <code>const auto&amp;</code> instead of <code>auto</code> when using type deduction in your range-based for loop when you don’t want to work with copies.  The performance penalty of accessing elements through a reference instead of by value is likely to be small, and this insulates us from potentially significant performance penalties down the road if the element type is later changed to something that is expensive to copy.
+</li>
+</ul>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>For range-based for loops, prefer to define the element type as:</p>
+<ul>
+<li><code>auto</code> when you want to modify copies of the elements.
+</li>
+<li><code>auto&amp;</code> when you want to modify the original elements.
+</li>
+<li><code>const auto&amp;</code> otherwise (when you just need to view the original elements).
+</li>
+</ul>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Range-based for loops and other standard container types</p>
+<p>Range-based for loops work with a wide variety of array types, including (non-decayed) C-style arrays, <code>std::array</code>, <code>std::vector</code>, linked list, trees, and maps.  We haven’t covered any of these yet, so don’t worry if you don’t know what these are.  Just remember that <em>range-based for</em> loops provide a flexible and generic way to iterate through more than just <code>std::vector</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::array fibonacci{ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 }; // note use of std::array here
+
+    for (auto number : fibonacci)
+    {
+        std::cout &lt;&lt; number &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Range-based for loops won’t work with decayed C-style arrays.  This is because a range-based for-loop needs to know the length of the array to know when traversal is complete, and decayed C-style arrays do not contain this information.</p>
+<p>Range-based for loops also won’t work with enumerations.  We show a method for working around this in lesson <a href="stdarray-and-enumerations.html">17.6 -- std::array and enumerations</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Getting the index of the current element</p>
+<p>Range-based for loops do <em>not</em> provide a direct way to get the array index of the current element.  This is because many of the structures that a range-based for loop can iterate over (such as <code>std::list</code>) do not support indices.</p>
+<p>However, because range-based for loops always iterate in a forwards direction and don’t skip elements, you can always declare (and increment) your own counter.  However, if you’re going to do this, you should consider whether you’re better off using a normal for-loop instead of a range-based for loop.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Range-based for loops in reverse <span class="cpp-section-pill cpp-section-standard">C++20</span></p>
+<p>Range-based for loops only iterate in forwards order.  However, there are cases where we want to traverse an array in reverse order.  Prior to C++20, range-based for loops could not be easily used for this purpose, and other solutions had to be employed (typically normal for-loops).</p>
+<p>However, as of C++20, you can use the <code>std::views::reverse</code> capability of the Ranges library to create a reverse view of the elements that can be traversed:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;ranges&gt; // C++20
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;std::string_view&gt; words{ "Alex", "Bobby", "Chad", "Dave" }; // sorted in alphabetical order
+
+    for (const auto&amp; word : std::views::reverse(words)) // create a reverse view
+        std::cout &lt;&lt; word &lt;&lt; ' ';
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+Dave
+Chad
+Bobby
+Alex
+</pre>
+<p>We haven’t covered the ranges library, so consider this a useful bit of magic for now.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Define a <code>std::vector</code> with the following names: “Alex”, “Betty”, “Caroline”, “Dave”, “Emily”, “Fred”, “Greg”, and “Holly”.  Ask the user to enter a name.  Use a range-based for loop to see if the name the user entered is in the array.</p>
+<p>Sample output:</p>
+<pre>
+Enter a name: Betty
+Betty was found.
+</pre>
+<pre>
+Enter a name: Megatron
+Megatron was not found.
+</pre>
+<p>Hint: Use <code>std::string</code> to hold the string the user inputs.<br>
+Hint: <code>std::string_view</code> is cheap to copy.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector&lt;std::string_view&gt; names{ "Alex", "Betty", "Caroline", "Dave",
+        "Emily", "Fred", "Greg", "Holly" };
+	
+    std::cout &lt;&lt; "Enter a name: ";
+    std::string username{};
+    std::cin &gt;&gt; username;
+
+    bool found{ false };
+
+    // We will be explicit about expecting `name` to be a std::string_view here
+    // That way if `names` is ever changed to an expensive to copy type
+    // (like std::string), we won't end up making expensive copies.
+    for (std::string_view name : names)
+    {
+        if (name == username)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if (found)
+        std::cout &lt;&lt; username &lt;&lt; " was found.\n";
+    else
+        std::cout &lt;&lt; username &lt;&lt; " was not found.\n";
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Modify your solution to quiz 1.  In this version, create a function template (not a normal function) called <code>isValueInArray()</code> that takes two parameters: a <code>std::vector</code>, and a value.  The function should return <code>true</code> if the value is in the array, and <code>false</code> otherwise.  Call the function from <code>main()</code> and pass it the array of names and the name the user entered.</p>
+<p>Reminder:</p>
+<ul>
+<li>A function template that is using template argument deduction (when template type arguments are not explicitly specified) will not do conversions to match the template type parameters.  The call either matches the template (and the template type can be deduced) or it doesn’t.
+</li>
+<li>A function template with an explicitly specified template type argument will convert arguments to match the parameter type (since the type is known).
+</li>
+</ul>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+bool isValueInArray(const std::vector&lt;T&gt;&amp; arr, const T&amp; value )
+{
+    // we'll use a reference since we don't know if T is expensive to copy
+    for (const auto&amp; a : arr)
+    {
+        if (a == value)
+            return true;
+    }
+
+    return false;
+}
+
+int main()
+{
+    std::vector&lt;std::string_view&gt; names{ "Alex", "Betty", "Caroline", "Dave",
+        "Emily", "Fred", "Greg", "Holly" };
+	
+    std::cout &lt;&lt; "Enter a name: ";
+    std::string username{};
+    std::cin &gt;&gt; username;
+
+    // By explicitly specifying std::string_view as a function template argument,
+    // the compiler will implicitly convert username to `std::string_view` to match the parameter type.
+    bool found{ isValueInArray&lt;std::string_view&gt;(names, username) };
+
+    // The following is also okay.  If we rely on template argument deduction instead, the compiler 
+    // won't do implicit conversions, so we need to make sure `username` has the expected type.
+    // bool found{ isValueInArray(names, static_cast&lt;std::string_view&gt;(username)) };
+
+    if (found)
+        std::cout &lt;&lt; username &lt;&lt; " was found.\n";
+    else
+        std::cout &lt;&lt; username &lt;&lt; " was not found.\n";
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="nav-kicker">← Previous lesson</span>16.7 · Arrays, loops, and sign challenge solutions</a><a class="next" href="array-indexing-and-length-using-enumerators.html"><span class="nav-kicker">Next lesson →</span>16.9 · Array indexing and length using enumerators</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

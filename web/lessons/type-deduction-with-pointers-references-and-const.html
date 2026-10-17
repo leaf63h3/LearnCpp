@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 10.8 -- Type deduction for objects using the auto keyword, we discussed how the auto keyword can be used to have the compiler deduce the type of ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>12.14 — Type deduction with pointers, references, and const · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/type-deduction-with-pointers-references-and-const/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 12 · Compound Types: References and Pointers</summary><div class="sidebar-title"><small>Chapter 12</small><strong>Compound Types: References and Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-compound-data-types.html"><span class="lesson-number">12.1</span><span>Introduction to compound data types</span></a></li><li><a href="value-categories-lvalues-and-rvalues.html"><span class="lesson-number">12.2</span><span>Value categories (lvalues and rvalues)</span></a></li><li><a href="lvalue-references.html"><span class="lesson-number">12.3</span><span>Lvalue references</span></a></li><li><a href="lvalue-references-to-const.html"><span class="lesson-number">12.4</span><span>Lvalue references to const</span></a></li><li><a href="pass-by-lvalue-reference.html"><span class="lesson-number">12.5</span><span>Pass by lvalue reference</span></a></li><li><a href="pass-by-const-lvalue-reference.html"><span class="lesson-number">12.6</span><span>Pass by const lvalue reference</span></a></li><li><a href="introduction-to-pointers.html"><span class="lesson-number">12.7</span><span>Introduction to pointers</span></a></li><li><a href="null-pointers.html"><span class="lesson-number">12.8</span><span>Null pointers</span></a></li><li><a href="pointers-and-const.html"><span class="lesson-number">12.9</span><span>Pointers and const</span></a></li><li><a href="pass-by-address.html"><span class="lesson-number">12.10</span><span>Pass by address</span></a></li><li><a href="pass-by-address-part-2.html"><span class="lesson-number">12.11</span><span>Pass by address (part 2)</span></a></li><li><a href="return-by-reference-and-return-by-address.html"><span class="lesson-number">12.12</span><span>Return by reference and return by address</span></a></li><li><a href="in-and-out-parameters.html"><span class="lesson-number">12.13</span><span>In and out parameters</span></a></li><li><a href="type-deduction-with-pointers-references-and-const.html" aria-current="page"><span class="lesson-number">12.14</span><span>Type deduction with pointers, references, and const</span></a></li><li><a href="stdoptional.html"><span class="lesson-number">12.15</span><span>std::optional</span></a></li><li><a href="chapter-12-summary-and-quiz.html"><span class="lesson-number">12.x</span><span>Chapter 12 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 12</div>
+        <h1>12.14 — Type deduction with pointers, references, and const</h1>
+        <div class="article-meta"><span>Updated: 2025-01-21 20:06</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="type-deduction-for-objects-using-the-auto-keyword.html">10.8 -- Type deduction for objects using the auto keyword</a>, we discussed how the <code>auto</code> keyword can be used to have the compiler deduce the type of a variable from the initializer:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int a { 5 };
+    auto b { a }; // b deduced as an int
+
+    return 0;
+}</code></pre>
+<p>We also noted that by default, type deduction will drop <code>const</code> from types:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    const double a { 7.8 }; // a has type const double
+    auto b { a };           // b has type double (const dropped)
+
+    constexpr double c { 7.8 }; // c has type const double (constexpr implicitly applies const)
+    auto d { c };               // d has type double (const dropped)
+
+    return 0;
+}</code></pre>
+<p>Const (or constexpr) can be reapplied by adding the <code>const</code> (or <code>constexpr</code>) qualifier to the definition of the deduced type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    double a { 7.8 };    // a has type double
+    const auto b { a };  // b has type const double (const applied)
+
+    constexpr double c { 7.8 }; // c has type const double (constexpr implicitly applies const)
+    const auto d { c };         // d is const double (const dropped, const reapplied)
+    constexpr auto e { c };     // e is constexpr double (const dropped, constexpr reapplied)
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Type deduction drops references</p>
+<p>In addition to dropping const, type deduction will also drop references:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+std::string&amp; getRef(); // some function that returns a reference
+
+int main()
+{
+    auto ref { getRef() }; // type deduced as std::string (not std::string&amp;)
+
+    return 0;
+}</code></pre>
+<p>In the above example, variable <code>ref</code> is using type deduction.  Although function <code>getRef()</code> returns a <code>std::string&amp;</code>, the reference qualifier is dropped, so the type of <code>ref</code> is deduced as <code>std::string</code>.</p>
+<p>Just like with dropped <code>const</code>, if you want the deduced type to be a reference, you can reapply the reference at the point of definition:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+std::string&amp; getRef(); // some function that returns a reference
+
+int main()
+{
+    auto ref1 { getRef() };  // std::string (reference dropped)
+    auto&amp; ref2 { getRef() }; // std::string&amp; (reference dropped, reference reapplied)
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Top-level const and low-level const</p>
+<p>A <strong>top-level const</strong> is a const qualifier that applies to an object itself.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">const int x;    // this const applies to x, so it is top-level
+int* const ptr; // this const applies to ptr, so it is top-level
+// references don't have a top-level const syntax, as they are implicitly top-level const</code></pre>
+<p>In contrast, a <strong>low-level const</strong> is a const qualifier that applies to the object being referenced or pointed to:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">const int&amp; ref; // this const applies to the object being referenced, so it is low-level
+const int* ptr; // this const applies to the object being pointed to, so it is low-level</code></pre>
+<p>A reference to a const value is always a low-level const.  A pointer can have a top-level, low-level, or both kinds of const:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">const int* const ptr; // the left const is low-level, the right const is top-level</code></pre>
+<p>When we say that type deduction drops const qualifiers, it only drops top-level consts.  Low-level consts are not dropped.  We’ll see examples of this in just a moment.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Type deduction and const references</p>
+<p>If the initializer is a reference to const, the reference is dropped first (and then reapplied if applicable), and then any top-level const is dropped from the result.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+const std::string&amp; getConstRef(); // some function that returns a reference to const
+
+int main()
+{
+    auto ref1{ getConstRef() }; // std::string (reference dropped, then top-level const dropped from result)
+
+    return 0;
+}</code></pre>
+<p>In the above example, since <code>getConstRef()</code> returns a <code>const std::string&amp;</code>, the reference is dropped first, leaving us with a <code>const std::string</code>.  This const is now a top-level const, so it is also dropped, leaving the deduced type as <code>std::string</code>.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Dropping a reference may change a low-level const to a top-level const: <code>const std::string&amp;</code> is a low-level const, but dropping the reference yields <code>const std::string</code>, which is a top-level const.
+</p></div>
+<p>We can reapply a reference and/or const:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+const std::string&amp; getConstRef(); // some function that returns a const reference
+
+int main()
+{
+    auto ref1{ getConstRef() };        // std::string (reference and top-level const dropped)
+    const auto ref2{ getConstRef() };  // const std::string (reference dropped, const dropped, const reapplied)
+
+    auto&amp; ref3{ getConstRef() };       // const std::string&amp; (reference dropped and reapplied, low-level const not dropped)
+    const auto&amp; ref4{ getConstRef() }; // const std::string&amp; (reference dropped and reapplied, low-level const not dropped)
+
+    return 0;
+}</code></pre>
+<p>We covered the case for <code>ref1</code> in the prior example.  For <code>ref2</code>, this is similar to the <code>ref1</code> case, except we’re reapplying the <code>const</code> qualifier, so the deduced type is <code>const std::string</code>.</p>
+<p>Things get more interesting with <code>ref3</code>.  Normally the reference would be dropped first, but since we’ve reapplied the reference, it is not dropped.  That means the type is still <code>const std::string&amp;</code>.  And since this const is a low-level const, it is not dropped.  Thus the deduced type is <code>const std::string&amp;</code>.</p>
+<p>The <code>ref4</code> case works similarly to <code>ref3</code>, except we’ve reapplied the <code>const</code> qualifier as well.  Since the type is already deduced as a reference to const, us reapplying <code>const</code> here is redundant.  That said, using <code>const</code> here makes it explicitly clear that our result will be const (whereas in the <code>ref3</code> case, the constness of the result is implicit and not obvious).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>If you want a const reference, reapply the <code>const</code> qualifier even when it’s not strictly necessary, as it makes your intent clear and helps prevent mistakes.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">What about constexpr references?</p>
+<p>Constexpr is not part of an expression’s type, so it is not deduced by <code>auto</code>.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>When defining a const reference (e.g. <code>const int&amp;</code>), the const applies to the object being referenced, not the reference itself.</p>
+<p>When defining a constexpr reference to a const variable (e.g. <code>constexpr const int&amp;</code>), we need to apply both <code>constexpr</code> (which applies to the reference) and <code>const</code> (which applies to the type being referenced).</p>
+<p>This is covered in lesson <a href="lvalue-references-to-const.html">12.4 -- Lvalue references to const</a>.
+</p></div>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string_view&gt;
+#include &lt;iostream&gt;
+
+constexpr std::string_view hello { "Hello" };   // implicitly const
+
+constexpr const std::string_view&amp; getConstRef() // function is constexpr, returns a const std::string_view&amp;
+{
+    return hello;
+}
+
+int main()
+{
+    auto ref1{ getConstRef() };                  // std::string_view (reference dropped and top-level const dropped)
+    constexpr auto ref2{ getConstRef() };        // constexpr const std::string_view (reference dropped and top-level const dropped, constexpr applied, implicitly const)
+
+    auto&amp; ref3{ getConstRef() };                 // const std::string_view&amp; (reference reapplied, low-level const not dropped)
+    constexpr const auto&amp; ref4{ getConstRef() }; // constexpr const std::string_view&amp; (reference reapplied, low-level const not dropped, constexpr applied)
+    
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Type deduction and pointers</p>
+<p>Unlike references, type deduction does not drop pointers:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+std::string* getPtr(); // some function that returns a pointer
+
+int main()
+{
+    auto ptr1{ getPtr() }; // std::string*
+
+    return 0;
+}</code></pre>
+<p>We can also use an asterisk in conjunction with pointer type deduction (<code>auto*</code>) to make it clearer that the deduced type is a pointer:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+std::string* getPtr(); // some function that returns a pointer
+
+int main()
+{
+    auto ptr1{ getPtr() };  // std::string*
+    auto* ptr2{ getPtr() }; // std::string*
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>The reason that references are dropped during type deduction but pointers are not dropped is because references and pointers have different semantics.</p>
+<p>When we evaluate a reference, we’re really evaluating the object being referenced.  Therefore, when deducing a type, it makes sense that we should deduce the type of the thing being referenced, not the reference itself.  Also, since we deduce a non-reference, it’s really easy to make it a reference by using <code>auto&amp;</code>.  If type deduction were to deduce a reference instead, the syntax for removing a reference if we didn’t want it is much more complicated.</p>
+<p>On the other hand, pointers hold the address of an object.  When we evaluate a pointer, we are evaluating the pointer, not the object being pointed to (if we want that, we can dereference the pointer).  Therefore, it makes sense that we should deduce the type of the pointer, not the thing being pointed to.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">The difference between auto and auto* <span class="cpp-section-pill cpp-section-optional">Optional</span></p>
+<p>When we use <code>auto</code> with a pointer type initializer, the type deduced for <code>auto</code> includes the pointer.  So for <code>ptr1</code> above, the type substituted for <code>auto</code> is <code>std::string*</code>.</p>
+<p>When we use <code>auto*</code> with a pointer type initializer, the type deduced for auto does <em>not</em> include the pointer -- the pointer is reapplied afterward after the type is deduced.  So for <code>ptr2</code> above, the type substituted for <code>auto</code> is <code>std::string</code>, and then the pointer is reapplied.</p>
+<p>In most cases, the practical effect is the same (<code>ptr1</code> and <code>ptr2</code> both deduce to <code>std::string*</code> in the above example).</p>
+<p>However, there are a couple of difference between <code>auto</code> and <code>auto*</code> in practice.  First, <code>auto*</code> must resolve to a pointer initializer, otherwise a compile error will result:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+std::string* getPtr(); // some function that returns a pointer
+
+int main()
+{
+    auto ptr3{ *getPtr() };      // std::string (because we dereferenced getPtr())
+    auto* ptr4{ *getPtr() };     // does not compile (initializer not a pointer)
+
+    return 0;
+}</code></pre>
+<p>This makes sense: in the <code>ptr4</code> case, <code>auto</code> deduces to <code>std::string</code>, then the pointer is reapplied.  Thus <code>ptr4</code> has type <code>std::string*</code>, and we can’t initialize a <code>std::string*</code> with an initializer that is not a pointer.</p>
+<p>Second, there are differences in how <code>auto</code> and <code>auto*</code> behave when we introduce <code>const</code> into the equation.  We’ll cover this below.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Type deduction and const pointers <span class="cpp-section-pill cpp-section-optional">Optional</span></p>
+<p>Since pointers aren’t dropped, we don’t have to worry about that.  But with pointers, we have both the const pointer and the pointer to const cases to think about, and we also have <code>auto</code> vs <code>auto*</code>.  Just like with references, only top-level const is dropped during pointer type deduction.</p>
+<p>Let’s start with a simple case:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+std::string* getPtr(); // some function that returns a pointer
+
+int main()
+{
+    const auto ptr1{ getPtr() };  // std::string* const
+    auto const ptr2 { getPtr() }; // std::string* const
+
+    const auto* ptr3{ getPtr() }; // const std::string*
+    auto* const ptr4{ getPtr() }; // std::string* const
+
+    return 0;
+}</code></pre>
+<p>When we use either <code>auto const</code> or <code>const auto</code>, we’re saying, “make the deduced pointer a const pointer”.  So in the case of <code>ptr1</code> and <code>ptr2</code>, the deduced type is <code>std::string*</code>, and then const is applied, making the final type <code>std::string* const</code>.  This is similar to how <code>const int</code> and <code>int const</code> mean the same thing.</p>
+<p>However, when we use <code>auto*</code>, the order of the const qualifier matters.  A <code>const</code> on the left means “make the deduced pointer a pointer to const”, whereas a <code>const</code> on the right means “make the deduced pointer type a const pointer”.  Thus <code>ptr3</code> ends up as a pointer to const, and <code>ptr4</code> ends up as a const pointer.</p>
+<p>Now let’s look at an example where the initializer is a const pointer to const.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+int main()
+{
+    std::string s{};
+    const std::string* const ptr { &amp;s };
+
+    auto ptr1{ ptr };  // const std::string*
+    auto* ptr2{ ptr }; // const std::string*
+
+    auto const ptr3{ ptr };  // const std::string* const
+    const auto ptr4{ ptr };  // const std::string* const
+
+    auto* const ptr5{ ptr }; // const std::string* const
+    const auto* ptr6{ ptr }; // const std::string*
+
+    const auto const ptr7{ ptr };  // error: const qualifer can not be applied twice
+    const auto* const ptr8{ ptr }; // const std::string* const
+
+    return 0;
+}</code></pre>
+<p>The <code>ptr1</code> and <code>ptr2</code> cases are straightforward.  The top-level const (the const on the pointer itself) is dropped.  The low-level const on the object being pointed to is not dropped.  So in both cases, the final type is <code>const std::string*</code>.</p>
+<p>The <code>ptr3</code> and <code>ptr4</code> cases are also straightforward.  The top-level const is dropped, but we’re reapplying it.  The low-level const on the object being pointed to is not dropped.  So in both cases, the final type is <code>const std::string* const</code>.</p>
+<p>The <code>ptr5</code> and <code>ptr6</code> cases are analogous to the cases we showed in the prior example.  In both cases, the top-level const is dropped.  For <code>ptr5</code>, the <code>auto* const</code> reapplies the top-level const, so the final type is <code>const std::string* const</code>.  For <code>ptr6</code>, the <code>const auto*</code> applies const to the type being pointed to (which in this case was already const), so the final type is <code>const std::string*</code>.</p>
+<p>In the <code>ptr7</code> case, we’re applying the const qualifier twice, which is disallowed, and will cause a compile error.</p>
+<p>And finally, in the <code>ptr8</code> case, we’re applying const on both sides of the pointer (which is allowed since <code>auto*</code> must be a pointer type), so the resulting types is <code>const std::string* const</code>.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>If you want a const pointer, pointer to const, or const pointer to const, reapply the <code>const</code> qualifier(s) even when it’s not strictly necessary, as it makes your intent clear and helps prevent mistakes.
+</p></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Consider using <code>auto*</code> when deducing a pointer type.  Using <code>auto*</code> in this case makes it clearer that we are deducing a pointer type, enlists the compiler’s help to ensure we don’t deduce a non-pointer type, and gives you more control over const.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Summary</p>
+<p>Sorry to hear about your headache.  Let’s recap the most important points quickly.</p>
+<p>Top-level vs low-level const:</p>
+<ul>
+<li>A top-level const applies to the object itself (e.g. <code>const int x</code> or <code>int* const ptr</code>).
+</li>
+<li>A low-level const applies to the object accessed through a reference or pointer (e.g. <code>const int&amp; ref</code>, <code>const int* ptr</code>).
+</li>
+</ul>
+<p>What type deduction deduces:</p>
+<ul>
+<li>Type deduction first drops any references (unless the deduced type is defined as a reference).  For a const reference, dropping the reference will cause the (low-level) const to become a top-level const.
+</li>
+<li>Type deduction then drops any top-level const (unless the deduced type is defined as <code>const</code> or <code>constexpr</code>).
+</li>
+<li>Constexpr is not part of the type system, so is never deduced.  It must always be explicitly applied to the deduced type.
+</li>
+<li>Type deduction does not drop pointers.
+</li>
+<li>Always explicitly define the deduced type as a reference, <code>const</code>, or <code>constexpr</code> (as applicable), and even if these qualifiers are redundant because they would be deduced.  This helps prevent errors and makes it clear what your intent is.
+</li>
+</ul>
+<p>Type deduction and pointers:</p>
+<ul>
+<li>When using <code>auto</code>, the deduced type will be a pointer only if the initializer is a pointer.  When using <code>auto*</code>, the deduced type is always a pointer, even if the initializer is not a pointer.
+</li>
+<li><code>auto const</code> and <code>const auto</code> both make the deduced pointer a const pointer.  There is no way to explicitly specify a low-level const (pointer-to-const) using <code>auto</code>.
+</li>
+<li><code>auto* const</code> also makes the deduced pointer a const pointer.  <code>const auto*</code> makes the deduced pointer a pointer-to-const.  If these are hard to remember, <code>int* const</code> is a const pointer (to int), so <code>auto* const</code> must be a const pointer.  <code>const int*</code> is a pointer-to-const (int), so <code>const auto*</code> must be a pointer-to-const)
+</li>
+<li>Consider using <code>auto*</code> over <code>auto</code> when deducing a pointer type, as it allows you to explicitly reapply both the top-level and low-level const, and will error if a pointer type is not deduced.
+</li>
+</ul>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="in-and-out-parameters.html"><span class="nav-kicker">← Previous lesson</span>12.13 · In and out parameters</a><a class="next" href="stdoptional.html"><span class="nav-kicker">Next lesson →</span>12.15 · std::optional</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An Integrated Development Environment (IDE) is a piece of software designed to make it easy to develop, build, and debug your programs. A typical modern ID">
+  <meta name="robots" content="noindex,nofollow">
+  <title>0.6 — Installing an Integrated Development Environment (IDE) · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/installing-an-integrated-development-environment-ide/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 0 · Introduction / Getting Started</summary><div class="sidebar-title"><small>Chapter 0</small><strong>Introduction / Getting Started</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-these-tutorials.html"><span class="lesson-number">0.1</span><span>Introduction to these tutorials</span></a></li><li><a href="introduction-to-programming-languages.html"><span class="lesson-number">0.2</span><span>Introduction to programs and programming languages</span></a></li><li><a href="introduction-to-cplusplus.html"><span class="lesson-number">0.3</span><span>Introduction to C/C++</span></a></li><li><a href="introduction-to-cpp-development.html"><span class="lesson-number">0.4</span><span>Introduction to C++ development</span></a></li><li><a href="introduction-to-the-compiler-linker-and-libraries.html"><span class="lesson-number">0.5</span><span>Introduction to the compiler, linker, and libraries</span></a></li><li><a href="installing-an-integrated-development-environment-ide.html" aria-current="page"><span class="lesson-number">0.6</span><span>Installing an Integrated Development Environment (IDE)</span></a></li><li><a href="compiling-your-first-program.html"><span class="lesson-number">0.7</span><span>Compiling your first program</span></a></li><li><a href="a-few-common-cpp-problems.html"><span class="lesson-number">0.8</span><span>A few common C++ problems</span></a></li><li><a href="configuring-your-compiler-build-configurations.html"><span class="lesson-number">0.9</span><span>Configuring your compiler: Build configurations</span></a></li><li><a href="configuring-your-compiler-compiler-extensions.html"><span class="lesson-number">0.10</span><span>Configuring your compiler: Compiler extensions</span></a></li><li><a href="configuring-your-compiler-warning-and-error-levels.html"><span class="lesson-number">0.11</span><span>Configuring your compiler: Warning and error levels</span></a></li><li><a href="configuring-your-compiler-choosing-a-language-standard.html"><span class="lesson-number">0.12</span><span>Configuring your compiler: Choosing a language standard</span></a></li><li><a href="what-language-standard-is-my-compiler-using.html"><span class="lesson-number">0.13</span><span>What language standard is my compiler using?</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 0</div>
+        <h1>0.6 — Installing an Integrated Development Environment (IDE)</h1>
+        <div class="article-meta"><span>Updated: 2025-01-29 16:54</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>An <strong>Integrated Development Environment (IDE)</strong> is a piece of software designed to make it easy to develop, build, and debug your programs.</p>
+<p>A typical modern IDE will include:</p>
+<ul>
+<li>Some way to easily load and save your code files.
+</li>
+<li>A code editor that has programming-friendly features, such as line numbering, syntax highlighting, integrated help, name completion, and automatic source code formatting.
+</li>
+<li>A basic build system that will allow you to compile and link your program into an executable, and then run it.
+</li>
+<li>An integrated debugger to make it easier to find and fix software defects.
+</li>
+<li>Some way to install plugins so you can modify the IDE or add capabilities such as version control.
+</li>
+</ul>
+<p>Some C++ IDEs will install and configure a C++ compiler and linker for you.  Others will allow you to plug in a compiler and linker of your choice (installed separately).</p>
+<p>And while you could do all of these things separately, it’s much easier to just install an IDE and be able to do all of these things from a single interface.</p>
+<p>So let’s install one!  </p>
+<p class="cpp-section cpp-topline" style="clear: both">Choosing an IDE</p>
+<p>The obvious next question is, “which one?”.  Many IDEs are free (in price), and you can install multiple IDEs if you wish to try more than one.  We’ll recommend a few of our favorites below.</p>
+<p>If you have some other IDE in mind, that’s fine too.  The concepts we show you in these tutorials should generally work for any decent modern IDE.  However, various IDEs use different names, layouts, key mappings, etc… so you may have to do a bit of searching in your IDE to find the equivalent functionality.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>To get the most value out of this site, we recommend installing an IDE that comes with a compiler that supports at least C++17.</p>
+<p>If you’re restricted to using a compiler that only supports C++14 (due to educational or business constraints), many of the lessons and examples will still work.  However, if you encounter a lesson that uses capabilities from C++17 (or newer) and you’re using an older language compiler, you’ll have to skip it or translate it to your version, which may or may not be easy.</p>
+<p>You should not be using any compiler that does not support at least C++11 (which is typically considered the modern minimum spec for C++).</p>
+<p><!--
+https://gcc.gnu.org/projects/cxx-status.html#cxx17
+https://clang.llvm.org/cxx_status.html
+https://docs.microsoft.com/en-us/cpp/overview/visual-cpp-language-conformance?view=vs-2019
+--></p>
+<p>We recommend installing the newest version of a compiler. If you can’t use the newest version, these are the absolute minimum compiler versions with C++17 support:</p>
+<ul>
+<li>GCC/G++ 7</li>
+
+<li>Clang++ 8</li>
+
+<li>Visual Studio 2017 15.7
+</li>
+</ul>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Visual Studio (for Windows)</p>
+<p>If you are developing on a Windows 10 or 11 machine, then we strongly recommend downloading <a href="https://www.visualstudio.com/downloads/" target="_blank" rel="noopener noreferrer">Visual Studio 2022 Community</a>.</p>
+<p>Once you run the installer, you’ll eventually come to a screen that asks you what workload you’d like to install.  Choose <em>Desktop development with C++</em>.  If you do not do this, then C++ capabilities will not be available.</p>
+<p>The default options selected on the right side of the screen should be fine, but please ensure that the <em>Windows 11 SDK</em> (or <em>Windows 10 SDK</em> if that is the only one available) is selected.  Windows 11 SDK apps can run on Windows 10.</p>
+<div class="cpp-image-wrapper"><img src="../assets/media/4e63ec7a7bf6e4c6.png" alt="Visual Studio Workload" loading="lazy"></div>
+<p class="cpp-section cpp-topline" style="clear: both">Code::Blocks (for Linux or Windows)</p>
+<p>If you are developing on Linux (or you are developing on Windows but want to write programs that you can easily port to Linux), we recommend <a href="https://www.codeblocks.org/downloads/binaries/" target="_blank" rel="noopener noreferrer">Code::Blocks</a>.  Code::Blocks is a free, open source, cross-platform IDE that will run on both Linux and Windows.</p>
+<div class="cpp-note cpp-lightyellowbackground">
+<p class="cpp-note-title cpp-bottomline">For Windows users</p>
+<p>Make sure to get the version of Code::Blocks that has MinGW bundled (it should be the one whose filename ends in <em>mingw-setup.exe</em>).  This will install MinGW, which includes a Windows port of the GCC C++ compiler:</p>
+<div class="cpp-image-wrapper"><img src="../assets/media/2a488d0d77fbb0fc.png" alt="Code::Blocks MinGW Windows download" loading="lazy"></div>
+<hr>
+<p>Code::Blocks 20.03 ships with an outdated version of MinGW that only supports C++17 (currently one version back from the latest version of C++).  If you want to use the latest version of C++ (C++20), you will need to update MinGW.  To do so, follow this procedure:</p>
+<ol start="1">
+<li>Install Code::Blocks as per the above.
+</li>
+<li>Close Code::Blocks if it is open.
+</li>
+<li>Open Windows File Explorer (Keyboard shortcut <em>Win-E</em>).
+</li>
+<li>Navigate to your Code::Blocks install directory (probably C:\Program Files (x86)\CodeBlocks).
+</li>
+<li>Rename the “MinGW” directory to “MinGW.bak” (in case something goes wrong).
+</li>
+<li>Open a browser and navigate to <a href="https://winlibs.com/" target="_blank" rel="noopener noreferrer">https://winlibs.com/</a>.
+</li>
+<li>Download an updated version of MinGW-w64.  You probably want the one under <em>Release Versions -&gt; UCRT Runtime -&gt; LATEST -&gt; Win64 -&gt; without LLVM/Clang/LLD/LLDB -&gt; Zip archive</em>.
+</li>
+<li>Extract the “mingw64” folder to your Code::blocks install directory.
+</li>
+<li>Rename “mingw64” to “MinGW”.
+</li>
+</ol>
+<p>Once you have confirmed the updated compiler works, you can delete the old folder (“MinGW.bak”).
+</p></div>
+<div class="cpp-note cpp-lightyellowbackground">
+<p class="cpp-note-title cpp-bottomline">For Linux users</p>
+<p>Some Linux installations may be missing dependencies needed to run or compile programs with Code::Blocks.</p>
+<p>Debian-based Linux users (such as those on Mint or Ubuntu) may need to install the <em>build-essential</em> package.  To do so from the terminal command line, type: <code>sudo apt-get install build-essential</code>.</p>
+<p>Arch Linux users may need to install the <em>base-devel</em> package.</p>
+<p>Users on other Linux variants will need to determine what their equivalent package manager and packages are.
+</p></div>
+<p>When you launch Code::Blocks for the first time, you may get a <em>Compilers auto-detection</em> dialog.  If you do, make sure <em>GNU GCC Compiler</em> is set as the default compiler and then select the <em>OK</em> button.</p>
+<div class="cpp-image-wrapper"><img src="../assets/media/621b45549122702f.png" alt="Compilers Auto Detection dialog" loading="lazy"></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Q: What do I do if I get a "Can’t find compiler executable in your configured search paths for GNU GCC Compiler" error?</p>
+<p>Try the following:</p>
+<ol start="1">
+<li>If you’re on Windows, make sure you’ve downloaded the version of Code::Blocks WITH MinGW.  It’s the one with “mingw” in the name.
+</li>
+<li>Try going to settings, compiler, and choose “reset to defaults”.
+</li>
+<li>Try going to settings, compiler, toolchain executables tab, and make sure “Compiler’s installation directory” is set to the MinGW directory (e.g. C:\Program Files (x86)\CodeBlocks\MinGW).
+</li>
+<li>Try doing a full uninstall, then reinstall.
+</li>
+<li><a href="http://wiki.codeblocks.org/index.php/Installing_a_supported_compiler" target="_blank" rel="noopener noreferrer">Try a different compiler.</a>
+</li>
+</ol>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Visual Studio Code (for experienced Linux, macOS, or Windows users)</p>
+<p>Visual Studio Code (also called “VS Code”, not to be confused with the similarly named “Visual Studio Community”) is a code editor that is a popular choice with experienced developers because it is fast, flexible, open source, works for multiple programming languages, and is available for many different platforms.</p>
+<p>The downside is that VS Code is much harder to configure correctly than other choices on this list (and on Windows, harder to install as well).  Before proceeding, we recommend reading through the installation and configuration documents linked below to ensure you understand and are comfortable with the steps involved.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>This tutorial series does not have complete instructions for VS Code.</p>
+<p>Visual Studio Code is <em>not</em> a good option for C++ beginners, and readers have reported many different challenges getting Visual Studio Code installed and configured correctly for C++.</p>
+<p>Please do not choose this option unless you are already familiar with Visual Studio Code from prior use, or have experience debugging configuration issues.</p>
+<p>We cannot provide installation or configuration support for Visual Studio Code on this site.
+</p></div>
+<p>A tip o’ the hat to user glibg10b for providing an initial draft of VS Code instructions across multiple articles.</p>
+<div class="cpp-note cpp-lightyellowbackground">
+<p class="cpp-note-title cpp-bottomline">For Linux users</p>
+<p>VS Code should be downloaded using your distribution’s package manager. The <a href="https://code.visualstudio.com/docs/setup/linux" target="_blank" rel="noopener noreferrer">VS Code instructions for linux</a> cover how to do this for various Linux distributions.</p>
+<p>Once VS Code is installed, follow the <a href="https://code.visualstudio.com/docs/cpp/config-linux" target="_blank" rel="noopener noreferrer">instructions on how to configure C++ for linux</a>.
+</p></div>
+<div class="cpp-note cpp-lightyellowbackground">
+<p class="cpp-note-title cpp-bottomline">For Mac users</p>
+<p>The <a href="https://code.visualstudio.com/docs/setup/mac" target="_blank" rel="noopener noreferrer">VS Code instructions for Mac</a> detail how to install and setup VS Code for macOS.</p>
+<p>Once VS Code is installed, follow the <a href="https://code.visualstudio.com/docs/cpp/config-clang-mac" target="_blank" rel="noopener noreferrer">instructions on how to configure C++ for Mac</a>.
+</p></div>
+<div class="cpp-note cpp-lightyellowbackground">
+<p class="cpp-note-title cpp-bottomline">For Windows users</p>
+<p>The <a href="https://code.visualstudio.com/docs/setup/windows" target="_blank" rel="noopener noreferrer">VS Code instructions for Windows</a> detail how to install and setup VS Code for Windows.</p>
+<p>Once VS Code is installed, follow the <a href="https://code.visualstudio.com/docs/cpp/config-mingw" target="_blank" rel="noopener noreferrer">instructions on how to configure C++ for Windows</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Other macOS IDEs</p>
+<p>Other popular Mac choices include <a href="https://developer.apple.com/xcode/" target="_blank" rel="noopener noreferrer">Xcode</a> (if it is available to you) and the <a href="https://www.eclipse.org/" target="_blank" rel="noopener noreferrer">Eclipse</a> code editor.  Eclipse is not set up to use C++ by default, and you will need to install the optional C++ components.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Other compilers or platforms</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Q: Can I use a web-based compiler?</p>
+<p>Yes, for some things.  While your IDE is downloading (or if you’re not sure you want to commit to installing one yet), you can continue this tutorial using a web-based compiler.  We recommend one of the following:</p>
+<ul>
+<li><a href="https://www.tutorialspoint.com/compile_cpp_online.php" target="_blank" rel="noopener noreferrer">TutorialsPoint</a>
+</li>
+<li><a href="https://wandbox.org/" target="_blank" rel="noopener noreferrer">Wandbox</a> (can choose different versions of GCC or Clang)
+</li>
+<li><a href="https://godbolt.org/" target="_blank" rel="noopener noreferrer">Godbolt</a> (can see assembly)
+</li>
+</ul>
+<p>Web-based compilers are fine for dabbling and simple exercises.  However, they are generally quite limited in functionality -- many won’t allow you to create multiple files or effectively debug your programs, and most don’t support interactive input.  You’ll want to migrate to a full IDE when you can.
+</p></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Q: Can I use a command-line compiler (e.g. g++ on Linux)?</p>
+<p>Yes, but we don’t recommend it for beginners.  You’ll need to find your own editor and look up how to use it elsewhere.  Learning to use a command line debugger is not as easy as an integrated debugger, and will make debugging your programs more difficult.
+</p></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Q: Can I use other code editors or IDEs, such as Eclipse, Sublime, or Notepad++?</p>
+<p>Yes, but we don’t recommend it for beginners.  There are many great code editors and IDEs that can be configured to support a wide variety of languages, and allow you to mix and match plugins to customize your experience however you like.  However, many of these editors and IDEs require additional configuration to compile C++ programs, and there’s a lot that can go wrong during that process.  For beginners, we recommend something that works out of the box, so you can spend more time learning to code and less time trying to figure out why your code editor isn’t working properly with your compiler or debugger.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">IDEs to avoid</p>
+<p>You should avoid the following IDEs altogether because they do not support at least C++11, do not support C++ at all, or are no longer actively supported or maintained:</p>
+<ul>
+<li>Borland Turbo C++ -- does not support C++11
+</li>
+<li>Visual Studio for Mac -- does not support C++.  (Note: this is a different product than VS Code).
+</li>
+<li>Dev C++ -- not actively supported
+</li>
+</ul>
+<p>There is no good reason to use an outdated or unsupported compiler when lightweight, free alternatives that support modern C++ exist.</p>
+<p class="cpp-section cpp-topline" style="clear: both">When things go wrong (a.k.a. when IDE stands for “I don’t even…”)</p>
+<p>IDE installations seem to cause their fair share of problems.  Installation might fail outright (or installation might work but the IDE will have problems when you try to use it due to a configuration issue).  If you encounter such issues, try uninstalling the IDE (assuming it installed in the first place), reboot your machine, disable your antivirus or anti-malware temporarily, and try the installation again.</p>
+<p>If you’re still encountering issues at this point, you have two options.  The easier option is to try a different IDE.  The other option is to fix the problem.  Unfortunately, the causes of installation and configuration errors are varied and specific to the IDE software itself, and we’re unable to effectively advise on how to resolve such issues.  In this case, we recommend copying the error message or problem you are having into your favorite search engine (such as Google or Duck Duck Go) and trying to find a forum post elsewhere from some poor soul who has inevitably encountered the same issue.  Often there will be suggestions on things you can try to remedy the issue.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Moving on</p>
+<p>Once your IDE is installed (which can be one of the hardest steps if things don’t go as expected), or if you’re temporarily proceeding with a web-based compiler, you are ready to write your first program!</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-the-compiler-linker-and-libraries.html"><span class="nav-kicker">← Previous lesson</span>0.5 · Introduction to the compiler, linker, and libraries</a><a class="next" href="compiling-your-first-program.html"><span class="nav-kicker">Next lesson →</span>0.7 · Compiling your first program</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

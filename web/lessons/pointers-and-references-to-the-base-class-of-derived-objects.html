@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous chapter, you learned all about how to use inheritance to derive new classes from existing classes. In this chapter, we are going to focus o">
+  <meta name="robots" content="noindex,nofollow">
+  <title>25.1 — Pointers and references to the base class of derived objects · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/pointers-and-references-to-the-base-class-of-derived-objects/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 25 · Virtual Functions</summary><div class="sidebar-title"><small>Chapter 25</small><strong>Virtual Functions</strong></div>
+<ol class="sidebar-lessons"><li><a href="pointers-and-references-to-the-base-class-of-derived-objects.html" aria-current="page"><span class="lesson-number">25.1</span><span>Pointers and references to the base class of derived objects</span></a></li><li><a href="virtual-functions.html"><span class="lesson-number">25.2</span><span>Virtual functions and polymorphism</span></a></li><li><a href="the-override-and-final-specifiers-and-covariant-return-types.html"><span class="lesson-number">25.3</span><span>The override and final specifiers, and covariant return types</span></a></li><li><a href="virtual-destructors-virtual-assignment-and-overriding-virtualization.html"><span class="lesson-number">25.4</span><span>Virtual destructors, virtual assignment, and overriding virtualization</span></a></li><li><a href="early-binding-and-late-binding.html"><span class="lesson-number">25.5</span><span>Early binding and late binding</span></a></li><li><a href="the-virtual-table.html"><span class="lesson-number">25.6</span><span>The virtual table</span></a></li><li><a href="pure-virtual-functions-abstract-base-classes-and-interface-classes.html"><span class="lesson-number">25.7</span><span>Pure virtual functions, abstract base classes, and interface classes</span></a></li><li><a href="virtual-base-classes.html"><span class="lesson-number">25.8</span><span>Virtual base classes</span></a></li><li><a href="object-slicing.html"><span class="lesson-number">25.9</span><span>Object slicing</span></a></li><li><a href="dynamic-casting.html"><span class="lesson-number">25.10</span><span>Dynamic casting</span></a></li><li><a href="printing-inherited-classes-using-operator.html"><span class="lesson-number">25.11</span><span>Printing inherited classes using operator&lt;&lt;</span></a></li><li><a href="chapter-25-summary-and-quiz.html"><span class="lesson-number">25.x</span><span>Chapter 25 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 25</div>
+        <h1>25.1 — Pointers and references to the base class of derived objects</h1>
+        <div class="article-meta"><span>Updated: 2024-11-25 16:38</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous chapter, you learned all about how to use inheritance to derive new classes from existing classes.  In this chapter, we are going to focus on one of the most important and powerful aspects of inheritance -- virtual functions.</p>
+<p>But before we discuss what virtual functions are, let’s first set the table for why we need them.</p>
+<p>In the chapter on <a href="http://www.learncpp.com/cpp-tutorial/113-order-of-construction-of-derived-classes/" target="_blank" rel="noopener noreferrer">construction of derived classes</a>, you learned that when you create a derived class, it is composed of multiple parts: one part for each inherited class, and a part for itself.</p>
+<p>For example, here’s a simple case:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string_view&gt;
+
+class Base
+{
+protected:
+    int m_value {};
+
+public:
+    Base(int value)
+        : m_value{ value }
+    {
+    }
+
+    std::string_view getName() const { return "Base"; }
+    int getValue() const { return m_value; }
+};
+
+class Derived: public Base
+{
+public:
+    Derived(int value)
+        : Base{ value }
+    {
+    }
+
+    std::string_view getName() const { return "Derived"; }
+    int getValueDoubled() const { return m_value * 2; }
+};</code></pre>
+<p>When we create a Derived object, it contains a Base part (which is constructed first), and a Derived part (which is constructed second).  Remember that inheritance implies an is-a relationship between two classes.  Since a Derived is-a Base, it is appropriate that Derived contain a Base part.</p>
+<p><strong>Pointers, references, and derived classes</strong></p>
+<p>It should be fairly intuitive that we can set Derived pointers and references to Derived objects:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    Derived derived{ 5 };
+    std::cout &lt;&lt; "derived is a " &lt;&lt; derived.getName() &lt;&lt; " and has value " &lt;&lt; derived.getValue() &lt;&lt; '\n';
+
+    Derived&amp; rDerived{ derived };
+    std::cout &lt;&lt; "rDerived is a " &lt;&lt; rDerived.getName() &lt;&lt; " and has value " &lt;&lt; rDerived.getValue() &lt;&lt; '\n';
+
+    Derived* pDerived{ &amp;derived };
+    std::cout &lt;&lt; "pDerived is a " &lt;&lt; pDerived-&gt;getName() &lt;&lt; " and has value " &lt;&lt; pDerived-&gt;getValue() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This produces the following output:</p>
+<pre>
+derived is a Derived and has value 5
+rDerived is a Derived and has value 5
+pDerived is a Derived and has value 5
+</pre>
+<p>However, since Derived has a Base part, a more interesting question is whether C++ will let us set a Base pointer or reference to a Derived object.  It turns out, we can!</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    Derived derived{ 5 };
+
+    // These are both legal!
+    Base&amp; rBase{ derived }; // rBase is an lvalue reference (not an rvalue reference)
+    Base* pBase{ &amp;derived };
+
+    std::cout &lt;&lt; "derived is a " &lt;&lt; derived.getName() &lt;&lt; " and has value " &lt;&lt; derived.getValue() &lt;&lt; '\n';
+    std::cout &lt;&lt; "rBase is a " &lt;&lt; rBase.getName() &lt;&lt; " and has value " &lt;&lt; rBase.getValue() &lt;&lt; '\n';
+    std::cout &lt;&lt; "pBase is a " &lt;&lt; pBase-&gt;getName() &lt;&lt; " and has value " &lt;&lt; pBase-&gt;getValue() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This produces the result:</p>
+<pre>
+derived is a Derived and has value 5
+rBase is a Base and has value 5
+pBase is a Base and has value 5
+</pre>
+<p>This result may not be quite what you were expecting at first!</p>
+<p>It turns out that because rBase and pBase are a Base reference and pointer, they can only see members of Base (or any classes that Base inherited).  So even though Derived::getName() shadows (hides) Base::getName() for Derived objects, the Base pointer/reference can not see Derived::getName().  Consequently, they call Base::getName(), which is why rBase and pBase report that they are a Base rather than a Derived.</p>
+<p>Note that this also means it is not possible to call Derived::getValueDoubled() using rBase or pBase.  They are unable to see anything in Derived.</p>
+<p>Here’s another slightly more complex example that we’ll build on in the next lesson:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+#include &lt;string&gt;
+
+class Animal
+{
+protected:
+    std::string m_name;
+
+    // We're making this constructor protected because
+    // we don't want people creating Animal objects directly,
+    // but we still want derived classes to be able to use it.
+    Animal(std::string_view name)
+        : m_name{ name }
+    {
+    }
+    
+    // To prevent slicing (covered later)
+    Animal(const Animal&amp;) = delete;
+    Animal&amp; operator=(const Animal&amp;) = delete;
+
+public:
+    std::string_view getName() const { return m_name; }
+    std::string_view speak() const { return "???"; }
+};
+
+class Cat: public Animal
+{
+public:
+    Cat(std::string_view name)
+        : Animal{ name }
+    {
+    }
+
+    std::string_view speak() const { return "Meow"; }
+};
+
+class Dog: public Animal
+{
+public:
+    Dog(std::string_view name)
+        : Animal{ name }
+    {
+    }
+
+    std::string_view speak() const { return "Woof"; }
+};
+
+int main()
+{
+    const Cat cat{ "Fred" };
+    std::cout &lt;&lt; "cat is named " &lt;&lt; cat.getName() &lt;&lt; ", and it says " &lt;&lt; cat.speak() &lt;&lt; '\n';
+
+    const Dog dog{ "Garbo" };
+    std::cout &lt;&lt; "dog is named " &lt;&lt; dog.getName() &lt;&lt; ", and it says " &lt;&lt; dog.speak() &lt;&lt; '\n';
+
+    const Animal* pAnimal{ &amp;cat };
+    std::cout &lt;&lt; "pAnimal is named " &lt;&lt; pAnimal-&gt;getName() &lt;&lt; ", and it says " &lt;&lt; pAnimal-&gt;speak() &lt;&lt; '\n';
+
+    pAnimal = &amp;dog;
+    std::cout &lt;&lt; "pAnimal is named " &lt;&lt; pAnimal-&gt;getName() &lt;&lt; ", and it says " &lt;&lt; pAnimal-&gt;speak() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This produces the result:</p>
+<pre>
+cat is named Fred, and it says Meow
+dog is named Garbo, and it says Woof
+pAnimal is named Fred, and it says ???
+pAnimal is named Garbo, and it says ???
+</pre>
+<p>We see the same issue here.  Because pAnimal is an Animal pointer, it can only see the Animal portion of the class.  Consequently, <code>pAnimal-&gt;speak()</code> calls Animal::speak() rather than the Dog::Speak() or Cat::speak() function.</p>
+<p><strong>Use for pointers and references to base classes</strong></p>
+<p>Now you might be saying, “The above examples seem kind of silly.  Why would I set a pointer or reference to the base class of a derived object when I can just use the derived object?”  It turns out that there are quite a few good reasons.</p>
+<p>First, let’s say you wanted to write a function that printed an animal’s name and sound.  Without using a pointer to a base class, you’d have to write it using overloaded functions, like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void report(const Cat&amp; cat)
+{
+    std::cout &lt;&lt; cat.getName() &lt;&lt; " says " &lt;&lt; cat.speak() &lt;&lt; '\n';
+}
+
+void report(const Dog&amp; dog)
+{
+    std::cout &lt;&lt; dog.getName() &lt;&lt; " says " &lt;&lt; dog.speak() &lt;&lt; '\n';
+}</code></pre>
+<p>Not too difficult, but consider what would happen if we had 30 different animal types instead of 2.  You’d have to write 30 almost identical functions!   Plus, if you ever added a new type of animal, you’d have to write a new function for that one too.  This is a huge waste of time considering the only real difference is the type of the parameter.</p>
+<p>However, because Cat and Dog are derived from Animal, Cat and Dog have an Animal part.  Therefore, it makes sense that we should be able to do something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void report(const Animal&amp; rAnimal)
+{
+    std::cout &lt;&lt; rAnimal.getName() &lt;&lt; " says " &lt;&lt; rAnimal.speak() &lt;&lt; '\n';
+}</code></pre>
+<p>This would let us pass in any class derived from Animal, even ones that we created after we wrote the function!  Instead of one function per derived class, we get one function that works with all classes derived from Animal!</p>
+<p>The problem is, of course, that because rAnimal is an Animal reference, <code>rAnimal.speak()</code> will call Animal::speak() instead of the derived version of speak().</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>We could also use a template function to reduce the number of overloaded functions we need to write:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;typename T&gt;
+void report(const T&amp; rAnimal)
+{
+    std::cout &lt;&lt; rAnimal.getName() &lt;&lt; " says " &lt;&lt; rAnimal.speak() &lt;&lt; '\n';
+}</code></pre>
+<p>And while this works, it has its own issues:</p>
+<ol start="1">
+<li>It’s not clear what type <code>T</code> is supposed to be, as we’ve lost the documentation that <code>T</code> is intended to be an <code>Animal</code>.
+</li>
+<li>This function does not enforce that <code>T</code> is an <code>Animal</code>. Rather, it will accept an object of any type that contains a <code>getName()</code> and <code>speak()</code> member function, whether that makes sense or not.
+</li>
+</ol>
+</div>
+<p>Second, let’s say you had 3 cats and 3 dogs that you wanted to keep in an array for easy access.  Because arrays can only hold objects of one type, without a pointer or reference to a base class, you’d have to create a different array for each derived type, like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+// Cat and Dog from the example above
+
+int main()
+{
+    const auto&amp; cats{ std::to_array&lt;Cat&gt;({{ "Fred" }, { "Misty" }, { "Zeke" }}) };
+    const auto&amp; dogs{ std::to_array&lt;Dog&gt;({{ "Garbo" }, { "Pooky" }, { "Truffle" }}) };
+    
+    // Before C++20
+    // const std::array&lt;Cat, 3&gt; cats{{ { "Fred" }, { "Misty" }, { "Zeke" } }};
+    // const std::array&lt;Dog, 3&gt; dogs{{ { "Garbo" }, { "Pooky" }, { "Truffle" } }};
+
+    for (const auto&amp; cat : cats)
+    {
+        std::cout &lt;&lt; cat.getName() &lt;&lt; " says " &lt;&lt; cat.speak() &lt;&lt; '\n';
+    }
+
+    for (const auto&amp; dog : dogs)
+    {
+        std::cout &lt;&lt; dog.getName() &lt;&lt; " says " &lt;&lt; dog.speak() &lt;&lt; '\n';
+    }
+
+    return 0;
+}</code></pre>
+<p>Now, consider what would happen if you had 30 different types of animals.  You’d need 30 arrays, one for each type of animal!</p>
+<p>However, because both Cat and Dog are derived from Animal, it makes sense that we should be able to do something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+// Cat and Dog from the example above
+
+int main()
+{
+    const Cat fred{ "Fred" };
+    const Cat misty{ "Misty" };
+    const Cat zeke{ "Zeke" };
+
+    const Dog garbo{ "Garbo" };
+    const Dog pooky{ "Pooky" };
+    const Dog truffle{ "Truffle" };
+
+    // Set up an array of pointers to animals, and set those pointers to our Cat and Dog objects
+    const auto animals{ std::to_array&lt;const Animal*&gt;({&amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke }) };
+    
+    // Before C++20, with the array size being explicitly specified
+    // const std::array&lt;const Animal*, 6&gt; animals{ &amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke };
+    
+    for (const auto animal : animals)
+    {
+        std::cout &lt;&lt; animal-&gt;getName() &lt;&lt; " says " &lt;&lt; animal-&gt;speak() &lt;&lt; '\n';
+    }
+
+    return 0;
+}</code></pre>
+<p>While this compiles and executes, unfortunately the fact that each element of array “animals” is a pointer to an Animal means that <code>animal-&gt;speak()</code> will call Animal::speak() instead of the derived class version of speak() that we want. The output is</p>
+<pre>
+Fred says ???
+Garbo says ???
+Misty says ???
+Pooky says ???
+Truffle says ???
+Zeke says ???
+</pre>
+<p>Although both of these techniques could save us a lot of time and energy, they have the same problem.  The pointer or reference to the base class calls the base version of the function rather than the derived version.  If only there was some way to make those base pointers call the derived version of a function instead of the base version…</p>
+<p>Want to take a guess what virtual functions are for? :)</p>
+<p><strong>Quiz time</strong></p>
+<ol start="1">
+<li>Our Animal/Cat/Dog example above doesn’t work like we want because a reference or pointer to an Animal can’t access the derived version of speak() needed to return the right value for the Cat or Dog.  One way to work around this issue would be to make the data returned by the speak() function accessible as part of the Animal base class (much like the Animal’s name is accessible via member m_name).
+</li>
+</ol>
+<p>Update the Animal, Cat, and Dog classes in the lesson above by adding a new member to Animal named m_speak.  Initialize it appropriately.  The following program should work properly:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    const Cat fred{ "Fred" };
+    const Cat misty{ "Misty" };
+    const Cat zeke{ "Zeke" };
+
+    const Dog garbo{ "Garbo" };
+    const Dog pooky{ "Pooky" };
+    const Dog truffle{ "Truffle" };
+
+    // Set up an array of pointers to animals, and set those pointers to our Cat and Dog objects
+    const auto animals{ std::to_array&lt;const Animal*&gt;({ &amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke }) };
+    
+    // Before C++20, with the array size being explicitly specified
+    // const std::array&lt;const Animal*, 6&gt; animals{ &amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke };
+    
+    for (const auto animal : animals)
+    {
+        std::cout &lt;&lt; animal-&gt;getName() &lt;&lt; " says " &lt;&lt; animal-&gt;speak() &lt;&lt; '\n';
+    }
+
+    return 0;
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;array&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+#include &lt;iostream&gt;
+
+class Animal
+{
+protected:
+    std::string m_name;
+    std::string m_speak;
+
+    // We're making this constructor protected because
+    // we don't want people creating Animal objects directly,
+    // but we still want derived classes to be able to use it.
+    Animal(std::string_view name, std::string_view speak)
+        : m_name{ name }, m_speak{ speak }
+    {
+    }
+    
+    // To prevent slicing (covered later)
+    Animal(const Animal&amp;) = delete;
+    Animal&amp; operator=(const Animal&amp;) = delete;
+
+public:
+    std::string_view getName() const { return m_name; }
+    std::string_view speak() const { return m_speak; }
+};
+
+class Cat: public Animal
+{
+public:
+    Cat(std::string_view name)
+        : Animal{ name, "Meow" }
+    {
+    }
+};
+
+class Dog: public Animal
+{
+public:
+    Dog(std::string_view name)
+        : Animal{ name, "Woof" }
+    {
+    }
+};
+
+int main()
+{
+    const Cat fred{ "Fred" };
+    const Cat misty{ "Misty" };
+    const Cat zeke{ "Zeke" };
+
+    const Dog garbo{ "Garbo" };
+    const Dog pooky{ "Pooky" };
+    const Dog truffle{ "Truffle" };
+
+    // Set up an array of pointers to animals, and set those pointers to our Cat and Dog objects
+    const auto animals{ std::to_array&lt;const Animal*&gt;({ &amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke }) };
+    
+    // Before C++20, with the array size being explicitly specified
+    // const std::array&lt;const Animal*, 6&gt; animals{ &amp;fred, &amp;garbo, &amp;misty, &amp;pooky, &amp;truffle, &amp;zeke };
+    
+    // animal is not a reference, because we're looping over pointers
+    for (const auto animal : animals)
+    {
+        std::cout &lt;&lt; animal-&gt;getName() &lt;&lt; " says " &lt;&lt; animal-&gt;speak() &lt;&lt; '\n';
+    }
+
+    return 0;
+}</code></pre>
+</div>
+<ol start="2">
+<li>Why is the above solution non-optimal?
+</li>
+</ol>
+<p>Hint: Think about the future state of Cat and Dog where we want to differentiate Cats and Dogs in more ways.<br>
+Hint: Think about the ways in which having a member that needs to be set at initialization limits you.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+The current solution is non-optimal for a number of reasons.
+<p>First, we need to add a member to Animal for each way we want to differentiate Cat and Dog.  Over time, our Animal class could become quite large memory-wise, and complicated!</p>
+<p>Second, this solution only works if the base class member can be determined at initialization time.  For example, if speak() returned a randomized result for each Animal (e.g. calling Dog::speak() could return “woof”, “arf”, or “yip”), this kind of solution starts to get awkward and fall apart.</p>
+<p>Third, because speak() is a member of Animal, speak() will have the same behavior for Cats and Dogs (that is, it will always return m_speak).  If we wanted <code>speak()</code> to have different behavior for Cats and Dogs (e.g. have Dogs return a random sound), we’d have to put all that extra logic in Animal, which makes Animal even more complex.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="chapter-24-summary-and-quiz.html"><span class="nav-kicker">← Previous lesson</span>24.x · Chapter 24 summary and quiz</a><a class="next" href="virtual-functions.html"><span class="nav-kicker">Next lesson →</span>25.2 · Virtual functions and polymorphism</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

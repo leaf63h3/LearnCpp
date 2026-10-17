@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 17.7 -- Introduction to C-style arrays, we introduced C-style arrays, which allow us to define a sequential collection of elements: int testScore">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.10 — C-style strings · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/c-style-strings/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html" aria-current="page"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.10 — C-style strings</h1>
+        <div class="article-meta"><span>Updated: 2024-05-25 16:20</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="introduction-to-c-style-arrays.html">17.7 -- Introduction to C-style arrays</a>, we introduced C-style arrays, which allow us to define a sequential collection of elements:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    int testScore[30] {}; // an array of 30 ints, indices 0 through 29</code></pre>
+<p>In lesson <a href="literals.html">5.2 -- Literals</a>, we defined a string as a collection of sequential characters (such as “Hello, world!”), and introduced C-style string literals.  We also noted that the C-style string literal “Hello, world!” has type <code>const char[14]</code> (13 explicit characters plus 1 hidden null-terminator character).</p>
+<p>If you hadn’t connected the dots before, it should be obvious now that C-style strings are just C-style arrays whose element type is <code>char</code> or <code>const char</code>!</p>
+<p>Although C-style string literals are fine to use in our code, C-style string objects have fallen out of favor in modern C++ because they are hard to use and dangerous (with <code>std::string</code> and <code>std::string_view</code> being the modern replacements).  Regardless, you may still run across uses of C-style string objects in older code, and we would be remiss not to cover them at all.</p>
+<p>Therefore, in this lesson, we’ll take a look at the most important points regarding C-style string objects in modern C++.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Defining C-style strings</p>
+<p>To define a C-style string variable, simply declare a C-style array variable of <code>char</code> (or <code>const char</code> / <code>constexpr char</code>):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">char str1[8]{};                    // an array of 8 char, indices 0 through 7
+
+const char str2[]{ "string" };     // an array of 7 char, indices 0 through 6
+constexpr char str3[] { "hello" }; // an array of 6 const char, indices 0 through 5</code></pre>
+<p>Remember that we need an extra character for the implicit null terminator.</p>
+<p>When defining C-style strings with an initializer, we highly recommend omitting the array length and letting the compiler calculate the length.  That way if the initializer changes in the future, you won’t have to remember to update the length, and there is no risk in forgetting to include an extra element to hold the null terminator.</p>
+<p class="cpp-section cpp-topline" style="clear: both">C-style strings will decay</p>
+<p>In lesson <a href="c-style-array-decay.html">17.8 -- C-style array decay</a>, we discussed how C-style arrays will decay into a pointer in most circumstances.  Because C-style strings are C-style arrays, they will decay -- C-style string literals decay into a <code>const char*</code>, and C-style string arrays decay into either a <code>const char*</code> or <code>char*</code> depending on whether the array is const.  And when a C-style string decays into a pointer, the length of the string (encoded in the type information) is lost.</p>
+<p>This loss of length information is the reason C-style strings have a null-terminator.  The length of the string can be (inefficiently) regenerated by counting the number of elements between the start of the string and the null terminator.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Outputting a C-style string</p>
+<p>When outputting a C-style string, <code>std::cout</code> outputs characters until it encounters the null terminator.  This null terminator marks the end of the string, so that decayed strings (which have lost their length information) can still be printed.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void print(char ptr[])
+{
+    std::cout &lt;&lt; ptr &lt;&lt; '\n'; // output string
+}
+
+int main()
+{
+    char str[]{ "string" };
+    std::cout &lt;&lt; str &lt;&lt; '\n'; // outputs string
+
+    print(str);
+
+    return 0;
+}</code></pre>
+<p>If you try to print a string that does not have a null terminator (e.g. because the null-terminator was overwritten somehow), the result will be undefined behavior.  The most likely outcome in this case will be that all the characters in the string are printed, and then it will just keep printing everything in adjacent memory slots (interpreted as a character) until it happens to hit a byte of memory containing a 0 (which will be interpreted as a null terminator)!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Inputting C-style strings</p>
+<p>Consider the case where we are asking the user to roll a die as many times as they wish and enter the numbers rolled without spaces (e.g. <code>524412616</code>).  How many characters will the user enter?  We have no idea.</p>
+<p>Because C-style strings are fixed-size arrays, the solution is to declare an array larger than we are ever likely to need:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    char rolls[255] {}; // declare array large enough to hold 254 characters + null terminator
+    std::cout &lt;&lt; "Enter your rolls: ";
+    std::cin &gt;&gt; rolls;
+    std::cout &lt;&lt; "You entered: " &lt;&lt; rolls &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Prior to C++20, <code>std::cin &gt;&gt; rolls</code> would extract as many characters as possible to <code>rolls</code> (stopping at the first non-leading whitespace).  Nothing is stopping the user from entering more than 254 characters (either unintentionally, or maliciously).  And if that happens, the user’s input will overflow the <code>rolls</code> array and undefined behavior will result.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p><strong>Array overflow</strong> or <strong>buffer overflow</strong> is a computer security issue that occurs when more data is copied into storage than the storage can hold.  In such cases, the memory just beyond the storage will be overwritten, leading to undefined behavior.  Malicious actors can potentially exploit such flaws to overwrite the contents of memory, hoping to change the program’s behavior in some advantageous way.
+</p></div>
+<p>In C++20, <code>operator&gt;&gt;</code> was changed so that it only works for inputting non-decayed C-style strings.  This allows <code>operator&gt;&gt;</code> to extract only as many characters as the C-style string’s length will allow, preventing overflow.  But this also means you can no longer use <code>operator&gt;&gt;</code> to input to decayed C-style strings.</p>
+<p>The recommended way of reading C-style strings using <code>std::cin</code> is as follows:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;iterator&gt; // for std::size
+
+int main()
+{
+    char rolls[255] {}; // declare array large enough to hold 254 characters + null terminator
+    std::cout &lt;&lt; "Enter your rolls: ";
+    std::cin.getline(rolls, std::size(rolls));
+    std::cout &lt;&lt; "You entered: " &lt;&lt; rolls &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This call to <code>cin.getline()</code> will read up to 254 characters (including whitespace) into <code>rolls</code>.  Any excess characters will be discarded.  Because <code>getline()</code> takes a length, we can provide the maximum number of characters to accept.  With a non-decayed array, this is easy -- we can use <code>std::size()</code> to get the array length.  With a decayed array, we have to determine the length in some other way.  And if we provide the wrong length, our program may malfunction or have security issues.</p>
+<p>In modern C++, when storing inputted text from the user, it’s safer to use <code>std::string</code>, as <code>std::string</code> will adjust automatically to hold as many characters as needed.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Modifying C-style strings</p>
+<p>One important point to note is that C-style strings follow the same rules as C-style arrays.  This means you can initialize the string upon creation, but you can not assign values to it using the assignment operator after that!</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">char str[]{ "string" }; // ok
+str = "rope";           // not ok!</code></pre>
+<p>This makes using C-style strings a bit awkward.</p>
+<p>Since C-style strings are arrays, you can use the [] operator to change individual characters in the string:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    char str[]{ "string" };
+    std::cout &lt;&lt; str &lt;&lt; '\n';
+    str[1] = 'p';
+    std::cout &lt;&lt; str &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This program prints:</p>
+<pre>
+string
+spring
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Getting the length of an C-style string</p>
+<p>Because C-style strings are C-style arrays, you can use <code>std::size()</code> (or in C++20, <code>std::ssize()</code>) to get the length of the string as an array.  There are two caveats here:</p>
+<ol start="1">
+<li>This doesn’t work on decayed strings.
+</li>
+<li>Returns the actual length of the C-style array, not the length of the string.
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    char str[255]{ "string" }; // 6 characters + null terminator
+    std::cout &lt;&lt; "length = " &lt;&lt; std::size(str) &lt;&lt; '\n'; // prints length = 255
+
+    char *ptr { str };
+    std::cout &lt;&lt; "length = " &lt;&lt; std::size(ptr) &lt;&lt; '\n'; // compile error
+
+    return 0;
+}</code></pre>
+<p>An alternate solution is to use the <code>strlen()</code> function, which lives in the <code>&lt;cstring&gt;</code> header.  <code>strlen()</code> will work on decayed arrays, and returns the length of the string being held, excluding the null terminator:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstring&gt; // for std::strlen
+#include &lt;iostream&gt;
+
+int main()
+{
+    char str[255]{ "string" }; // 6 characters + null terminator
+    std::cout &lt;&lt; "length = " &lt;&lt; std::strlen(str) &lt;&lt; '\n'; // prints length = 6
+
+    char *ptr { str };
+    std::cout &lt;&lt; "length = " &lt;&lt; std::strlen(ptr) &lt;&lt; '\n';   // prints length = 6
+
+    return 0;
+}</code></pre>
+<p>However, <code>std::strlen()</code> is slow, as it has to traverse through the whole array, counting characters until it hits the null terminator.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Other C-style string manipulating functions</p>
+<p>Because C-style strings are the primary string type in C, the C language provides many functions for manipulating C-style strings.  These functions have been inherited by C++ as part of the <code>&lt;cstring&gt;</code> header.</p>
+<p>Here are a few of the most useful that you may see in older code:</p>
+<ul>
+<li>strlen() -- returns the length of a C-style string
+</li>
+<li>strcpy(), strncpy(), strcpy_s() -- overwrites one C-style string with another
+</li>
+<li>strcat(), strncat() -- Appends one C-style string to the end of another
+</li>
+<li>strcmp(), strncmp() -- Compares two C-style strings (returns <code>0</code> if equal)
+</li>
+</ul>
+<p>Except for <code>strlen()</code>, we generally recommend avoiding these.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Avoid non-const C-style string objects</p>
+<p>Unless you have a specific, compelling reason to use non-const C-style strings, they are best avoided, as they are awkward to work with and are prone to overruns, which will cause undefined behavior (and are potential security issues).</p>
+<p>In the rare case that you do need to work with C-style strings or fixed buffer sizes (e.g. for memory-limited devices), we’d recommend using a well-tested 3rd party fixed-length string library designed for the purpose.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Avoid non-const C-style string objects in favor of <code>std::string</code>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Write a function to print a C-style string character by character.  Use a pointer and pointer arithmetic to step through each character of the string and print that character.  Write a <code>main</code> function that tests the function with the string literal “Hello, world!”.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// str will point to the first letter of the C-style string.
+// Note that str points to a const char, so we can not change the values it points to.
+// However, we can point str at something else.  This does not change the value of the argument.
+void printCString(const char str[])
+{
+    // While we haven't encountered a null terminator
+    while (*str != '\0')
+    {
+        // print the current character
+        std::cout &lt;&lt; *str;
+
+        // and use pointer arithmetic to move str to the next character
+        ++str;
+    }
+}
+
+int main()
+{
+    printCString("Hello world!");
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Repeat quiz #1, but this time the function should print the string backwards.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printCStringBackwards(const char str[])
+{
+    // We can't modify str this time (we need it later)
+    // So we'll define a new pointer with the same address as str
+    const char *ptr{ str };
+
+    // Find the null terminator
+    while (*ptr != '\0')
+        ++ptr;
+
+    // Now walk backwards and print characters until ptr reaches str again
+    while (ptr-- != str)
+    {
+        std::cout &lt;&lt; *ptr;
+    } 
+}
+
+int main()
+{
+    printCStringBackwards("Hello world!");
+
+    std::cout &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="pointer-arithmetic-and-subscripting.html"><span class="nav-kicker">← Previous lesson</span>17.9 · Pointer arithmetic and subscripting</a><a class="next" href="c-style-string-symbolic-constants.html"><span class="nav-kicker">Next lesson →</span>17.11 · C-style string symbolic constants</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

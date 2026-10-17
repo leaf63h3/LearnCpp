@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous two lessons, we’ve looked at two types of object composition, composition and aggregation. Object composition is used to model relationship">
+  <meta name="robots" content="noindex,nofollow">
+  <title>23.4 — Association · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/association/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 23 · Object Relationships</summary><div class="sidebar-title"><small>Chapter 23</small><strong>Object Relationships</strong></div>
+<ol class="sidebar-lessons"><li><a href="object-relationships.html"><span class="lesson-number">23.1</span><span>Object relationships</span></a></li><li><a href="composition.html"><span class="lesson-number">23.2</span><span>Composition</span></a></li><li><a href="aggregation.html"><span class="lesson-number">23.3</span><span>Aggregation</span></a></li><li><a href="association.html" aria-current="page"><span class="lesson-number">23.4</span><span>Association</span></a></li><li><a href="dependencies.html"><span class="lesson-number">23.5</span><span>Dependencies</span></a></li><li><a href="container-classes.html"><span class="lesson-number">23.6</span><span>Container classes</span></a></li><li><a href="stdinitializer_list.html"><span class="lesson-number">23.7</span><span>std::initializer_list</span></a></li><li><a href="chapter-23-summary-and-quiz.html"><span class="lesson-number">23.x</span><span>Chapter 23 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 23</div>
+        <h1>23.4 — Association</h1>
+        <div class="article-meta"><span>Updated: 2023-12-07 12:03</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous two lessons, we’ve looked at two types of object composition, composition and aggregation.  Object composition is used to model relationships where a complex object is built from one or more simpler objects (parts).</p>
+<p>In this lesson, we’ll take a look at a weaker type of relationship between two otherwise unrelated objects, called an association.  Unlike object composition relationships, in an association, there is no implied whole/part relationship.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Association</p>
+<p>To qualify as an <strong>association</strong>, an object and another object must have the following relationship:</p>
+<ul>
+<li>The associated object (member) is otherwise unrelated to the object (class)</li>
+<li>The associated object (member) can belong to more than one object (class) at a time</li>
+<li>The associated object (member) does <em>not</em> have its existence managed by the object (class)</li>
+<li>The associated object (member) may or may not know about the existence of the object (class)</li>
+</ul>
+<p>Unlike a composition or aggregation, where the part is a part of the whole object, in an association, the associated object is otherwise unrelated to the object.  Just like an aggregation, the associated object can belong to multiple objects simultaneously, and isn’t managed by those objects.  However, unlike an aggregation, where the relationship is always unidirectional, in an association, the relationship may be unidirectional or bidirectional (where the two objects are aware of each other).</p>
+<p>The relationship between doctors and patients is a great example of an association.  The doctor clearly has a relationship with his patients, but conceptually it’s not a part/whole (object composition) relationship.  A doctor can see many patients in a day, and a patient can see many doctors (perhaps they want a second opinion, or they are visiting different types of doctors).  Neither of the object’s lifespans are tied to the other.</p>
+<p>We can say that association models as “uses-a” relationship.  The doctor “uses” the patient (to earn income).  The patient uses the doctor (for whatever health purposes they need).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Implementing associations</p>
+<p>Because associations are a broad type of relationship, they can be implemented in many different ways.  However, most often, associations are implemented using pointers, where the object points at the associated object.</p>
+<p>In this example, we’ll implement a bi-directional Doctor/Patient relationship, since it makes sense for the Doctors to know who their Patients are, and vice-versa.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;functional&gt; // reference_wrapper
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+#include &lt;vector&gt;
+
+// Since Doctor and Patient have a circular dependency, we're going to forward declare Patient
+class Patient;
+
+class Doctor
+{
+private:
+	std::string m_name{};
+	std::vector&lt;std::reference_wrapper&lt;const Patient&gt;&gt; m_patient{};
+
+public:
+	Doctor(std::string_view name) :
+		m_name{ name }
+	{
+	}
+
+	void addPatient(Patient&amp; patient);
+	
+	// We'll implement this function below Patient since we need Patient to be defined at that point
+	friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Doctor&amp; doctor);
+
+	const std::string&amp; getName() const { return m_name; }
+};
+
+class Patient
+{
+private:
+	std::string m_name{};
+	std::vector&lt;std::reference_wrapper&lt;const Doctor&gt;&gt; m_doctor{}; // so that we can use it here
+
+	// We're going to make addDoctor private because we don't want the public to use it.
+	// They should use Doctor::addPatient() instead, which is publicly exposed
+	void addDoctor(const Doctor&amp; doctor)
+	{
+		m_doctor.push_back(doctor);
+	}
+
+public:
+	Patient(std::string_view name)
+		: m_name{ name }
+	{
+	}
+
+	// We'll implement this function below to parallel operator&lt;&lt;(std::ostream&amp;, const Doctor&amp;)
+	friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Patient&amp; patient);
+
+	const std::string&amp; getName() const { return m_name; }
+
+	// We'll friend Doctor::addPatient() so it can access the private function Patient::addDoctor()
+	friend void Doctor::addPatient(Patient&amp; patient);
+};
+
+void Doctor::addPatient(Patient&amp; patient)
+{
+	// Our doctor will add this patient
+	m_patient.push_back(patient);
+
+	// and the patient will also add this doctor
+	patient.addDoctor(*this);
+}
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Doctor&amp; doctor)
+{
+	if (doctor.m_patient.empty())
+	{
+		out &lt;&lt; doctor.m_name &lt;&lt; " has no patients right now";
+		return out;
+	}
+
+	out &lt;&lt; doctor.m_name &lt;&lt; " is seeing patients: ";
+	for (const auto&amp; patient : doctor.m_patient)
+		out &lt;&lt; patient.get().getName() &lt;&lt; ' ';
+
+	return out;
+}
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Patient&amp; patient)
+{
+	if (patient.m_doctor.empty())
+	{
+		out &lt;&lt; patient.getName() &lt;&lt; " has no doctors right now";
+		return out;
+	}
+
+	out &lt;&lt; patient.m_name &lt;&lt; " is seeing doctors: ";
+	for (const auto&amp; doctor : patient.m_doctor)
+		out &lt;&lt; doctor.get().getName() &lt;&lt; ' ';
+
+	return out;
+}
+
+int main()
+{
+	// Create a Patient outside the scope of the Doctor
+	Patient dave{ "Dave" };
+	Patient frank{ "Frank" };
+	Patient betsy{ "Betsy" };
+
+	Doctor james{ "James" };
+	Doctor scott{ "Scott" };
+
+	james.addPatient(dave);
+
+	scott.addPatient(dave);
+	scott.addPatient(betsy);
+
+	std::cout &lt;&lt; james &lt;&lt; '\n';
+	std::cout &lt;&lt; scott &lt;&lt; '\n';
+	std::cout &lt;&lt; dave &lt;&lt; '\n';
+	std::cout &lt;&lt; frank &lt;&lt; '\n';
+	std::cout &lt;&lt; betsy &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+James is seeing patients: Dave
+Scott is seeing patients: Dave Betsy
+Dave is seeing doctors: James Scott
+Frank has no doctors right now
+Betsy is seeing doctors: Scott
+</pre>
+<p>In general, you should avoid bidirectional associations if a unidirectional one will do, as they add complexity and tend to be harder to write without making errors.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Reflexive association</p>
+<p>Sometimes objects may have a relationship with other objects of the same type.  This is called a <strong>reflexive association</strong>.  A good example of a reflexive association is the relationship between a university course and its prerequisites (which are also university courses).</p>
+<p>Consider the simplified case where a Course can only have one prerequisite.  We can do something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+class Course
+{
+private:
+    std::string m_name{};
+    const Course* m_prerequisite{};
+
+public:
+    Course(std::string_view name, const Course* prerequisite = nullptr):
+        m_name{ name }, m_prerequisite{ prerequisite }
+    {
+    }
+
+};</code></pre>
+<p>This can lead to a chain of associations (a course has a prerequisite, which has a prerequisite, etc…)</p>
+<p class="cpp-section cpp-topline" style="clear: both">Associations can be indirect</p>
+<p>In all of the previous cases, we’ve used either pointers or references to directly link objects together.  However, in an association, this is not strictly required.  Any kind of data that allows you to link two objects together suffices.  In the following example, we show how a Driver class can have a unidirectional association with a Car without actually including a Car pointer or reference member:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+class Car
+{
+private:
+	std::string m_name{};
+	int m_id{};
+
+public:
+	Car(std::string_view name, int id)
+		: m_name{ name }, m_id{ id }
+	{
+	}
+
+	const std::string&amp; getName() const { return m_name; }
+	int getId() const { return m_id; }
+};
+
+// Our CarLot is essentially just a static array of Cars and a lookup function to retrieve them.
+// Because it's static, we don't need to allocate an object of type CarLot to use it
+namespace CarLot
+{
+    Car carLot[4] { { "Prius", 4 }, { "Corolla", 17 }, { "Accord", 84 }, { "Matrix", 62 } };
+
+	Car* getCar(int id)
+	{
+		for (auto&amp; car : carLot)
+        {
+			if (car.getId() == id)
+			{
+				return &amp;car;
+			}
+		}
+		
+		return nullptr;
+	}
+};
+
+class Driver
+{
+private:
+	std::string m_name{};
+	int m_carId{}; // we're associated with the Car by ID rather than pointer
+
+public:
+	Driver(std::string_view name, int carId)
+		: m_name{ name }, m_carId{ carId }
+	{
+	}
+
+	const std::string&amp; getName() const { return m_name; }
+	int getCarId() const { return m_carId; }
+};
+
+int main()
+{
+	Driver d{ "Franz", 17 }; // Franz is driving the car with ID 17
+
+	Car* car{ CarLot::getCar(d.getCarId()) }; // Get that car from the car lot
+	
+	if (car)
+		std::cout &lt;&lt; d.getName() &lt;&lt; " is driving a " &lt;&lt; car-&gt;getName() &lt;&lt; '\n';
+	else
+		std::cout &lt;&lt; d.getName() &lt;&lt; " couldn't find his car\n";
+
+	return 0;
+}</code></pre>
+<p>In the above example, we have a CarLot holding our cars.  The Driver, who needs a car, doesn’t have a pointer to his Car -- instead, he has the ID of the car, which we can use to get the Car from the CarLot when we need it.</p>
+<p>In this particular example, doing things this way is kind of silly, since getting the Car out of the CarLot requires an inefficient lookup (a pointer connecting the two is much faster).  However, there are advantages to referencing things by a unique ID instead of a pointer.  For example, you can reference things that are not currently in memory (maybe they’re in a file, or in a database, and can be loaded on demand).  Also, pointers can take 4 or 8 bytes -- if space is at a premium and the number of unique objects is fairly low, referencing them by an 8-bit or 16-bit integer can save lots of memory.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Composition vs aggregation vs association summary</p>
+<p>Here’s a summary table to help you remember the difference between composition, aggregation, and association:</p>
+<div class="cpp-table-wrapper"><table class="cpp-table">
+<tr>
+<th>Property</th>
+<th>Composition</th>
+<th>Aggregation</th>
+<th>Association</th>
+</tr>
+<tr>
+<td>Relationship type</td>
+<td>Whole/part</td>
+<td>Whole/part</td>
+<td>Otherwise unrelated</td>
+</tr>
+<tr>
+<td>Members can belong to multiple classes</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Members’ existence managed by class</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Directionality</td>
+<td>Unidirectional</td>
+<td>Unidirectional</td>
+<td>Unidirectional or bidirectional</td>
+</tr>
+<tr>
+<td>Relationship verb</td>
+<td>Part-of</td>
+<td>Has-a</td>
+<td>Uses-a</td>
+</tr>
+<p></p></table></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="aggregation.html"><span class="nav-kicker">← Previous lesson</span>23.3 · Aggregation</a><a class="next" href="dependencies.html"><span class="nav-kicker">Next lesson →</span>23.5 · Dependencies</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

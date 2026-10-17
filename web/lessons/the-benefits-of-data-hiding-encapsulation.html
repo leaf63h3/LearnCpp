@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In a previous lesson (14.5 -- Public and private members and access specifiers), we mentioned that the member variables of a class are typically made priva">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.8 — The benefits of data hiding (encapsulation) · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/the-benefits-of-data-hiding-encapsulation/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html" aria-current="page"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.8 — The benefits of data hiding (encapsulation)</h1>
+        <div class="article-meta"><span>Updated: 2025-02-20 16:22</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In a previous lesson (<a href="public-and-private-members-and-access-specifiers.html">14.5 -- Public and private members and access specifiers</a>), we mentioned that the member variables of a class are typically made private.  Programmers who are learning about classes for the first time often have a hard time understanding why you’d want to do this.  After all, making your variables private means they can’t be accessed by the public.  At best, this makes for more work when writing your classes.  At worst, it may seem completely pointless (especially if we’re providing public access functions to the private member data).  </p>
+<p>The answer to this question is so foundational that we’re going to spend an entire lesson on the topic!</p>
+<p>Let’s start with an analogy.</p>
+<p>In modern life, we have access to many mechanical or electronic devices.  You turn your TV on/off with a remote control.  You make your car move forward by pressing the gas pedal.  You turn on your lights by flipping a switch.  All of these devices have something in common: They provide a simple user interface (a set of buttons, a pedal, a switch, etc…) that allows you to perform key actions.</p>
+<p>How these devices actually operate is hidden away from you.  When you press the button on your remote control, you don’t need to know how the remote is communicating with your TV.  When you press the gas pedal on your car, you don’t need to know how the combustion engine makes the wheels turn.  When you take a picture, you don’t need to know how the sensors gather light and turn that light into a pixelated image.</p>
+<p>This separation of interface and implementation is extremely useful because it allows us to use objects without having to understand how they work -- instead, we only have to understand how to interact with them.  This vastly reduces the complexity of using these objects, and increases the number of objects we’re capable of interacting with.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Implementation and interfaces in class types</p>
+<p>For similar reasons, the separation of interface and implementation is useful in programming.  But first, let’s define what we mean by interface and implementation with regards to class types.</p>
+<p>The <strong>interface</strong> of a class type (also called a <strong>class interface</strong>) defines how a user of the class type will interact with objects of the class type.  Because only public members can be accessed from outside of the class type, the public members of a class type form its interface.  For this reason, an interface composed of public members is sometimes called a <strong>public interface</strong>.</p>
+<p>An interface is an implicit contract between the author of a class and the user of a class.  If an existing interface is ever changed, any code that uses it may break.  Therefore, it is important to ensure the interfaces for our class types are well-designed and stable (don’t change much).</p>
+<p>The <strong>implementation</strong> of a class type consists of the code that actually makes the class behave as intended.  This includes both the member variables that store data, and the bodies of the member functions that contain the program logic and manipulate the member variables.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Data hiding</p>
+<p>In programming, <strong>data hiding</strong> (also called <strong>information hiding</strong> or <strong>data abstraction</strong>) is a technique used to enforce the separation of interface and implementation by hiding (making inaccessible) the implementation of a program-defined data type from users.  </p>
+<p>Implementing data hiding in a C++ class type is simple.  First, we ensure the data members of the class type are private (so that the user can not directly access them).  The statements inside the bodies of member functions are already not directly accessible to users, so we don’t need to do anything else there.  Next, we ensure the member functions are public, so that the user can call them.</p>
+<p>By following these rules, we force the user of a class type to manipulate objects using the public interface, and prevent them from directly accessing implementation details.</p>
+<p>Classes defined in C++ should use data hiding.  And in fact, all of the classes provided by the standard library do just that.  Structs, on the other hand, should not use data hiding, as having non-public members prevents them from being treated as aggregates.</p>
+<p>Defining classes this way requires a bit of extra work for the class author.  And requiring users of the class to use the public interface may seem more burdensome than providing public access to the member variables directly.  But doing so provides a large number of useful benefits that help encourage class reusability and maintainability.  We’ll spend the rest of the lesson discussing these benefits.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Nomenclature</p>
+<p>In programming, the term <strong>encapsulation</strong> typically refers to one of two things:</p>
+<ul>
+<li>The enclosing of one or more items within a container of some kind.
+</li>
+<li>The bundling of data and functions for operating on instances of that data.
+</li>
+</ul>
+<p>In C++, a class type that has data and a public interface for creating and manipulating objects of that class is encapsulated.  Because encapsulation is a prerequisite for data hiding, and because data hiding is such an important technique, conventionally the term encapsulation often includes data hiding as well.</p>
+<p>In this tutorial series, we’ll assume all encapsulated classes implement data hiding.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Data hiding make classes easier to use, and reduces complexity</p>
+<p>To use an encapsulated class, you don’t need to know how it is implemented.  You only need to understand its interface: what member functions are publicly available, what arguments they take, and what values they return.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string_view&gt;
+
+int main()
+{
+    std::string_view sv{ "Hello, world!" };
+    std::cout &lt;&lt; sv.length();
+
+    return 0;
+}</code></pre>
+<p>In this short program, the details of how <code>std::string_view</code> is implemented is not exposed to us.  We don’t get to see how many data members a <code>std::string_view</code> has, what they are named, or what type they are.  We don’t know how the <code>length()</code> member function is returning the length of the string being viewed.</p>
+<p>And the great part is, we don’t have to know!  The program just works.  All we need to know is how to initialize an object of type <code>std::string_view</code>, and what the <code>length()</code> member function returns.</p>
+<p>Not having to care about these details dramatically reduces the complexity of your programs, which in turn reduces mistakes.  More than any other reason, this is the key advantage of encapsulation.</p>
+<p>Imagine how much more complicated C++ would be if you had to understand how <code>std::string</code>, <code>std::vector</code>, or <code>std::cout</code> were implemented in order to use them!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Data hiding allows us to maintain invariants</p>
+<p>Back in the introductory lesson on classes (<a href="introduction-to-classes.html">14.2 -- Introduction to classes</a>), we introduced the concept of <em>class invariants</em>, which are conditions that must be true throughout the lifetime of an object in order for the object to stay in a valid state.</p>
+<p>Consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Employee // members are public by default
+{
+    std::string name{ "John" };
+    char firstInitial{ 'J' }; // should match first initial of name
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Employee " &lt;&lt; name &lt;&lt; " has first initial " &lt;&lt; firstInitial &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Employee e{}; // defaults to "John" and 'J'
+    e.print();
+
+    e.name = "Mark"; // change employee's name to "Mark"
+    e.print(); // prints wrong initial
+
+    return 0;
+}</code></pre>
+<p>This program prints:</p>
+<pre>
+John has first initial J
+Mark has first initial J
+</pre>
+<p>Our <code>Employee</code> struct has a class invariant that <code>firstInitial</code> should always equal the first character of <code>name</code>.  If this is ever untrue, then the <code>print()</code> function will malfunction.</p>
+<p>Because the <code>name</code> member is public, the code in <code>main()</code> is able to set <code>e.name</code> to <code>"Mark"</code>, and the <code>firstInitial</code> member is not updated.  Our invariant is broken, and our second call to <code>print()</code> doesn’t work as expected.</p>
+<p>When we give users direct access to the implementation of a class, they become responsible for maintaining all invariants -- which they may not do (either correctly, or at all).  Putting this burden on the user adds a lot of complexity.</p>
+<p>Let’s rewrite this program, making our member variables private, and exposing a member function to set the name of an Employee:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+class Employee // members are private by default
+{
+    std::string m_name{};
+    char m_firstInitial{};
+
+public:
+    void setName(std::string_view name)
+    {
+        m_name = name;
+        m_firstInitial = name.front(); // use std::string::front() to get first letter of `name`
+    }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Employee " &lt;&lt; m_name &lt;&lt; " has first initial " &lt;&lt; m_firstInitial &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Employee e{};
+    e.setName("John");
+    e.print();
+
+    e.setName("Mark");
+    e.print();
+
+    return 0;
+}</code></pre>
+<p>This program now works as expected:</p>
+<pre>
+John has first initial J
+Mark has first initial M
+</pre>
+<p>The only change from the user’s perspective is that instead of assigning <code>name</code> a value directly, they’re calling member function <code>setName()</code>, which does the job of setting both <code>m_name</code> and <code>m_firstInitial</code>.  The user is absolved of the burden of having to maintain this invariant!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Data hiding allows us to do better error detection (and handling)</p>
+<p>In the above program, the invariant that <code>m_firstInitial</code> must match the first character of <code>m_name</code> exists because <code>m_firstInitial</code> exists independently of <code>m_name</code>.  We can remove this particular invariant by replacing data member <code>m_firstInitial</code> with a member function that returns the first initial:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Employee
+{
+    std::string m_name{ "John" };
+
+public:
+    void setName(std::string_view name)
+    {
+        m_name = name;
+    }
+
+    // use std::string::front() to get first letter of `m_name`
+    char firstInitial() const { return m_name.front(); }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Employee " &lt;&lt; m_name &lt;&lt; " has first initial " &lt;&lt; firstInitial() &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Employee e{}; // defaults to "John"
+    e.setName("Mark");
+    e.print();
+
+    return 0;
+}</code></pre>
+<p>However, this program has another class invariant.  Take a moment and see if you can determine what it is.  We’ll wait here and watch this dry paint…</p>
+<p>The answer is that <code>m_name</code> shouldn’t be an empty string (because every <code>Employee</code> should have a name).  If <code>m_name</code> is set to an empty string, nothing bad will happen immediately.  But if <code>firstInitial()</code> is then called, the <code>front()</code> member of <code>std::string</code> will try to get the first letter of the empty string, and that leads to undefined behavior.</p>
+<p>Ideally, we’d like to prevent <code>m_name</code> from ever being empty.</p>
+<p>If the user had public access to the <code>m_name</code> member, they could just set <code>m_name = ""</code>, and there’s nothing we can do to prevent that from happening.</p>
+<p>However, because we’re forcing the user to set <code>m_name</code> through the public interface function <code>setName()</code>, we can have <code>setName()</code> validate that the user has passed in a valid name.  If the name is non-empty, then we can assign it to <code>m_name</code>.  If the name is an empty string, we can do any number of things in response:</p>
+<ul>
+<li>Ignore the request to set the name to “” and return to the caller.
+</li>
+<li>Assert out.
+</li>
+<li>Throw an exception.
+</li>
+<li>Do the hokey pokey.  Wait, not this one.
+</li>
+</ul>
+<p>The point here is that we can detect the misuse, and then handle it however we think is most appropriate.  How we best handle such cases effectively is a topic for another day.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Data hiding makes it possible to change implementation details without breaking existing programs</p>
+<p>Consider this simple example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Something
+{
+    int value1 {};
+    int value2 {};
+    int value3 {};
+};
+
+int main()
+{
+    Something something;
+    something.value1 = 5;
+    std::cout &lt;&lt; something.value1 &lt;&lt; '\n';
+}</code></pre>
+<p>While this program works fine, what would happen if we decided to change the implementation details of the class, like this?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Something
+{
+    int value[3] {}; // uses an array of 3 values
+};
+
+int main()
+{
+    Something something;
+    something.value1 = 5;
+    std::cout &lt;&lt; something.value1 &lt;&lt; '\n';
+}</code></pre>
+<p>We haven’t covered arrays yet, but don’t worry about that.  The point here is that this program no longer compiles because the member named <code>value1</code> no longer exists, and a statement in <code>main()</code> is still using that identifier.</p>
+<p>Data hiding gives us the ability to change how classes are implemented without breaking the programs that use them.</p>
+<p>Here is the encapsulated version of the original version of this class that uses functions to access <code>m_value1</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Something
+{
+private:
+    int m_value1 {};
+    int m_value2 {};
+    int m_value3 {};
+
+public:
+    void setValue1(int value) { m_value1 = value; }
+    int getValue1() const { return m_value1; }
+};
+
+int main()
+{
+    Something something;
+    something.setValue1(5);
+    std::cout &lt;&lt; something.getValue1() &lt;&lt; '\n';
+}</code></pre>
+<p>Now, let’s change the class’s implementation back to an array:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Something
+{
+private:
+    int m_value[3]; // note: we changed the implementation of this class!
+
+public:
+    // We have to update any member functions to reflect the new implementation
+    void setValue1(int value) { m_value[0] = value; }
+    int getValue1() const { return m_value[0]; }
+};
+
+int main()
+{
+    // But our programs that use the class do not need to be updated!
+    Something something;
+    something.setValue1(5);
+    std::cout &lt;&lt; something.getValue1() &lt;&lt; '\n';
+}</code></pre>
+<p>Because we did not change the public interface of the class, our program that uses that interface did not need to change at all, and still functions identically.</p>
+<p>Analogously, if gnomes snuck into your house at night and replaced the internals of your TV remote with a different (but compatible) technology, you probably wouldn’t even notice!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Classes with interfaces are easier to debug</p>
+<p>And finally, encapsulation can help you debug a program when something goes wrong.  Often when a program does not work correctly, it is because one of our member variables has been given an incorrect value.  If everyone is able to set the member variable directly, tracking down which piece of code actually modified the member variable to the wrong value can be difficult.  This can involve breakpointing every statement that modifies the member variable -- and there can be lots of them.</p>
+<p>However, if a member can only be changed through a single member function, then you can simply breakpoint that single function and watch as each caller changes the value.  This can make it much easier to determine who the culprit is.</p>
+<p class="cpp-section cpp-topline" style="clear: both"><a name="prefer-non-member-functions"></a>Prefer non-member functions to member functions <a href="../index.html"><i class="fa fa-link" style="font-size: 0.8em;"></i></a></p>
+<p>In C++, if a function can be reasonably implemented as a non-member function, prefer to implement it as a non-member function instead of as a member function.</p>
+<p>This has numerous benefits:</p>
+<ul>
+<li>Non-member functions are not part of the interface of your class.  Thus, the interface of your class will be smaller and more straightforward, making the class easier to understand.
+</li>
+<li>Non-member functions enforce encapsulation, as such functions must work through the public interface of the class.  There is no temptation to access the implementation directly just because it is convenient.
+</li>
+<li>Non-member functions do not need to be considered when making changes to the implementation of a class (so long as the interface doesn’t change in an incompatible way).
+</li>
+<li>Non-member functions tend to be easier to debug.
+</li>
+<li>Non-member functions containing application specific data and logic can be separated from the reusable portions of the class.
+</li>
+</ul>
+<p>If you have prior experience with a modern OOP language (like Java or C#), this practice might come as a surprise.  Those languages use a different conceptual model, where the class is the center of the universe, and everything resolves around it.  Accordingly, these languages put member functions at the forefront (and in fact, Java and C# don’t even support non-member functions).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer implementing functions as non-members when possible (especially functions that contain application specific data or logic).
+</p></div>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Here’s a simplified guide on when to make a function a member vs a non-member:</p>
+<ul>
+<li>Use a member function when you have to.  C++ requires that certain kinds of functions be defined as members.  We’ll see one example in the next lesson, when we talk about constructors.  Others include destructors, virtual functions, and certain operators.
+</li>
+<li>Prefer a member function when the function needs access to private (or protected) data that should not be exposed.
+</li>
+<li>Prefer a non-member function otherwise (especially for functions that do not modify the state of the object).
+</li>
+</ul>
+<p>There are exceptions to the latter two -- we’ll introduce some of these as we discuss the topics they’re associated with.</p>
+<p>One common but challenging case occurs when preferring a non-member function requires the addition of access functions to facilitate.  In this case, you’ll need to consider the tradeoffs.</p>
+<ul>
+<li>Adding access functions means creating one or two new member functions (getter and possibly setter), increasing the size and complexity of the classes interface.  This may not be worth it unless you can use these new access functions in multiple places.
+</li>
+<li>Do not add access functions to data that should not be directly accessible (e.g. because it’s internal state) or that would allow the user to violate a class invariant.
+</li>
+</ul>
+</div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>The article <a href="https://embeddedartistry.com/fieldatlas/how-non-member-functions-improve-encapsulation/" target="_blank" rel="noopener noreferrer">How Non-Member Functions Improve Encapsulation</a> by Scott Meyers explores the idea of preferring non-member functions in further detail.
+</p></div>
+<p>Let’s illustrate this with three similar examples, in order from worst to best:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Yogurt
+{
+    std::string m_flavor{ "vanilla" };
+
+public:
+    void setFlavor(std::string_view flavor)
+    {
+        m_flavor = flavor;
+    }
+
+    const std::string&amp; getFlavor() const { return m_flavor; }
+
+    // Worst: member function print() uses direct access to m_flavor when getter exists
+    void print() const
+    {
+        std::cout &lt;&lt; "The yogurt has flavor " &lt;&lt; m_flavor &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Yogurt y{};
+    y.setFlavor("cherry");
+    y.print();
+
+    return 0;
+}</code></pre>
+<p>The above is the worst version.  The <code>print()</code> member function directly accesses <code>m_flavor</code> when a getter for the flavor already exists.  If the class implementation is ever updated, <code>print()</code> will also probably need to be modified.  The string printed by <code>print()</code> is application-specific (another application using this class may want to print something else, which will require cloning or modifying the class).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Yogurt
+{
+    std::string m_flavor{ "vanilla" };
+
+public:
+    void setFlavor(std::string_view flavor)
+    {
+        m_flavor = flavor;
+    }
+
+    const std::string&amp; getFlavor() const { return m_flavor; }
+
+    // Better: member function print() has no direct access to members
+    void print(std::string_view prefix) const
+    {
+        std::cout &lt;&lt; prefix &lt;&lt; ' ' &lt;&lt; getFlavor() &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Yogurt y{};
+    y.setFlavor("cherry");
+    y.print("The yogurt has flavor");
+
+    return 0;
+}</code></pre>
+<p>The above version is better, but still not great.  <code>print()</code> is still a member function, but at least it now does not directly access any data members.  If the class implementation is ever updated, <code>print()</code> will need to be evaluated to determine whether it needs an update (but it will not).  The prefix for the <code>print()</code> function is now parameterized, which allows us to move the prefix into non-member function <code>main()</code>.  But the function still imposes constraints on how things are printed (e.g. it always prints as prefix, space, flavor, newline).  If that does not meet the needs of a given application, another function will need to be added.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Yogurt
+{
+    std::string m_flavor{ "vanilla" };
+
+public:
+    void setFlavor(std::string_view flavor)
+    {
+        m_flavor = flavor;
+    }
+
+    const std::string&amp; getFlavor() const { return m_flavor; }
+};
+
+// Best: non-member function print() is not part of the class interface
+void print(const Yogurt&amp; y)
+{
+        std::cout &lt;&lt; "The yogurt has flavor " &lt;&lt; y.getFlavor() &lt;&lt; '\n';
+}
+
+int main()
+{
+    Yogurt y{};
+    y.setFlavor("cherry");
+    print(y);
+
+    return 0;
+}</code></pre>
+<p>The above version is the best.  <code>print()</code> is now a non-member function.  It does not directly access any members.  If the class implementation ever changes, <code>print()</code> will not need to be evaluated at all.  Additionally, each application can provide it’s own <code>print()</code> function that prints exactly how that application wants to.</p>
+<p class="cpp-section cpp-topline" style="clear: both">The order of class member declaration</p>
+<p>When writing code outside of a class, we are required to declare variables and functions before we can use them.  However, inside a class, this limitation does not exist.  As noted in lesson <a href="member-functions.html">14.3 -- Member functions</a>, we can order our members in any order we like.</p>
+<p>So how should we order them?</p>
+<p>There are two schools of thought here:</p>
+<ul>
+<li>List your private members first, and then list your public member functions.  This follows the traditional style of declare-before-use.  Anybody looking at your class code will see how you’ve defined your data members before they are used, which can make reading through and understanding implementation details easier.
+</li>
+<li>List your public members first, and put your private members down at the bottom.  Because someone who uses your class is interested in the public interface, putting your public members first makes the information they need up top, and puts the implementation details (which are least important) last.
+</li>
+</ul>
+<p>In modern C++, the second method (public members go first) is more commonly recommended, especially for code that will be shared with other developers.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Declare public members first, protected members next, and private members last.  This spotlights the public interface and de-emphasizes implementation details.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>The majority of examples on this site use the opposite declaration order from what is recommended.  This is partly historic, but we also find this order is more intuitive when learning language mechanics, where we’re focused on implementation details and dissecting how things work.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>The following order is recommended by the <a href="https://google.github.io/styleguide/cppguide.html#Declaration_Order" target="_blank" rel="noopener noreferrer">Google C++ style guide</a>:</p>
+<ul>
+<li>Types and type aliases (typedef, using, enum, nested structs and classes, and friend types)
+</li>
+<li>Static constants
+</li>
+<li>Factory functions
+</li>
+<li>Constructors and assignment operators
+</li>
+<li>Destructor
+</li>
+<li>All other functions (static and non-static member functions, and friend functions)
+</li>
+<li>Data members (static and non-static)
+</li>
+</ul>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="member-functions-returning-references-to-data-members.html"><span class="nav-kicker">← Previous lesson</span>14.7 · Member functions returning references to data members</a><a class="next" href="introduction-to-constructors.html"><span class="nav-kicker">Next lesson →</span>14.9 · Introduction to constructors</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

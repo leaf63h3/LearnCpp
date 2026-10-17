@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 11.6 -- Function templates, we introduced the challenge of having to create a separate (overloaded) function for each different set of types we w">
+  <meta name="robots" content="noindex,nofollow">
+  <title>13.13 — Class templates · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/class-templates/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 13 · Compound Types: Enums and Structs</summary><div class="sidebar-title"><small>Chapter 13</small><strong>Compound Types: Enums and Structs</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-program-defined-user-defined-types.html"><span class="lesson-number">13.1</span><span>Introduction to program-defined (user-defined) types</span></a></li><li><a href="unscoped-enumerations.html"><span class="lesson-number">13.2</span><span>Unscoped enumerations</span></a></li><li><a href="unscoped-enumerator-integral-conversions.html"><span class="lesson-number">13.3</span><span>Unscoped enumerator integral conversions</span></a></li><li><a href="converting-an-enumeration-to-and-from-a-string.html"><span class="lesson-number">13.4</span><span>Converting an enumeration to and from a string</span></a></li><li><a href="introduction-to-overloading-the-i-o-operators.html"><span class="lesson-number">13.5</span><span>Introduction to overloading the I/O operators</span></a></li><li><a href="scoped-enumerations-enum-classes.html"><span class="lesson-number">13.6</span><span>Scoped enumerations (enum classes)</span></a></li><li><a href="introduction-to-structs-members-and-member-selection.html"><span class="lesson-number">13.7</span><span>Introduction to structs, members, and member selection</span></a></li><li><a href="struct-aggregate-initialization.html"><span class="lesson-number">13.8</span><span>Struct aggregate initialization</span></a></li><li><a href="default-member-initialization.html"><span class="lesson-number">13.9</span><span>Default member initialization</span></a></li><li><a href="passing-and-returning-structs.html"><span class="lesson-number">13.10</span><span>Passing and returning structs</span></a></li><li><a href="struct-miscellany.html"><span class="lesson-number">13.11</span><span>Struct miscellany</span></a></li><li><a href="member-selection-with-pointers-and-references.html"><span class="lesson-number">13.12</span><span>Member selection with pointers and references</span></a></li><li><a href="class-templates.html" aria-current="page"><span class="lesson-number">13.13</span><span>Class templates</span></a></li><li><a href="class-template-argument-deduction-ctad-and-deduction-guides.html"><span class="lesson-number">13.14</span><span>Class template argument deduction (CTAD) and deduction guides</span></a></li><li><a href="alias-templates.html"><span class="lesson-number">13.15</span><span>Alias templates</span></a></li><li><a href="chapter-13-summary-and-quiz.html"><span class="lesson-number">13.x</span><span>Chapter 13 summary and quiz</span></a></li><li><a href="using-a-language-reference.html"><span class="lesson-number">13.y</span><span>Using a language reference</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 13</div>
+        <h1>13.13 — Class templates</h1>
+        <div class="article-meta"><span>Updated: 2024-12-30 20:09</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="function-templates.html">11.6 -- Function templates</a>, we introduced the challenge of having to create a separate (overloaded) function for each different set of types we want to work with:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// function to calculate the greater of two int values
+int max(int x, int y)
+{
+    return (x &lt; y) ? y : x;
+}
+
+// almost identical function to calculate the greater of two double values
+// the only difference is the type information
+double max(double x, double y)
+{
+    return (x &lt; y) ? y : x;
+}
+
+int main()
+{
+    std::cout &lt;&lt; max(5, 6);     // calls max(int, int)
+    std::cout &lt;&lt; '\n';
+    std::cout &lt;&lt; max(1.2, 3.4); // calls max(double, double)
+
+    return 0;
+}</code></pre>
+<p>The solution to this was to create a function template that the compiler can use to instantiate normal functions for whichever set of types we need:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// a single function template for max
+template &lt;typename T&gt;
+T max(T x, T y)
+{
+    return (x &lt; y) ? y : x;
+}
+
+int main()
+{
+    std::cout &lt;&lt; max(5, 6);     // instantiates and calls max&lt;int&gt;(int, int)
+    std::cout &lt;&lt; '\n';
+    std::cout &lt;&lt; max(1.2, 3.4); // instantiates and calls max&lt;double&gt;(double, double)
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover how function template instantiation works in lesson <a href="function-template-instantiation.html">11.7 -- Function template instantiation</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Aggregate types have similar challenges</p>
+<p>We run into similar challenges with aggregate types (both structs/classes/unions and arrays).</p>
+<p>For example, let’s say we’re writing a program where we need to work with pairs of <code>int</code> values, and need to determine which of the two numbers is larger.  We might write a program like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Pair
+{
+    int first{};
+    int second{};
+};
+
+constexpr int max(Pair p) // pass by value because Pair is small
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}
+
+int main()
+{
+    Pair p1{ 5, 6 };
+    std::cout &lt;&lt; max(p1) &lt;&lt; " is larger\n";
+
+    return 0;
+}</code></pre>
+<p>Later, we discover that we also need pairs of <code>double</code> values.  So we update our program to the following:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Pair
+{
+    int first{};
+    int second{};
+};
+
+struct Pair // compile error: erroneous redefinition of Pair
+{
+    double first{};
+    double second{};
+};
+
+constexpr int max(Pair p)
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}
+
+constexpr double max(Pair p) // compile error: overloaded function differs only by return type
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}
+
+int main()
+{
+    Pair p1{ 5, 6 };
+    std::cout &lt;&lt; max(p1) &lt;&lt; " is larger\n";
+
+    Pair p2{ 1.2, 3.4 };
+    std::cout &lt;&lt; max(p2) &lt;&lt; " is larger\n";
+
+    return 0;
+}</code></pre>
+<p>Unfortunately, this program won’t compile, and has a number of problems that need to be addressed.</p>
+<p>First, unlike functions, type definitions can’t be overloaded.  The compiler will treat double second definition of <code>Pair</code> as an erroneous redeclaration of the first definition of <code>Pair</code>.  Second, although functions can be overloaded, our <code>max(Pair)</code> functions only differ by return type, and overloaded functions can’t be differentiated solely by return type.  Third, there is a lot of redundancy here.  Each <code>Pair</code> struct is identical (except for the data type) and same with our <code>max(Pair)</code> functions (except for the return type).</p>
+<p>We could solve the first two issues by giving our <code>Pair</code> structs different names (e.g. <code>PairInt</code> and <code>PairDouble</code>).  But then we both have to remember our naming scheme, and essentially clone a bunch of code for each additional pair type we want, which doesn’t solve the redundancy problem.</p>
+<p>Fortunately, we can do better.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Before proceeding, please review lessons <a href="function-templates.html">11.6 -- Function templates</a> and <a href="function-template-instantiation.html">11.7 -- Function template instantiation</a> if you’re hazy on how function templates, template types, or function template instantiation works.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Class templates</p>
+<p>Much like a function template is a template definition for instantiating functions, a <strong>class template</strong> is a template definition for instantiating class types.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>A “class type” is a struct, class, or union type.  Although we’ll be demonstrating “class templates” on structs for simplicity, everything here applies equally well to classes.
+</p></div>
+<p>As a reminder, here’s our <code>int</code> pair struct definition:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct Pair
+{
+    int first{};
+    int second{};
+};</code></pre>
+<p>Let’s rewrite our pair class as a class template:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+struct Pair
+{
+    T first{};
+    T second{};
+};
+
+int main()
+{
+    Pair&lt;int&gt; p1{ 5, 6 };        // instantiates Pair&lt;int&gt; and creates object p1
+    std::cout &lt;&lt; p1.first &lt;&lt; ' ' &lt;&lt; p1.second &lt;&lt; '\n';
+
+    Pair&lt;double&gt; p2{ 1.2, 3.4 }; // instantiates Pair&lt;double&gt; and creates object p2
+    std::cout &lt;&lt; p2.first &lt;&lt; ' ' &lt;&lt; p2.second &lt;&lt; '\n';
+
+    Pair&lt;double&gt; p3{ 7.8, 9.0 }; // creates object p3 using prior definition for Pair&lt;double&gt;
+    std::cout &lt;&lt; p3.first &lt;&lt; ' ' &lt;&lt; p3.second &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>Just like with function templates, we start a class template definition with a template parameter declaration.  We begin with the <code>template</code> keyword.  Next, we specify all of the template types that our class template will use inside angled brackets (&lt;&gt;). For each template type that we need, we use the keyword <code>typename</code> (preferred) or <code>class</code> (not preferred), followed by the name of the template type (e.g. <code>T</code>).  In this case, since both of our members will be the same type, we only need one template type.</p>
+<p>Next, we define our struct like usual, except we can use our template type (<code>T</code>) wherever we want a templated type that will be replaced with a real type later.  That’s it!  We’re done with the class template definition.</p>
+<p>Inside main, we can instantiate <code>Pair</code> objects using whatever types we desire.  First, we instantiate an object of type <code>Pair&lt;int&gt;</code>.  Because a type definition for <code>Pair&lt;int&gt;</code> doesn’t exist yet, the compiler uses the class template to instantiate a struct type definition named <code>Pair&lt;int&gt;</code>, where all occurrences of template type <code>T</code> are replaced by type <code>int</code>.</p>
+<p>Next, we instantiate an object of type <code>Pair&lt;double&gt;</code>, which instantiates a struct type definition named <code>Pair&lt;double&gt;</code> where <code>T</code> is replaced by <code>double</code>.  For <code>p3</code>, <code>Pair&lt;double&gt;</code> has already been instantiated, so the compiler will use the prior type definition.</p>
+<p>Here’s the same example as above, showing what the compiler actually compiles after all template instantiations are done:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// A declaration for our Pair class template
+// (we don't need the definition any more since it's not used)
+template &lt;typename T&gt;
+struct Pair;
+
+// Explicitly define what Pair&lt;int&gt; looks like
+template &lt;&gt; // tells the compiler this is a template type with no template parameters
+struct Pair&lt;int&gt;
+{
+    int first{};
+    int second{};
+};
+
+// Explicitly define what Pair&lt;double&gt; looks like
+template &lt;&gt; // tells the compiler this is a template type with no template parameters
+struct Pair&lt;double&gt;
+{
+    double first{};
+    double second{};
+};
+
+int main()
+{
+    Pair&lt;int&gt; p1{ 5, 6 };        // instantiates Pair&lt;int&gt; and creates object p1
+    std::cout &lt;&lt; p1.first &lt;&lt; ' ' &lt;&lt; p1.second &lt;&lt; '\n';
+
+    Pair&lt;double&gt; p2{ 1.2, 3.4 }; // instantiates Pair&lt;double&gt; and creates object p2
+    std::cout &lt;&lt; p2.first &lt;&lt; ' ' &lt;&lt; p2.second &lt;&lt; '\n';
+
+    Pair&lt;double&gt; p3{ 7.8, 9.0 }; // creates object p3 using prior definition for Pair&lt;double&gt;
+    std::cout &lt;&lt; p3.first &lt;&lt; ' ' &lt;&lt; p3.second &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>You can compile this example directly and see that it works as expected!</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>The above example makes use of a feature called class template specialization (covered in future lesson <a href="class-template-specialization.html">26.4 -- Class template specialization</a>).  Knowledge of how this feature works is not required at this point.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Using our class template in a function</p>
+<p>Now let’s return to the challenge of making our <code>max()</code> function work with different types.  Because the compiler treats <code>Pair&lt;int&gt;</code> and <code>Pair&lt;double&gt;</code> as separate types, we could use overloaded functions that are differentiated by parameter type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr int max(Pair&lt;int&gt; p)
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}
+
+constexpr double max(Pair&lt;double&gt; p) // okay: overloaded function differentiated by parameter type
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}</code></pre>
+<p>While this compiles, it doesn’t solve the redundancy problem.  What we really want is a function that can take a pair of any type.  In other words, we want a function that takes a parameter of type <code>Pair&lt;T&gt;</code>, where T is a template type parameter.  And that means we need a function template for this job!</p>
+<p>Here’s a full example, with <code>max()</code> being implemented as a function template:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+struct Pair
+{
+    T first{};
+    T second{};
+};
+
+template &lt;typename T&gt;
+constexpr T max(Pair&lt;T&gt; p)
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}
+
+int main()
+{
+    Pair&lt;int&gt; p1{ 5, 6 };
+    std::cout &lt;&lt; max&lt;int&gt;(p1) &lt;&lt; " is larger\n"; // explicit call to max&lt;int&gt;
+
+    Pair&lt;double&gt; p2{ 1.2, 3.4 };
+    std::cout &lt;&lt; max(p2) &lt;&lt; " is larger\n"; // call to max&lt;double&gt; using template argument deduction (prefer this)
+
+    return 0;
+}</code></pre>
+<p>The <code>max()</code> function template is pretty straightforward.  Because we want to pass in a <code>Pair&lt;T&gt;</code>, we need the compiler to understand what <code>T</code> is.  Therefore, we need to start our function with a template parameter declaration that defines template type T.  We can then use <code>T</code> as both our return type, and as the template type for <code>Pair&lt;T&gt;</code>.</p>
+<p>When the <code>max()</code> function is called with a <code>Pair&lt;int&gt;</code> argument, the compiler will instantiate the function <code>int max&lt;int&gt;(Pair&lt;int&gt;)</code> from the function template, where template type <code>T</code> is replaced with <code>int</code>.  The following snippet shows what the compiler actually instantiates in such a case:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;&gt;
+constexpr int max(Pair&lt;int&gt; p)
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}</code></pre>
+<p>As with all calls to a function template, we can either be explicit about the template type argument (e.g. <code>max&lt;int&gt;(p1)</code>) or we can be implicit (e.g. <code>max(p2)</code>) and let the compiler use template argument deduction to determine what the template type argument should be.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Class templates with template type and non-template type members</p>
+<p>Class templates can have some members using a template type and other members using a normal (non-template) type.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;typename T&gt;
+struct Foo
+{
+    T first{};    // first will have whatever type T is replaced with
+    int second{}; // second will always have type int, regardless of what type T is
+};</code></pre>
+<p>This works exactly like you’d expect: <code>first</code> will be whatever the template type <code>T</code> is, and <code>second</code> will always be an <code>int</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Class templates with multiple template types</p>
+<p>Class templates can also have multiple template types.  For example, if we wanted the two members of our <code>Pair</code> class to be able to have different types, we can define our <code>Pair</code> class template with two template types:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T, typename U&gt;
+struct Pair
+{
+    T first{};
+    U second{};
+};
+
+template &lt;typename T, typename U&gt;
+void print(Pair&lt;T, U&gt; p)
+{
+    std::cout &lt;&lt; '[' &lt;&lt; p.first &lt;&lt; ", " &lt;&lt; p.second &lt;&lt; ']';
+}
+
+int main()
+{
+    Pair&lt;int, double&gt; p1{ 1, 2.3 }; // a pair holding an int and a double
+    Pair&lt;double, int&gt; p2{ 4.5, 6 }; // a pair holding a double and an int
+    Pair&lt;int, int&gt; p3{ 7, 8 };      // a pair holding two ints
+
+    print(p2);
+
+    return 0;
+}</code></pre>
+<p>To define multiple template types, in our template parameter declaration, we separate each of our desired template types with a comma.  In the above example we define two different template types, one named <code>T</code>, and one named <code>U</code>.  The actual template type arguments for <code>T</code> and <code>U</code> can be different (as in the case of <code>p1</code> and <code>p2</code> above) or the same (as in the case of <code>p3</code>).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Making a function template work with more than one class type</p>
+<p>Consider the <code>print()</code> function template from the above example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;typename T, typename U&gt;
+void print(Pair&lt;T, U&gt; p)
+{
+    std::cout &lt;&lt; '[' &lt;&lt; p.first &lt;&lt; ", " &lt;&lt; p.second &lt;&lt; ']';
+}</code></pre>
+<p>Because we’ve explicitly defined the function parameter as a <code>Pair&lt;T, U&gt;</code>, only arguments of type <code>Pair&lt;T, U&gt;</code> (or those that can be converted to a <code>Pair&lt;T, U&gt;</code>) will match.  This is ideal if we only want to be able to call our function with a <code>Pair&lt;T, U&gt;</code> argument.</p>
+<p>In some cases, we may write function templates that we want to use with any type that will successfully compile.  To do that, we simply use a type template parameter as the function parameter instead.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T, typename U&gt;
+struct Pair
+{
+    T first{};
+    U second{};
+};
+
+struct Point
+{
+    int first{};
+    int second{};
+};
+
+template &lt;typename T&gt;
+void print(T p) // type template parameter will match anything
+{
+    std::cout &lt;&lt; '[' &lt;&lt; p.first &lt;&lt; ", " &lt;&lt; p.second &lt;&lt; ']'; // will only compile if type has first and second members
+}
+
+int main()
+{
+    Pair&lt;double, int&gt; p1{ 4.5, 6 };
+    print(p1); // matches print(Pair&lt;double, int&gt;)
+
+    std::cout &lt;&lt; '\n';
+
+    Point p2 { 7, 8 };
+    print(p2); // matches print(Point)
+
+    std::cout &lt;&lt; '\n';
+    
+    return 0;
+}</code></pre>
+<p>In the above example, we’ve rewritten <code>print()</code> so that it has only a single type template parameter (<code>T</code>), which will match any type.  The body of the function will compile successfully for any class type that has a <code>first</code> and <code>second</code> member.  We demonstrate this by calling <code>print()</code> with an object of type <code>Pair&lt;double, int&gt;</code>, and then again with an object of type <code>Point</code>.</p>
+<p>There is one case that can be misleading.  Consider the following version of <code>print()</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;typename T, typename U&gt;
+struct Pair // defines a class type named Pair
+{
+    T first{};
+    U second{};
+};
+
+template &lt;typename Pair&gt; // defines a type template parameter named Pair (shadows Pair class type)
+void print(Pair p)       // this refers to template parameter Pair, not class type Pair
+{
+    std::cout &lt;&lt; '[' &lt;&lt; p.first &lt;&lt; ", " &lt;&lt; p.second &lt;&lt; ']';
+}</code></pre>
+<p>You might expect that this function will only match when called with a <code>Pair</code> class type argument.  But this version of <code>print()</code> is functionally identically to the prior version where the template parameter was named <code>T</code>, and will match with <em>any</em> type.  The issue here is that when we define <code>Pair</code> as a type template parameter, it shadows other uses of the name <code>Pair</code> within the global scope.  So within the function template, <code>Pair </code> refers to the template parameter <code>Pair</code>, not the class type <code>Pair</code>.  And since a type template parameter will match to any type, this <code>Pair</code> matches to any argument type, not just those of class type <code>Pair</code>!</p>
+<p>This is a good reason to stick to simple template parameter names, such a <code>T</code>, <code>U</code>, <code>N</code>, as they are less likely to shadow a class type name.</p>
+<p class="cpp-section cpp-topline" style="clear: both">std::pair</p>
+<p>Because working with pairs of data is common, the C++ standard library contains a class template named <code>std::pair</code> (in the <code>&lt;utility&gt;</code> header) that is defined identically to the <code>Pair</code> class template with multiple template types in the preceding section.  In fact, we can swap out the <code>pair</code> struct we developed for <code>std::pair</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;utility&gt;
+
+template &lt;typename T, typename U&gt;
+void print(std::pair&lt;T, U&gt; p)
+{
+    // the members of std::pair have predefined names `first` and `second`
+    std::cout &lt;&lt; '[' &lt;&lt; p.first &lt;&lt; ", " &lt;&lt; p.second &lt;&lt; ']';
+}
+
+int main()
+{
+    std::pair&lt;int, double&gt; p1{ 1, 2.3 }; // a pair holding an int and a double
+    std::pair&lt;double, int&gt; p2{ 4.5, 6 }; // a pair holding a double and an int
+    std::pair&lt;int, int&gt; p3{ 7, 8 };      // a pair holding two ints
+
+    print(p2);
+
+    return 0;
+}</code></pre>
+<p>We developed our own <code>Pair</code> class in this lesson to show how things work, but in real code, you should favor <code>std::pair</code> over writing your own.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using class templates in multiple files</p>
+<p>Just like function templates, class templates are typically defined in header files so they can be included into any code file that needs them.  Both template definitions and type definitions are exempt from the one-definition rule, so this won’t cause problems:</p>
+<p>pair.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef PAIR_H
+#define PAIR_H
+
+template &lt;typename T&gt;
+struct Pair
+{
+    T first{};
+    T second{};
+};
+
+template &lt;typename T&gt;
+constexpr T max(Pair&lt;T&gt; p)
+{
+    return (p.first &lt; p.second ? p.second : p.first);
+}
+
+#endif</code></pre>
+<p>foo.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "pair.h"
+#include &lt;iostream&gt;
+
+void foo()
+{
+    Pair&lt;int&gt; p1{ 1, 2 };
+    std::cout &lt;&lt; max(p1) &lt;&lt; " is larger\n";
+}</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include "pair.h"
+#include &lt;iostream&gt;
+
+void foo(); // forward declaration for function foo()
+
+int main()
+{
+    Pair&lt;double&gt; p2 { 3.4, 5.6 };
+    std::cout &lt;&lt; max(p2) &lt;&lt; " is larger\n";
+
+    foo();
+
+    return 0;
+}</code></pre>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="member-selection-with-pointers-and-references.html"><span class="nav-kicker">← Previous lesson</span>13.12 · Member selection with pointers and references</a><a class="next" href="class-template-argument-deduction-ctad-and-deduction-guides.html"><span class="nav-kicker">Next lesson →</span>13.14 · Class template argument deduction (CTAD) and deduction guides</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

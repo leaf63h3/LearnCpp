@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="So far, we’ve explored 3 types of relationships: composition, aggregation, and association. We’ve saved the simplest one for last: dependencies. In casual ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>23.5 — Dependencies · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/dependencies/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 23 · Object Relationships</summary><div class="sidebar-title"><small>Chapter 23</small><strong>Object Relationships</strong></div>
+<ol class="sidebar-lessons"><li><a href="object-relationships.html"><span class="lesson-number">23.1</span><span>Object relationships</span></a></li><li><a href="composition.html"><span class="lesson-number">23.2</span><span>Composition</span></a></li><li><a href="aggregation.html"><span class="lesson-number">23.3</span><span>Aggregation</span></a></li><li><a href="association.html"><span class="lesson-number">23.4</span><span>Association</span></a></li><li><a href="dependencies.html" aria-current="page"><span class="lesson-number">23.5</span><span>Dependencies</span></a></li><li><a href="container-classes.html"><span class="lesson-number">23.6</span><span>Container classes</span></a></li><li><a href="stdinitializer_list.html"><span class="lesson-number">23.7</span><span>std::initializer_list</span></a></li><li><a href="chapter-23-summary-and-quiz.html"><span class="lesson-number">23.x</span><span>Chapter 23 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 23</div>
+        <h1>23.5 — Dependencies</h1>
+        <div class="article-meta"><span>Updated: 2023-09-11 11:13</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>So far, we’ve explored 3 types of relationships: composition, aggregation, and association.  We’ve saved the simplest one for last: dependencies.</p>
+<p>In casual conversation, we use the term dependency to indicate that an object is reliant upon another object for a given task.  For example, if you break your foot, you are dependent on crutches to get around (but not otherwise).  Flowers are dependent upon bees to pollinate them, in order to grow fruit or propagate (but not otherwise).</p>
+<p>A <strong>dependency</strong> occurs when one object invokes another object’s functionality in order to accomplish some specific task.  This is a weaker relationship than an association, but still, any change to object being depended upon may break functionality in the (dependent) caller.  A dependency is always a unidirectional relationship.</p>
+<p>A good example of a dependency that you’ve already seen many times is std::ostream.  Our classes that use std::ostream use it in order to accomplish the task of printing something to the console, but not otherwise.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+ 
+class Point
+{
+private:
+    double m_x{};
+    double m_y{};
+    double m_z{};
+ 
+public:
+    Point(double x=0.0, double y=0.0, double z=0.0): m_x{x}, m_y{y}, m_z{z}
+    {
+    }
+ 
+    friend std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point); // Point has a dependency on std::ostream here
+};
+ 
+std::ostream&amp; operator&lt;&lt; (std::ostream&amp; out, const Point&amp; point)
+{
+    // Since operator&lt;&lt; is a friend of the Point class, we can access Point's members directly.
+    out &lt;&lt; "Point(" &lt;&lt; point.m_x &lt;&lt; ", " &lt;&lt; point.m_y &lt;&lt; ", " &lt;&lt; point.m_z &lt;&lt; ')';
+ 
+    return out;
+}
+ 
+int main()
+{
+    Point point1 { 2.0, 3.0, 4.0 };
+ 
+    std::cout &lt;&lt; point1; // the program has a dependency on std::cout here
+ 
+    return 0;
+}</code></pre>
+<p>In the above code, Point isn’t directly related to std::ostream, but it has a dependency on std::ostream since operator&lt;&lt; uses std::ostream to print the Point to the console.</p>
+<p><strong>Dependencies vs Association in C++</strong></p>
+<p>There’s typically some confusion about what differentiates a dependency from an association.</p>
+<p>In C++, associations are a relationship where one class keeps a direct or indirect “link” to the associated class as a member.  For example, a Doctor class has an array of pointers to its Patients as a member.  You can always ask the Doctor who its patients are.  The Driver class holds the id of the Car the driver object owns as an integer member.  The Driver always knows what Car is associated with it.</p>
+<p>Dependencies typically are not members.  Rather, the object being depended on is typically instantiated as needed (like opening a file to write data to), or passed into a function as a parameter (like std::ostream in the overloaded operator&lt;&lt; above).</p>
+<p><strong>Humor break</strong></p>
+<p>Dependencies (courtesy of our friends at <a href="https://xkcd.com/754/" target="_blank" rel="noopener noreferrer">xkcd</a>):</p>
+<p><img src="../assets/media/c7cec29481ee5c1a.png" loading="lazy" alt=""></p>
+<p>Of course, you and I know that this is actually a reflexive association!</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="association.html"><span class="nav-kicker">← Previous lesson</span>23.4 · Association</a><a class="next" href="container-classes.html"><span class="nav-kicker">Next lesson →</span>23.6 · Container classes</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

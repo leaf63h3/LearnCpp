@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous lesson (12.7 -- Introduction to pointers), we covered the basics of pointers, which are objects that hold the address of another object. Th">
+  <meta name="robots" content="noindex,nofollow">
+  <title>12.8 — Null pointers · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/null-pointers/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 12 · Compound Types: References and Pointers</summary><div class="sidebar-title"><small>Chapter 12</small><strong>Compound Types: References and Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-compound-data-types.html"><span class="lesson-number">12.1</span><span>Introduction to compound data types</span></a></li><li><a href="value-categories-lvalues-and-rvalues.html"><span class="lesson-number">12.2</span><span>Value categories (lvalues and rvalues)</span></a></li><li><a href="lvalue-references.html"><span class="lesson-number">12.3</span><span>Lvalue references</span></a></li><li><a href="lvalue-references-to-const.html"><span class="lesson-number">12.4</span><span>Lvalue references to const</span></a></li><li><a href="pass-by-lvalue-reference.html"><span class="lesson-number">12.5</span><span>Pass by lvalue reference</span></a></li><li><a href="pass-by-const-lvalue-reference.html"><span class="lesson-number">12.6</span><span>Pass by const lvalue reference</span></a></li><li><a href="introduction-to-pointers.html"><span class="lesson-number">12.7</span><span>Introduction to pointers</span></a></li><li><a href="null-pointers.html" aria-current="page"><span class="lesson-number">12.8</span><span>Null pointers</span></a></li><li><a href="pointers-and-const.html"><span class="lesson-number">12.9</span><span>Pointers and const</span></a></li><li><a href="pass-by-address.html"><span class="lesson-number">12.10</span><span>Pass by address</span></a></li><li><a href="pass-by-address-part-2.html"><span class="lesson-number">12.11</span><span>Pass by address (part 2)</span></a></li><li><a href="return-by-reference-and-return-by-address.html"><span class="lesson-number">12.12</span><span>Return by reference and return by address</span></a></li><li><a href="in-and-out-parameters.html"><span class="lesson-number">12.13</span><span>In and out parameters</span></a></li><li><a href="type-deduction-with-pointers-references-and-const.html"><span class="lesson-number">12.14</span><span>Type deduction with pointers, references, and const</span></a></li><li><a href="stdoptional.html"><span class="lesson-number">12.15</span><span>std::optional</span></a></li><li><a href="chapter-12-summary-and-quiz.html"><span class="lesson-number">12.x</span><span>Chapter 12 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 12</div>
+        <h1>12.8 — Null pointers</h1>
+        <div class="article-meta"><span>Updated: 2025-02-05 12:57</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous lesson (<a href="introduction-to-pointers.html">12.7 -- Introduction to pointers</a>), we covered the basics of pointers, which are objects that hold the address of another object.  This address can be dereferenced using the dereference operator (*) to get the object at that address:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int x{ 5 };
+    std::cout &lt;&lt; x &lt;&lt; '\n'; // print the value of variable x
+
+    int* ptr{ &amp;x }; // ptr holds the address of x
+    std::cout &lt;&lt; *ptr &lt;&lt; '\n'; // use dereference operator to print the value of the object at the address that ptr is holding (which is x's address)
+
+    return 0;
+}</code></pre>
+<p>The above example prints:</p>
+<pre>
+5
+5
+</pre>
+<p>In the prior lesson, we also noted that pointers do not need to point to anything.  In this lesson, we’ll explore such pointers (and the various implications of pointing to nothing) further.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Null pointers</p>
+<p>Besides a memory address, there is one additional value that a pointer can hold: a null value.  A <strong>null value</strong> (often shortened to <strong>null</strong>) is a special value that means something has no value.  When a pointer is holding a null value, it means the pointer is not pointing at anything.  Such a pointer is called a <strong>null pointer</strong>.</p>
+<p>The easiest way to create a null pointer is to use value initialization:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int* ptr {}; // ptr is now a null pointer, and is not holding an address
+ 
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Value initialize your pointers (to be null pointers) if you are not initializing them with the address of a valid object.
+</p></div>
+<p>Because we can use assignment to change what a pointer is pointing at, a pointer that is initially set to null can later be changed to point at a valid object:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int* ptr {}; // ptr is a null pointer, and is not holding an address
+
+    int x { 5 };
+    ptr = &amp;x; // ptr now pointing at object x (no longer a null pointer)
+
+    std::cout &lt;&lt; *ptr &lt;&lt; '\n'; // print value of x through dereferenced ptr
+ 
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">The nullptr keyword</p>
+<p>Much like the keywords <code>true</code> and <code>false</code> represent Boolean literal values, the <strong>nullptr</strong> keyword represents a null pointer literal.  We can use <code>nullptr</code> to explicitly initialize or assign a pointer a null value.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int* ptr { nullptr }; // can use nullptr to initialize a pointer to be a null pointer
+
+    int value { 5 };
+    int* ptr2 { &amp;value }; // ptr2 is a valid pointer
+    ptr2 = nullptr; // Can assign nullptr to make the pointer a null pointer
+
+    someFunction(nullptr); // we can also pass nullptr to a function that has a pointer parameter
+
+    return 0;
+}</code></pre>
+<p>In the above example, we use assignment to set the value of <code>ptr2</code> to <code>nullptr</code>, making <code>ptr2</code> a null pointer.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use <code>nullptr</code> when you need a null pointer literal for initialization, assignment, or passing a null pointer to a function.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Dereferencing a null pointer results in undefined behavior</p>
+<p>Much like dereferencing a dangling (or wild) pointer leads to undefined behavior, dereferencing a null pointer also leads to undefined behavior.  In most cases, it will crash your application.</p>
+<p>The following program illustrates this, and will probably crash or terminate your application abnormally when you run it (go ahead, try it, you won’t harm your machine):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int* ptr {}; // Create a null pointer
+    std::cout &lt;&lt; *ptr &lt;&lt; '\n'; // Dereference the null pointer
+
+    return 0;
+}</code></pre>
+<p>Conceptually, this makes sense. Dereferencing a pointer means “go to the address the pointer is pointing at and access the value there”.  A null pointer holds a null value, which semantically means the pointer is not pointing at anything.  So what value would it access?</p>
+<p>Accidentally dereferencing null and dangling pointers is one of the most common mistakes C++ programmers make, and is probably the most common reason that C++ programs crash in practice.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Whenever you are using pointers, you’ll need to be extra careful that your code isn’t dereferencing null or dangling pointers, as this will cause undefined behavior (probably an application crash).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Checking for null pointers</p>
+<p>Much like we can use a conditional to test Boolean values for <code>true</code> or <code>false</code>, we can use a conditional to test whether a pointer has value <code>nullptr</code> or not:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int x { 5 };
+    int* ptr { &amp;x };
+
+    if (ptr == nullptr) // explicit test for equivalence
+        std::cout &lt;&lt; "ptr is null\n";
+    else
+        std::cout &lt;&lt; "ptr is non-null\n";
+
+    int* nullPtr {};
+    std::cout &lt;&lt; "nullPtr is " &lt;&lt; (nullPtr==nullptr ? "null\n" : "non-null\n"); // explicit test for equivalence
+
+    return 0;
+}</code></pre>
+<p>The above program prints:</p>
+<pre>
+ptr is non-null
+nullPtr is null
+</pre>
+<p>In lesson <a href="boolean-values.html">4.9 -- Boolean values</a>, we noted that integral values will implicitly convert into Boolean values: an integral value of <code>0</code> converts to Boolean value <code>false</code>, and any other integral value converts to Boolean value <code>true</code>.</p>
+<p>Similarly, pointers will also implicitly convert to Boolean values: a null pointer converts to Boolean value <code>false</code>, and a non-null pointer converts to Boolean value <code>true</code>.  This allows us to skip explicitly testing for <code>nullptr</code> and just use the implicit conversion to Boolean to test whether a pointer is a null pointer.  The following program is equivalent to the prior one:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int x { 5 };
+    int* ptr { &amp;x };
+
+    // pointers convert to Boolean false if they are null, and Boolean true if they are non-null
+    if (ptr) // implicit conversion to Boolean
+        std::cout &lt;&lt; "ptr is non-null\n";
+    else
+        std::cout &lt;&lt; "ptr is null\n";
+
+    int* nullPtr {};
+    std::cout &lt;&lt; "nullPtr is " &lt;&lt; (nullPtr ? "non-null\n" : "null\n"); // implicit conversion to Boolean
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Conditionals can only be used to differentiate null pointers from non-null pointers.  There is no convenient way to determine whether a non-null pointer is pointing to a valid object or dangling (pointing to an invalid object).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Use nullptr to avoid dangling pointers</p>
+<p>Above, we mentioned that dereferencing a pointer that is either null or dangling will result in undefined behavior.  Therefore, we need to ensure our code does not do either of these things.</p>
+<p>We can easily avoid dereferencing a null pointer by using a conditional to ensure a pointer is non-null before trying to dereference it:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// Assume ptr is some pointer that may or may not be a null pointer
+if (ptr) // if ptr is not a null pointer
+    std::cout &lt;&lt; *ptr &lt;&lt; '\n'; // okay to dereference
+else
+    // do something else that doesn't involve dereferencing ptr (print an error message, do nothing at all, etc...)</code></pre>
+<p>But what about dangling pointers?  Because there is no way to detect whether a pointer is dangling, we need to avoid having any dangling pointers in our program in the first place.  We do that by ensuring that any pointer that is not pointing at a valid object is set to <code>nullptr</code>.</p>
+<p>That way, before dereferencing a pointer, we only need to test whether it is null -- if it is non-null, we assume the pointer is not dangling.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>A pointer should either hold the address of a valid object, or be set to nullptr.  That way we only need to test pointers for null, and can assume any non-null pointer is valid.
+</p></div>
+<p>Unfortunately, avoiding dangling pointers isn’t always easy: when an object is destroyed, any pointers to that object will be left dangling.  Such pointers are <em>not</em> nulled automatically!  It is the programmer’s responsibility to ensure that all pointers to an object that has just been destroyed are properly set to <code>nullptr</code>.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>When an object is destroyed, any pointers to the destroyed object will be left dangling (they will not be automatically set to <code>nullptr</code>).  It is your responsibility to detect these cases and ensure those pointers are subsequently set to <code>nullptr</code>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Legacy null pointer literals: 0 and NULL</p>
+<p>In older code, you may see two other literal values used instead of <code>nullptr</code>.</p>
+<p>The first is the literal <code>0</code>.  In the context of a pointer, the literal <code>0</code> is specially defined to mean a null value, and is the only time you can assign an integral literal to a pointer.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    float* ptr { 0 };  // ptr is now a null pointer (for example only, don't do this)
+
+    float* ptr2; // ptr2 is uninitialized
+    ptr2 = 0; // ptr2 is now a null pointer (for example only, don't do this)
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>On modern architectures, the address <code>0</code> is typically used to represent a null pointer.  However, this value is not guaranteed by the C++ standard, and some architectures use other values.  The literal <code>0</code>, when used in the context of a null pointer, will be translated into whatever address the architecture uses to represent a null pointer.
+</p></div>
+<p>Additionally, there is a preprocessor macro named <code>NULL</code> (defined in the &lt;cstddef&gt; header).  This macro is inherited from C, where it is commonly used to indicate a null pointer.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstddef&gt; // for NULL
+
+int main()
+{
+    double* ptr { NULL }; // ptr is a null pointer
+
+    double* ptr2; // ptr2 is uninitialized
+    ptr2 = NULL; // ptr2 is now a null pointer
+
+    return 0;
+}</code></pre>
+<p>Both <code>0</code> and <code>NULL</code> should be avoided in modern C++ (use <code>nullptr</code> instead).  We discuss why in lesson <a href="pass-by-address-part-2.html">12.11 -- Pass by address (part 2)</a>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Favor references over pointers whenever possible</p>
+<p>Pointers and references both give us the ability to access some other object indirectly.</p>
+<p>Pointers have the additional abilities of being able to change what they are pointing at, and to be pointed at null.  However, these pointer abilities are also inherently dangerous:  A null pointer runs the risk of being dereferenced, and the ability to change what a pointer is pointing at can make creating dangling pointers easier:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int* ptr { };
+    
+    {
+        int x{ 5 };
+        ptr = &amp;x; // assign the pointer to an object that will be destroyed (not possible with a reference)
+    } // ptr is now dangling and pointing to invalid object
+
+    if (ptr) // condition evaluates to true because ptr is not nullptr
+        std::cout &lt;&lt; *ptr; // undefined behavior
+
+    return 0;
+}</code></pre>
+<p>Since references can’t be bound to null, we don’t have to worry about null references.  And because references must be bound to a valid object upon creation and then can not be reseated, dangling references are harder to create.</p>
+<p>Because they are safer, references should be favored over pointers, unless the additional capabilities provided by pointers are required.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Favor references over pointers unless the additional capabilities provided by pointers are needed.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">A joke</p>
+<p>Did you hear the joke about the null pointer?</p>
+<p>That’s okay, you wouldn’t get dereference.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>1a) Can we determine whether a pointer is a null pointer or not?  If so, how?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p>Yes, we can use a conditional (if statement or conditional operator) on the pointer.  A pointer will convert to Boolean <code>false</code> if it is a null pointer, and <code>true</code> otherwise.
+</p></div>
+<p>1b) Can we determine whether a non-null pointer is valid or dangling?  If so, how?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<p>There is no easy way to determine this.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>For each subitem, answer whether the action described will result in behavior that is: predictable, undefined, or possibly undefined.  If the answer is “possibly undefined”, clarify when.</p>
+<p>Assume that any objects mentioned are of a type that the pointer can point to.</p>
+<p>2a) Assigning the address of an object to a non-const pointer</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<p>Predictable.  This just copies the address into the pointer object.
+</p></div>
+<p>2b) Assigning nullptr to a pointer</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<p>Predictable.
+</p></div>
+<p>2c) Dereferencing a pointer to a valid object</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_4" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_4" hidden="hidden">
+<p>Predictable.
+</p></div>
+<p>2d) Dereferencing a dangling pointer</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_5" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_5" hidden="hidden">
+<p>Undefined.
+</p></div>
+<p>2e) Dereferencing a null pointer</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_6" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_6" hidden="hidden">
+<p>Undefined.
+</p></div>
+<p>2f) Dereferencing a non-null pointer</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_7" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_7" hidden="hidden">
+<p>Possibly undefined, if the pointer is dangling.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>Why should we set pointers that aren’t pointing to a valid object to ‘nullptr’?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_8" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_8" hidden="hidden">
+<p>We can not determine whether a non-null pointer is valid or dangling, and accessing a dangling pointer will result in undefined behavior.  Therefore, we need to ensure that we do not have any dangling pointers in our program.</p>
+<p>If we ensure all pointers are either pointing to valid objects or set to <code>nullptr</code>, then we can use a conditional to test for null to ensure we don’t dereference a null pointer, and assume all non-null pointers are pointing to valid objects.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-pointers.html"><span class="nav-kicker">← Previous lesson</span>12.7 · Introduction to pointers</a><a class="next" href="pointers-and-const.html"><span class="nav-kicker">Next lesson →</span>12.9 · Pointers and const</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In some cases, it is possible to write functions that don’t behave as desired when called with values of certain types. Consider the following example: #in">
+  <meta name="robots" content="noindex,nofollow">
+  <title>11.4 — Deleting functions · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/deleting-functions/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 11 · Function Overloading and Function Templates</summary><div class="sidebar-title"><small>Chapter 11</small><strong>Function Overloading and Function Templates</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-function-overloading.html"><span class="lesson-number">11.1</span><span>Introduction to function overloading</span></a></li><li><a href="function-overload-differentiation.html"><span class="lesson-number">11.2</span><span>Function overload differentiation</span></a></li><li><a href="function-overload-resolution-and-ambiguous-matches.html"><span class="lesson-number">11.3</span><span>Function overload resolution and ambiguous matches</span></a></li><li><a href="deleting-functions.html" aria-current="page"><span class="lesson-number">11.4</span><span>Deleting functions</span></a></li><li><a href="default-arguments.html"><span class="lesson-number">11.5</span><span>Default arguments</span></a></li><li><a href="function-templates.html"><span class="lesson-number">11.6</span><span>Function templates</span></a></li><li><a href="function-template-instantiation.html"><span class="lesson-number">11.7</span><span>Function template instantiation</span></a></li><li><a href="function-templates-with-multiple-template-types.html"><span class="lesson-number">11.8</span><span>Function templates with multiple template types</span></a></li><li><a href="non-type-template-parameters.html"><span class="lesson-number">11.9</span><span>Non-type template parameters</span></a></li><li><a href="using-function-templates-in-multiple-files.html"><span class="lesson-number">11.10</span><span>Using function templates in multiple files</span></a></li><li><a href="chapter-11-summary-and-quiz.html"><span class="lesson-number">11.x</span><span>Chapter 11 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 11</div>
+        <h1>11.4 — Deleting functions</h1>
+        <div class="article-meta"><span>Updated: 2023-12-28 17:32</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In some cases, it is possible to write functions that don’t behave as desired when called with values of certain types.</p>
+<p>Consider the following example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printInt(int x)
+{
+    std::cout &lt;&lt; x &lt;&lt; '\n';
+}
+
+int main()
+{
+    printInt(5);    // okay: prints 5
+    printInt('a');  // prints 97 -- does this make sense?
+    printInt(true); // print 1 -- does this make sense?
+    
+    return 0;
+}</code></pre>
+<p>This example prints:</p>
+<pre>
+5
+97
+1
+</pre>
+<p>While <code>printInt(5)</code> is clearly okay, the other two calls to <code>printInt()</code> are more questionable.  With <code>printInt('a')</code>, the compiler will determine that it can promote <code>'a'</code> to int value <code>97</code> in order to match the function call with the function definition.  And it will promote <code>true</code> to int value <code>1</code>.  And it will do so without complaint.</p>
+<p>Let’s assume we don’t think it makes sense to call <code>printInt()</code> with a value of type <code>char</code> or <code>bool</code>.  What can we do?</p>
+<p class="cpp-section cpp-topline" style="clear: both">Deleting a function using the <code>= delete</code> specifier</p>
+<p>In cases where we have a function that we explicitly do not want to be callable, we can define that function as deleted by using the <strong>= delete</strong> specifier.  If the compiler matches a function call to a deleted function, compilation will be halted with a compile error.</p>
+<p>Here’s an updated version of the above making use of this syntax:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void printInt(int x)
+{
+    std::cout &lt;&lt; x &lt;&lt; '\n';
+}
+
+void printInt(char) = delete; // calls to this function will halt compilation
+void printInt(bool) = delete; // calls to this function will halt compilation
+
+int main()
+{
+    printInt(97);   // okay
+
+    printInt('a');  // compile error: function deleted
+    printInt(true); // compile error: function deleted
+
+    printInt(5.0);  // compile error: ambiguous match
+    
+    return 0;
+}</code></pre>
+<p>Let’s take a quick look at some of these.  First, <code>printInt('a')</code> is a direct match for <code>printInt(char)</code>, which is deleted.  The compiler thus produces a compilation error.  <code>printInt(true)</code> is a direct match for <code>printInt(bool)</code>, which is deleted, and thus also produces a compilation error.</p>
+<p><code>printInt(5.0)</code> is an interesting case, with perhaps unexpected results.  First, the compiler checks to see if exact match <code>printInt(double)</code> exists.  It does not.  Next, the compiler tries to find a best match.  Although <code>printInt(int)</code> is the only non-deleted function, the deleted functions are still considered as candidates in function overload resolution.  Because none of these functions are unambiguously the best match, the compiler will issue an ambiguous match compilation error.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p><code>= delete</code> means “I forbid this”, not “this doesn’t exist”. </p>
+<p>Deleted function participate in all stages of function overload resolution (not just in the exact match stage).  If a deleted function is selected, then a compilation error results.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Other types of functions can be similarly deleted.</p>
+<p>We discuss deleting member functions in lesson <a href="introduction-to-the-copy-constructor.html">14.14 -- Introduction to the copy constructor</a>, and deleting function template specializations in lesson <a href="function-template-instantiation.html">11.7 -- Function template instantiation</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Deleting all non-matching overloads <span class="cpp-section-pill cpp-section-advanced">Advanced</span></p>
+<p>Deleting a bunch of individual function overloads works fine, but can be verbose.  There may be times when we want a certain function to be called only with arguments whose types exactly match the function parameters.  We can do this by using a function template (introduced in upcoming lesson <a href="function-templates.html">11.6 -- Function templates</a>) as follows:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// This function will take precedence for arguments of type int
+void printInt(int x)
+{
+    std::cout &lt;&lt; x &lt;&lt; '\n';
+}
+
+// This function template will take precedence for arguments of other types
+// Since this function template is deleted, calls to it will halt compilation
+template &lt;typename T&gt;
+void printInt(T x) = delete;
+
+int main()
+{
+    printInt(97);   // okay
+    printInt('a');  // compile error
+    printInt(true); // compile error
+    
+    return 0;
+}</code></pre>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="function-overload-resolution-and-ambiguous-matches.html"><span class="nav-kicker">← Previous lesson</span>11.3 · Function overload resolution and ambiguous matches</a><a class="next" href="default-arguments.html"><span class="nav-kicker">Next lesson →</span>11.5 · Default arguments</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

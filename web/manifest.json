@@ -1,0 +1,2505 @@
+{
+  "name": "LearnCpp",
+  "generated_at": "2026-10-17T14:38:19.001925+00:00",
+  "source": "https://www.learncpp.com/",
+  "lesson_count": 356,
+  "chapter_count": 35,
+  "external_videos": [
+    "https://www.youtube.com/watch?v=_nrly6PH6NU",
+    "https://www.youtube.com/watch?v=2olsGf6JIkU"
+  ],
+  "lessons": [
+    {
+      "number": "0.1",
+      "title": "Introduction to these tutorials",
+      "slug": "introduction-to-these-tutorials",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-these-tutorials/",
+      "modified": "2025-02-23T23:08:42"
+    },
+    {
+      "number": "0.2",
+      "title": "Introduction to programs and programming languages",
+      "slug": "introduction-to-programming-languages",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-programming-languages/",
+      "modified": "2025-03-20T14:25:02"
+    },
+    {
+      "number": "0.3",
+      "title": "Introduction to C/C++",
+      "slug": "introduction-to-cplusplus",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-cplusplus/",
+      "modified": "2024-09-16T22:49:04"
+    },
+    {
+      "number": "0.4",
+      "title": "Introduction to C++ development",
+      "slug": "introduction-to-cpp-development",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-cpp-development/",
+      "modified": "2024-10-17T12:02:16"
+    },
+    {
+      "number": "0.5",
+      "title": "Introduction to the compiler, linker, and libraries",
+      "slug": "introduction-to-the-compiler-linker-and-libraries",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-the-compiler-linker-and-libraries/",
+      "modified": "2025-02-23T23:19:11"
+    },
+    {
+      "number": "0.6",
+      "title": "Installing an Integrated Development Environment (IDE)",
+      "slug": "installing-an-integrated-development-environment-ide",
+      "source": "https://www.learncpp.com/cpp-tutorial/installing-an-integrated-development-environment-ide/",
+      "modified": "2025-01-29T16:54:06"
+    },
+    {
+      "number": "0.7",
+      "title": "Compiling your first program",
+      "slug": "compiling-your-first-program",
+      "source": "https://www.learncpp.com/cpp-tutorial/compiling-your-first-program/",
+      "modified": "2025-01-21T10:41:08"
+    },
+    {
+      "number": "0.8",
+      "title": "A few common C++ problems",
+      "slug": "a-few-common-cpp-problems",
+      "source": "https://www.learncpp.com/cpp-tutorial/a-few-common-cpp-problems/",
+      "modified": "2024-12-19T20:45:32"
+    },
+    {
+      "number": "0.9",
+      "title": "Configuring your compiler: Build configurations",
+      "slug": "configuring-your-compiler-build-configurations",
+      "source": "https://www.learncpp.com/cpp-tutorial/configuring-your-compiler-build-configurations/",
+      "modified": "2024-09-05T12:16:32"
+    },
+    {
+      "number": "0.10",
+      "title": "Configuring your compiler: Compiler extensions",
+      "slug": "configuring-your-compiler-compiler-extensions",
+      "source": "https://www.learncpp.com/cpp-tutorial/configuring-your-compiler-compiler-extensions/",
+      "modified": "2024-10-25T16:10:32"
+    },
+    {
+      "number": "0.11",
+      "title": "Configuring your compiler: Warning and error levels",
+      "slug": "configuring-your-compiler-warning-and-error-levels",
+      "source": "https://www.learncpp.com/cpp-tutorial/configuring-your-compiler-warning-and-error-levels/",
+      "modified": "2025-03-17T21:36:50"
+    },
+    {
+      "number": "0.12",
+      "title": "Configuring your compiler: Choosing a language standard",
+      "slug": "configuring-your-compiler-choosing-a-language-standard",
+      "source": "https://www.learncpp.com/cpp-tutorial/configuring-your-compiler-choosing-a-language-standard/",
+      "modified": "2025-02-27T01:01:06"
+    },
+    {
+      "number": "0.13",
+      "title": "What language standard is my compiler using?",
+      "slug": "what-language-standard-is-my-compiler-using",
+      "source": "https://www.learncpp.com/cpp-tutorial/what-language-standard-is-my-compiler-using/",
+      "modified": "2024-12-29T16:25:51"
+    },
+    {
+      "number": "1.1",
+      "title": "Statements and the structure of a program",
+      "slug": "statements-and-the-structure-of-a-program",
+      "source": "https://www.learncpp.com/cpp-tutorial/statements-and-the-structure-of-a-program/",
+      "modified": "2025-03-17T20:19:21"
+    },
+    {
+      "number": "1.2",
+      "title": "Comments",
+      "slug": "comments",
+      "source": "https://www.learncpp.com/cpp-tutorial/comments/",
+      "modified": "2025-03-19T09:43:39"
+    },
+    {
+      "number": "1.3",
+      "title": "Introduction to objects and variables",
+      "slug": "introduction-to-objects-and-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-objects-and-variables/",
+      "modified": "2025-03-18T11:52:55"
+    },
+    {
+      "number": "1.4",
+      "title": "Variable assignment and initialization",
+      "slug": "variable-assignment-and-initialization",
+      "source": "https://www.learncpp.com/cpp-tutorial/variable-assignment-and-initialization/",
+      "modified": "2025-03-06T16:21:29"
+    },
+    {
+      "number": "1.5",
+      "title": "Introduction to iostream: cout, cin, and endl",
+      "slug": "introduction-to-iostream-cout-cin-and-endl",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-iostream-cout-cin-and-endl/",
+      "modified": "2025-02-05T18:56:16"
+    },
+    {
+      "number": "1.6",
+      "title": "Uninitialized variables and undefined behavior",
+      "slug": "uninitialized-variables-and-undefined-behavior",
+      "source": "https://www.learncpp.com/cpp-tutorial/uninitialized-variables-and-undefined-behavior/",
+      "modified": "2024-11-29T15:21:13"
+    },
+    {
+      "number": "1.7",
+      "title": "Keywords and naming identifiers",
+      "slug": "keywords-and-naming-identifiers",
+      "source": "https://www.learncpp.com/cpp-tutorial/keywords-and-naming-identifiers/",
+      "modified": "2025-01-18T18:27:56"
+    },
+    {
+      "number": "1.8",
+      "title": "Whitespace and basic formatting",
+      "slug": "whitespace-and-basic-formatting",
+      "source": "https://www.learncpp.com/cpp-tutorial/whitespace-and-basic-formatting/",
+      "modified": "2024-01-23T09:15:21"
+    },
+    {
+      "number": "1.9",
+      "title": "Introduction to literals and operators",
+      "slug": "introduction-to-literals-and-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-literals-and-operators/",
+      "modified": "2024-12-19T21:09:55"
+    },
+    {
+      "number": "1.10",
+      "title": "Introduction to expressions",
+      "slug": "introduction-to-expressions",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-expressions/",
+      "modified": "2025-02-15T15:57:53"
+    },
+    {
+      "number": "1.11",
+      "title": "Developing your first program",
+      "slug": "developing-your-first-program",
+      "source": "https://www.learncpp.com/cpp-tutorial/developing-your-first-program/",
+      "modified": "2024-03-12T17:51:28"
+    },
+    {
+      "number": "1.x",
+      "title": "Chapter 1 summary and quiz",
+      "slug": "chapter-1-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-1-summary-and-quiz/",
+      "modified": "2024-12-28T20:09:26"
+    },
+    {
+      "number": "2.1",
+      "title": "Introduction to functions",
+      "slug": "introduction-to-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-functions/",
+      "modified": "2024-09-28T17:06:16"
+    },
+    {
+      "number": "2.2",
+      "title": "Function return values (value-returning functions)",
+      "slug": "function-return-values-value-returning-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-return-values-value-returning-functions/",
+      "modified": "2025-02-05T16:38:58"
+    },
+    {
+      "number": "2.3",
+      "title": "Void functions (non-value returning functions)",
+      "slug": "void-functions-non-value-returning-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/void-functions-non-value-returning-functions/",
+      "modified": "2023-10-23T20:54:22"
+    },
+    {
+      "number": "2.4",
+      "title": "Introduction to function parameters and arguments",
+      "slug": "introduction-to-function-parameters-and-arguments",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-function-parameters-and-arguments/",
+      "modified": "2025-02-18T20:19:38"
+    },
+    {
+      "number": "2.5",
+      "title": "Introduction to local scope",
+      "slug": "introduction-to-local-scope",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-local-scope/",
+      "modified": "2025-01-01T22:21:21"
+    },
+    {
+      "number": "2.6",
+      "title": "Why functions are useful, and how to use them effectively",
+      "slug": "why-functions-are-useful-and-how-to-use-them-effectively",
+      "source": "https://www.learncpp.com/cpp-tutorial/why-functions-are-useful-and-how-to-use-them-effectively/",
+      "modified": "2023-01-25T11:24:06"
+    },
+    {
+      "number": "2.7",
+      "title": "Forward declarations and definitions",
+      "slug": "forward-declarations",
+      "source": "https://www.learncpp.com/cpp-tutorial/forward-declarations/",
+      "modified": "2025-01-03T16:25:15"
+    },
+    {
+      "number": "2.8",
+      "title": "Programs with multiple code files",
+      "slug": "programs-with-multiple-code-files",
+      "source": "https://www.learncpp.com/cpp-tutorial/programs-with-multiple-code-files/",
+      "modified": "2025-02-11T18:52:01"
+    },
+    {
+      "number": "2.9",
+      "title": "Naming collisions and an introduction to namespaces",
+      "slug": "naming-collisions-and-an-introduction-to-namespaces",
+      "source": "https://www.learncpp.com/cpp-tutorial/naming-collisions-and-an-introduction-to-namespaces/",
+      "modified": "2025-02-18T19:14:52"
+    },
+    {
+      "number": "2.10",
+      "title": "Introduction to the preprocessor",
+      "slug": "introduction-to-the-preprocessor",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-the-preprocessor/",
+      "modified": "2025-03-05T15:33:49"
+    },
+    {
+      "number": "2.11",
+      "title": "Header files",
+      "slug": "header-files",
+      "source": "https://www.learncpp.com/cpp-tutorial/header-files/",
+      "modified": "2025-02-27T00:16:12"
+    },
+    {
+      "number": "2.12",
+      "title": "Header guards",
+      "slug": "header-guards",
+      "source": "https://www.learncpp.com/cpp-tutorial/header-guards/",
+      "modified": "2024-06-12T17:32:53"
+    },
+    {
+      "number": "2.13",
+      "title": "How to design your first programs",
+      "slug": "how-to-design-your-first-programs",
+      "source": "https://www.learncpp.com/cpp-tutorial/how-to-design-your-first-programs/",
+      "modified": "2025-01-06T15:35:29"
+    },
+    {
+      "number": "2.x",
+      "title": "Chapter 2 summary and quiz",
+      "slug": "chapter-2-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-2-summary-and-quiz/",
+      "modified": "2024-04-26T13:39:18"
+    },
+    {
+      "number": "3.1",
+      "title": "Syntax and semantic errors",
+      "slug": "syntax-and-semantic-errors",
+      "source": "https://www.learncpp.com/cpp-tutorial/syntax-and-semantic-errors/",
+      "modified": "2024-09-04T15:16:00"
+    },
+    {
+      "number": "3.2",
+      "title": "The debugging process",
+      "slug": "the-debugging-process",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-debugging-process/",
+      "modified": "2025-02-13T21:40:31"
+    },
+    {
+      "number": "3.3",
+      "title": "A strategy for debugging",
+      "slug": "a-strategy-for-debugging",
+      "source": "https://www.learncpp.com/cpp-tutorial/a-strategy-for-debugging/",
+      "modified": "2024-10-18T15:04:15"
+    },
+    {
+      "number": "3.4",
+      "title": "Basic debugging tactics",
+      "slug": "basic-debugging-tactics",
+      "source": "https://www.learncpp.com/cpp-tutorial/basic-debugging-tactics/",
+      "modified": "2024-12-30T19:55:29"
+    },
+    {
+      "number": "3.5",
+      "title": "More debugging tactics",
+      "slug": "more-debugging-tactics",
+      "source": "https://www.learncpp.com/cpp-tutorial/more-debugging-tactics/",
+      "modified": "2024-08-26T21:50:58"
+    },
+    {
+      "number": "3.6",
+      "title": "Using an integrated debugger: Stepping",
+      "slug": "using-an-integrated-debugger-stepping",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-an-integrated-debugger-stepping/",
+      "modified": "2024-08-30T11:42:21"
+    },
+    {
+      "number": "3.7",
+      "title": "Using an integrated debugger: Running and breakpoints",
+      "slug": "using-an-integrated-debugger-running-and-breakpoints",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-an-integrated-debugger-running-and-breakpoints/",
+      "modified": "2023-12-15T17:31:56"
+    },
+    {
+      "number": "3.8",
+      "title": "Using an integrated debugger: Watching variables",
+      "slug": "using-an-integrated-debugger-watching-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-an-integrated-debugger-watching-variables/",
+      "modified": "2024-01-05T12:09:35"
+    },
+    {
+      "number": "3.9",
+      "title": "Using an integrated debugger: The call stack",
+      "slug": "using-an-integrated-debugger-the-call-stack",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-an-integrated-debugger-the-call-stack/",
+      "modified": "2023-06-05T16:03:36"
+    },
+    {
+      "number": "3.10",
+      "title": "Finding issues before they become problems",
+      "slug": "finding-issues-before-they-become-problems",
+      "source": "https://www.learncpp.com/cpp-tutorial/finding-issues-before-they-become-problems/",
+      "modified": "2024-10-14T22:12:37"
+    },
+    {
+      "number": "3.x",
+      "title": "Chapter 3 summary and quiz",
+      "slug": "chapter-3-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-3-summary-and-quiz/",
+      "modified": "2024-08-13T00:31:53"
+    },
+    {
+      "number": "4.1",
+      "title": "Introduction to fundamental data types",
+      "slug": "introduction-to-fundamental-data-types",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-fundamental-data-types/",
+      "modified": "2025-02-26T17:05:20"
+    },
+    {
+      "number": "4.2",
+      "title": "Void",
+      "slug": "void",
+      "source": "https://www.learncpp.com/cpp-tutorial/void/",
+      "modified": "2023-08-29T11:50:36"
+    },
+    {
+      "number": "4.3",
+      "title": "Object sizes and the sizeof operator",
+      "slug": "object-sizes-and-the-sizeof-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/object-sizes-and-the-sizeof-operator/",
+      "modified": "2024-12-26T12:27:25"
+    },
+    {
+      "number": "4.4",
+      "title": "Signed integers",
+      "slug": "signed-integers",
+      "source": "https://www.learncpp.com/cpp-tutorial/signed-integers/",
+      "modified": "2024-12-28T19:11:52"
+    },
+    {
+      "number": "4.5",
+      "title": "Unsigned integers, and why to avoid them",
+      "slug": "unsigned-integers-and-why-to-avoid-them",
+      "source": "https://www.learncpp.com/cpp-tutorial/unsigned-integers-and-why-to-avoid-them/",
+      "modified": "2024-08-29T13:16:09"
+    },
+    {
+      "number": "4.6",
+      "title": "Fixed-width integers and size_t",
+      "slug": "fixed-width-integers-and-size-t",
+      "source": "https://www.learncpp.com/cpp-tutorial/fixed-width-integers-and-size-t/",
+      "modified": "2025-01-21T18:33:58"
+    },
+    {
+      "number": "4.7",
+      "title": "Introduction to scientific notation",
+      "slug": "introduction-to-scientific-notation",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-scientific-notation/",
+      "modified": "2025-01-29T16:12:54"
+    },
+    {
+      "number": "4.8",
+      "title": "Floating point numbers",
+      "slug": "floating-point-numbers",
+      "source": "https://www.learncpp.com/cpp-tutorial/floating-point-numbers/",
+      "modified": "2024-11-24T23:41:41"
+    },
+    {
+      "number": "4.9",
+      "title": "Boolean values",
+      "slug": "boolean-values",
+      "source": "https://www.learncpp.com/cpp-tutorial/boolean-values/",
+      "modified": "2025-02-04T20:46:34"
+    },
+    {
+      "number": "4.10",
+      "title": "Introduction to if statements",
+      "slug": "introduction-to-if-statements",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-if-statements/",
+      "modified": "2025-02-11T17:32:53"
+    },
+    {
+      "number": "4.11",
+      "title": "Chars",
+      "slug": "chars",
+      "source": "https://www.learncpp.com/cpp-tutorial/chars/",
+      "modified": "2025-03-19T09:53:22"
+    },
+    {
+      "number": "4.12",
+      "title": "Introduction to type conversion and static_cast",
+      "slug": "introduction-to-type-conversion-and-static_cast",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-type-conversion-and-static_cast/",
+      "modified": "2025-03-03T13:45:24"
+    },
+    {
+      "number": "4.x",
+      "title": "Chapter 4 summary and quiz",
+      "slug": "chapter-4-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-4-summary-and-quiz/",
+      "modified": "2024-11-29T14:44:08"
+    },
+    {
+      "number": "5.1",
+      "title": "Constant variables (named constants)",
+      "slug": "constant-variables-named-constants",
+      "source": "https://www.learncpp.com/cpp-tutorial/constant-variables-named-constants/",
+      "modified": "2024-10-17T12:05:13"
+    },
+    {
+      "number": "5.2",
+      "title": "Literals",
+      "slug": "literals",
+      "source": "https://www.learncpp.com/cpp-tutorial/literals/",
+      "modified": "2025-03-17T11:32:28"
+    },
+    {
+      "number": "5.3",
+      "title": "Numeral systems (decimal, binary, hexadecimal, and octal)",
+      "slug": "numeral-systems-decimal-binary-hexadecimal-and-octal",
+      "source": "https://www.learncpp.com/cpp-tutorial/numeral-systems-decimal-binary-hexadecimal-and-octal/",
+      "modified": "2025-02-11T19:19:23"
+    },
+    {
+      "number": "5.4",
+      "title": "The as-if rule and compile-time optimization",
+      "slug": "the-as-if-rule-and-compile-time-optimization",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-as-if-rule-and-compile-time-optimization/",
+      "modified": "2025-01-01T22:25:13"
+    },
+    {
+      "number": "5.5",
+      "title": "Constant expressions",
+      "slug": "constant-expressions",
+      "source": "https://www.learncpp.com/cpp-tutorial/constant-expressions/",
+      "modified": "2025-02-18T19:39:42"
+    },
+    {
+      "number": "5.6",
+      "title": "Constexpr variables",
+      "slug": "constexpr-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-variables/",
+      "modified": "2025-02-05T17:28:04"
+    },
+    {
+      "number": "5.7",
+      "title": "Introduction to std::string",
+      "slug": "introduction-to-stdstring",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-stdstring/",
+      "modified": "2025-01-03T12:39:53"
+    },
+    {
+      "number": "5.8",
+      "title": "Introduction to std::string_view",
+      "slug": "introduction-to-stdstring_view",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-stdstring_view/",
+      "modified": "2024-11-26T16:53:44"
+    },
+    {
+      "number": "5.9",
+      "title": "std::string_view (part 2)",
+      "slug": "stdstring_view-part-2",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring_view-part-2/",
+      "modified": "2025-01-02T22:17:09"
+    },
+    {
+      "number": "5.x",
+      "title": "Chapter 5 summary and quiz",
+      "slug": "chapter-5-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-5-summary-and-quiz/",
+      "modified": "2024-12-02T12:03:04"
+    },
+    {
+      "number": "6.1",
+      "title": "Operator precedence and associativity",
+      "slug": "operator-precedence-and-associativity",
+      "source": "https://www.learncpp.com/cpp-tutorial/operator-precedence-and-associativity/",
+      "modified": "2025-02-19T17:13:44"
+    },
+    {
+      "number": "6.2",
+      "title": "Arithmetic operators",
+      "slug": "arithmetic-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/arithmetic-operators/",
+      "modified": "2025-02-14T16:51:25"
+    },
+    {
+      "number": "6.3",
+      "title": "Remainder and Exponentiation",
+      "slug": "remainder-and-exponentiation",
+      "source": "https://www.learncpp.com/cpp-tutorial/remainder-and-exponentiation/",
+      "modified": "2024-12-30T19:40:39"
+    },
+    {
+      "number": "6.4",
+      "title": "Increment/decrement operators, and side effects",
+      "slug": "increment-decrement-operators-and-side-effects",
+      "source": "https://www.learncpp.com/cpp-tutorial/increment-decrement-operators-and-side-effects/",
+      "modified": "2024-12-29T15:34:43"
+    },
+    {
+      "number": "6.5",
+      "title": "The comma operator",
+      "slug": "the-comma-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-comma-operator/",
+      "modified": "2023-10-24T09:54:11"
+    },
+    {
+      "number": "6.6",
+      "title": "The conditional operator",
+      "slug": "the-conditional-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-conditional-operator/",
+      "modified": "2025-02-14T12:20:19"
+    },
+    {
+      "number": "6.7",
+      "title": "Relational operators and floating point comparisons",
+      "slug": "relational-operators-and-floating-point-comparisons",
+      "source": "https://www.learncpp.com/cpp-tutorial/relational-operators-and-floating-point-comparisons/",
+      "modified": "2025-01-21T11:14:03"
+    },
+    {
+      "number": "6.8",
+      "title": "Logical operators",
+      "slug": "logical-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/logical-operators/",
+      "modified": "2024-11-26T16:51:21"
+    },
+    {
+      "number": "6.x",
+      "title": "Chapter 6 summary and quiz",
+      "slug": "chapter-6-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-6-summary-and-quiz/",
+      "modified": "2024-12-02T11:10:30"
+    },
+    {
+      "number": "O.1",
+      "title": "Bit flags and bit manipulation via std::bitset",
+      "slug": "bit-flags-and-bit-manipulation-via-stdbitset",
+      "source": "https://www.learncpp.com/cpp-tutorial/bit-flags-and-bit-manipulation-via-stdbitset/",
+      "modified": "2025-02-15T16:52:17"
+    },
+    {
+      "number": "O.2",
+      "title": "Bitwise operators",
+      "slug": "bitwise-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/bitwise-operators/",
+      "modified": "2025-02-26T22:49:10"
+    },
+    {
+      "number": "O.3",
+      "title": "Bit manipulation with bitwise operators and bit masks",
+      "slug": "bit-manipulation-with-bitwise-operators-and-bit-masks",
+      "source": "https://www.learncpp.com/cpp-tutorial/bit-manipulation-with-bitwise-operators-and-bit-masks/",
+      "modified": "2024-07-21T18:21:15"
+    },
+    {
+      "number": "O.4",
+      "title": "Converting integers between binary and decimal representation",
+      "slug": "converting-integers-between-binary-and-decimal-representation",
+      "source": "https://www.learncpp.com/cpp-tutorial/converting-integers-between-binary-and-decimal-representation/",
+      "modified": "2025-02-18T21:06:42"
+    },
+    {
+      "number": "7.1",
+      "title": "Compound statements (blocks)",
+      "slug": "compound-statements-blocks",
+      "source": "https://www.learncpp.com/cpp-tutorial/compound-statements-blocks/",
+      "modified": "2024-05-18T19:50:10"
+    },
+    {
+      "number": "7.2",
+      "title": "User-defined namespaces and the scope resolution operator",
+      "slug": "user-defined-namespaces-and-the-scope-resolution-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/user-defined-namespaces-and-the-scope-resolution-operator/",
+      "modified": "2024-06-28T19:08:18"
+    },
+    {
+      "number": "7.3",
+      "title": "Local variables",
+      "slug": "local-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/local-variables/",
+      "modified": "2024-06-09T21:18:47"
+    },
+    {
+      "number": "7.4",
+      "title": "Introduction to global variables",
+      "slug": "introduction-to-global-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-global-variables/",
+      "modified": "2024-06-09T21:28:11"
+    },
+    {
+      "number": "7.5",
+      "title": "Variable shadowing (name hiding)",
+      "slug": "variable-shadowing-name-hiding",
+      "source": "https://www.learncpp.com/cpp-tutorial/variable-shadowing-name-hiding/",
+      "modified": "2024-07-18T22:38:14"
+    },
+    {
+      "number": "7.6",
+      "title": "Internal linkage",
+      "slug": "internal-linkage",
+      "source": "https://www.learncpp.com/cpp-tutorial/internal-linkage/",
+      "modified": "2025-01-30T15:34:01"
+    },
+    {
+      "number": "7.7",
+      "title": "External linkage and variable forward declarations",
+      "slug": "external-linkage-and-variable-forward-declarations",
+      "source": "https://www.learncpp.com/cpp-tutorial/external-linkage-and-variable-forward-declarations/",
+      "modified": "2024-12-11T21:54:11"
+    },
+    {
+      "number": "7.8",
+      "title": "Why (non-const) global variables are evil",
+      "slug": "why-non-const-global-variables-are-evil",
+      "source": "https://www.learncpp.com/cpp-tutorial/why-non-const-global-variables-are-evil/",
+      "modified": "2025-01-29T18:02:41"
+    },
+    {
+      "number": "7.9",
+      "title": "Inline functions and variables",
+      "slug": "inline-functions-and-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/inline-functions-and-variables/",
+      "modified": "2025-01-18T18:16:17"
+    },
+    {
+      "number": "7.10",
+      "title": "Sharing global constants across multiple files (using inline variables)",
+      "slug": "sharing-global-constants-across-multiple-files-using-inline-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/sharing-global-constants-across-multiple-files-using-inline-variables/",
+      "modified": "2024-12-14T16:02:37"
+    },
+    {
+      "number": "7.11",
+      "title": "Static local variables",
+      "slug": "static-local-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/static-local-variables/",
+      "modified": "2024-12-26T12:39:19"
+    },
+    {
+      "number": "7.12",
+      "title": "Scope, duration, and linkage summary",
+      "slug": "scope-duration-and-linkage-summary",
+      "source": "https://www.learncpp.com/cpp-tutorial/scope-duration-and-linkage-summary/",
+      "modified": "2024-12-01T21:30:52"
+    },
+    {
+      "number": "7.13",
+      "title": "Using declarations and using directives",
+      "slug": "using-declarations-and-using-directives",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-declarations-and-using-directives/",
+      "modified": "2025-03-05T17:34:03"
+    },
+    {
+      "number": "7.14",
+      "title": "Unnamed and inline namespaces",
+      "slug": "unnamed-and-inline-namespaces",
+      "source": "https://www.learncpp.com/cpp-tutorial/unnamed-and-inline-namespaces/",
+      "modified": "2024-11-26T16:53:03"
+    },
+    {
+      "number": "7.x",
+      "title": "Chapter 7 summary and quiz",
+      "slug": "chapter-7-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-7-summary-and-quiz/",
+      "modified": "2024-12-02T11:10:19"
+    },
+    {
+      "number": "8.1",
+      "title": "Control flow introduction",
+      "slug": "control-flow-introduction",
+      "source": "https://www.learncpp.com/cpp-tutorial/control-flow-introduction/",
+      "modified": "2023-12-23T19:16:06"
+    },
+    {
+      "number": "8.2",
+      "title": "If statements and blocks",
+      "slug": "if-statements-and-blocks",
+      "source": "https://www.learncpp.com/cpp-tutorial/if-statements-and-blocks/",
+      "modified": "2025-03-05T15:29:51"
+    },
+    {
+      "number": "8.3",
+      "title": "Common if statement problems",
+      "slug": "common-if-statement-problems",
+      "source": "https://www.learncpp.com/cpp-tutorial/common-if-statement-problems/",
+      "modified": "2024-12-29T22:51:52"
+    },
+    {
+      "number": "8.4",
+      "title": "Constexpr if statements",
+      "slug": "constexpr-if-statements",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-if-statements/",
+      "modified": "2024-03-05T10:34:42"
+    },
+    {
+      "number": "8.5",
+      "title": "Switch statement basics",
+      "slug": "switch-statement-basics",
+      "source": "https://www.learncpp.com/cpp-tutorial/switch-statement-basics/",
+      "modified": "2024-12-28T20:11:23"
+    },
+    {
+      "number": "8.6",
+      "title": "Switch fallthrough and scoping",
+      "slug": "switch-fallthrough-and-scoping",
+      "source": "https://www.learncpp.com/cpp-tutorial/switch-fallthrough-and-scoping/",
+      "modified": "2024-09-01T14:53:27"
+    },
+    {
+      "number": "8.7",
+      "title": "Goto statements",
+      "slug": "goto-statements",
+      "source": "https://www.learncpp.com/cpp-tutorial/goto-statements/",
+      "modified": "2024-10-14T20:31:11"
+    },
+    {
+      "number": "8.8",
+      "title": "Introduction to loops and while statements",
+      "slug": "introduction-to-loops-and-while-statements",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-loops-and-while-statements/",
+      "modified": "2025-02-05T18:05:37"
+    },
+    {
+      "number": "8.9",
+      "title": "Do while statements",
+      "slug": "do-while-statements",
+      "source": "https://www.learncpp.com/cpp-tutorial/do-while-statements/",
+      "modified": "2025-02-05T17:38:20"
+    },
+    {
+      "number": "8.10",
+      "title": "For statements",
+      "slug": "for-statements",
+      "source": "https://www.learncpp.com/cpp-tutorial/for-statements/",
+      "modified": "2025-02-19T17:55:27"
+    },
+    {
+      "number": "8.11",
+      "title": "Break and continue",
+      "slug": "break-and-continue",
+      "source": "https://www.learncpp.com/cpp-tutorial/break-and-continue/",
+      "modified": "2023-09-11T16:54:29"
+    },
+    {
+      "number": "8.12",
+      "title": "Halts (exiting your program early)",
+      "slug": "halts-exiting-your-program-early",
+      "source": "https://www.learncpp.com/cpp-tutorial/halts-exiting-your-program-early/",
+      "modified": "2024-12-28T20:11:52"
+    },
+    {
+      "number": "8.13",
+      "title": "Introduction to random number generation",
+      "slug": "introduction-to-random-number-generation",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-random-number-generation/",
+      "modified": "2024-08-26T00:10:30"
+    },
+    {
+      "number": "8.14",
+      "title": "Generating random numbers using Mersenne Twister",
+      "slug": "generating-random-numbers-using-mersenne-twister",
+      "source": "https://www.learncpp.com/cpp-tutorial/generating-random-numbers-using-mersenne-twister/",
+      "modified": "2025-02-02T21:35:38"
+    },
+    {
+      "number": "8.15",
+      "title": "Global random numbers (Random.h)",
+      "slug": "global-random-numbers-random-h",
+      "source": "https://www.learncpp.com/cpp-tutorial/global-random-numbers-random-h/",
+      "modified": "2025-01-29T17:49:58"
+    },
+    {
+      "number": "8.x",
+      "title": "Chapter 8 summary and quiz",
+      "slug": "chapter-8-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-8-summary-and-quiz/",
+      "modified": "2025-02-04T21:09:29"
+    },
+    {
+      "number": "9.1",
+      "title": "Introduction to testing your code",
+      "slug": "introduction-to-testing-your-code",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-testing-your-code/",
+      "modified": "2024-04-30T15:49:07"
+    },
+    {
+      "number": "9.2",
+      "title": "Code coverage",
+      "slug": "code-coverage",
+      "source": "https://www.learncpp.com/cpp-tutorial/code-coverage/",
+      "modified": "2024-12-23T21:46:27"
+    },
+    {
+      "number": "9.3",
+      "title": "Common semantic errors in C++",
+      "slug": "common-semantic-errors-in-c",
+      "source": "https://www.learncpp.com/cpp-tutorial/common-semantic-errors-in-c/",
+      "modified": "2024-11-10T11:46:36"
+    },
+    {
+      "number": "9.4",
+      "title": "Detecting and handling errors",
+      "slug": "detecting-and-handling-errors",
+      "source": "https://www.learncpp.com/cpp-tutorial/detecting-and-handling-errors/",
+      "modified": "2025-01-17T20:46:10"
+    },
+    {
+      "number": "9.5",
+      "title": "std::cin and handling invalid input",
+      "slug": "stdcin-and-handling-invalid-input",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdcin-and-handling-invalid-input/",
+      "modified": "2025-01-29T22:16:45"
+    },
+    {
+      "number": "9.6",
+      "title": "Assert and static_assert",
+      "slug": "assert-and-static_assert",
+      "source": "https://www.learncpp.com/cpp-tutorial/assert-and-static_assert/",
+      "modified": "2024-11-02T14:00:42"
+    },
+    {
+      "number": "9.x",
+      "title": "Chapter 9 summary and quiz",
+      "slug": "chapter-9-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-9-summary-and-quiz/",
+      "modified": "2024-12-01T21:57:11"
+    },
+    {
+      "number": "10.1",
+      "title": "Implicit type conversion",
+      "slug": "implicit-type-conversion",
+      "source": "https://www.learncpp.com/cpp-tutorial/implicit-type-conversion/",
+      "modified": "2025-03-03T15:13:55"
+    },
+    {
+      "number": "10.2",
+      "title": "Floating-point and integral promotion",
+      "slug": "floating-point-and-integral-promotion",
+      "source": "https://www.learncpp.com/cpp-tutorial/floating-point-and-integral-promotion/",
+      "modified": "2024-07-31T17:41:54"
+    },
+    {
+      "number": "10.3",
+      "title": "Numeric conversions",
+      "slug": "numeric-conversions",
+      "source": "https://www.learncpp.com/cpp-tutorial/numeric-conversions/",
+      "modified": "2024-08-20T20:12:47"
+    },
+    {
+      "number": "10.4",
+      "title": "Narrowing conversions, list initialization, and constexpr initializers",
+      "slug": "narrowing-conversions-list-initialization-and-constexpr-initializers",
+      "source": "https://www.learncpp.com/cpp-tutorial/narrowing-conversions-list-initialization-and-constexpr-initializers/",
+      "modified": "2024-02-16T09:39:22"
+    },
+    {
+      "number": "10.5",
+      "title": "Arithmetic conversions",
+      "slug": "arithmetic-conversions",
+      "source": "https://www.learncpp.com/cpp-tutorial/arithmetic-conversions/",
+      "modified": "2024-11-11T11:13:18"
+    },
+    {
+      "number": "10.6",
+      "title": "Explicit type conversion (casting) and static_cast",
+      "slug": "explicit-type-conversion-casting-and-static-cast",
+      "source": "https://www.learncpp.com/cpp-tutorial/explicit-type-conversion-casting-and-static-cast/",
+      "modified": "2025-03-04T02:37:48"
+    },
+    {
+      "number": "10.7",
+      "title": "Typedefs and type aliases",
+      "slug": "typedefs-and-type-aliases",
+      "source": "https://www.learncpp.com/cpp-tutorial/typedefs-and-type-aliases/",
+      "modified": "2024-02-11T23:33:28"
+    },
+    {
+      "number": "10.8",
+      "title": "Type deduction for objects using the auto keyword",
+      "slug": "type-deduction-for-objects-using-the-auto-keyword",
+      "source": "https://www.learncpp.com/cpp-tutorial/type-deduction-for-objects-using-the-auto-keyword/",
+      "modified": "2024-09-25T10:21:21"
+    },
+    {
+      "number": "10.9",
+      "title": "Type deduction for functions",
+      "slug": "type-deduction-for-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/type-deduction-for-functions/",
+      "modified": "2024-12-18T10:15:38"
+    },
+    {
+      "number": "10.x",
+      "title": "Chapter 10 summary and quiz",
+      "slug": "chapter-10-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-10-summary-and-quiz/",
+      "modified": "2024-09-03T19:45:26"
+    },
+    {
+      "number": "11.1",
+      "title": "Introduction to function overloading",
+      "slug": "introduction-to-function-overloading",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-function-overloading/",
+      "modified": "2023-12-28T17:31:45"
+    },
+    {
+      "number": "11.2",
+      "title": "Function overload differentiation",
+      "slug": "function-overload-differentiation",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-overload-differentiation/",
+      "modified": "2024-12-11T22:05:08"
+    },
+    {
+      "number": "11.3",
+      "title": "Function overload resolution and ambiguous matches",
+      "slug": "function-overload-resolution-and-ambiguous-matches",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-overload-resolution-and-ambiguous-matches/",
+      "modified": "2025-01-17T20:39:33"
+    },
+    {
+      "number": "11.4",
+      "title": "Deleting functions",
+      "slug": "deleting-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/deleting-functions/",
+      "modified": "2023-12-28T17:32:02"
+    },
+    {
+      "number": "11.5",
+      "title": "Default arguments",
+      "slug": "default-arguments",
+      "source": "https://www.learncpp.com/cpp-tutorial/default-arguments/",
+      "modified": "2024-11-10T09:10:51"
+    },
+    {
+      "number": "11.6",
+      "title": "Function templates",
+      "slug": "function-templates",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-templates/",
+      "modified": "2025-01-27T09:36:05"
+    },
+    {
+      "number": "11.7",
+      "title": "Function template instantiation",
+      "slug": "function-template-instantiation",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-template-instantiation/",
+      "modified": "2024-08-21T10:03:39"
+    },
+    {
+      "number": "11.8",
+      "title": "Function templates with multiple template types",
+      "slug": "function-templates-with-multiple-template-types",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-templates-with-multiple-template-types/",
+      "modified": "2024-12-18T10:05:59"
+    },
+    {
+      "number": "11.9",
+      "title": "Non-type template parameters",
+      "slug": "non-type-template-parameters",
+      "source": "https://www.learncpp.com/cpp-tutorial/non-type-template-parameters/",
+      "modified": "2024-10-20T15:39:41"
+    },
+    {
+      "number": "11.10",
+      "title": "Using function templates in multiple files",
+      "slug": "using-function-templates-in-multiple-files",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-function-templates-in-multiple-files/",
+      "modified": "2024-10-20T15:39:33"
+    },
+    {
+      "number": "11.x",
+      "title": "Chapter 11 summary and quiz",
+      "slug": "chapter-11-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-11-summary-and-quiz/",
+      "modified": "2024-09-28T15:03:55"
+    },
+    {
+      "number": "F.1",
+      "title": "Constexpr functions",
+      "slug": "constexpr-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-functions/",
+      "modified": "2025-02-18T19:40:26"
+    },
+    {
+      "number": "F.2",
+      "title": "Constexpr functions (part 2)",
+      "slug": "constexpr-functions-part-2",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-functions-part-2/",
+      "modified": "2024-12-10T00:05:33"
+    },
+    {
+      "number": "F.3",
+      "title": "Constexpr functions (part 3) and consteval",
+      "slug": "constexpr-functions-part-3-and-consteval",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-functions-part-3-and-consteval/",
+      "modified": "2025-03-05T17:24:04"
+    },
+    {
+      "number": "F.4",
+      "title": "Constexpr functions (part 4)",
+      "slug": "constexpr-functions-part-4",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-functions-part-4/",
+      "modified": "2025-03-17T11:19:26"
+    },
+    {
+      "number": "F.X",
+      "title": "Chapter F summary and quiz",
+      "slug": "chapter-f-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-f-summary-and-quiz/",
+      "modified": "2024-12-02T11:32:07"
+    },
+    {
+      "number": "12.1",
+      "title": "Introduction to compound data types",
+      "slug": "introduction-to-compound-data-types",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-compound-data-types/",
+      "modified": "2024-11-23T16:48:38"
+    },
+    {
+      "number": "12.2",
+      "title": "Value categories (lvalues and rvalues)",
+      "slug": "value-categories-lvalues-and-rvalues",
+      "source": "https://www.learncpp.com/cpp-tutorial/value-categories-lvalues-and-rvalues/",
+      "modified": "2025-01-03T14:39:26"
+    },
+    {
+      "number": "12.3",
+      "title": "Lvalue references",
+      "slug": "lvalue-references",
+      "source": "https://www.learncpp.com/cpp-tutorial/lvalue-references/",
+      "modified": "2024-11-11T13:33:39"
+    },
+    {
+      "number": "12.4",
+      "title": "Lvalue references to const",
+      "slug": "lvalue-references-to-const",
+      "source": "https://www.learncpp.com/cpp-tutorial/lvalue-references-to-const/",
+      "modified": "2025-02-23T03:11:00"
+    },
+    {
+      "number": "12.5",
+      "title": "Pass by lvalue reference",
+      "slug": "pass-by-lvalue-reference",
+      "source": "https://www.learncpp.com/cpp-tutorial/pass-by-lvalue-reference/",
+      "modified": "2024-12-06T09:52:30"
+    },
+    {
+      "number": "12.6",
+      "title": "Pass by const lvalue reference",
+      "slug": "pass-by-const-lvalue-reference",
+      "source": "https://www.learncpp.com/cpp-tutorial/pass-by-const-lvalue-reference/",
+      "modified": "2024-11-21T13:49:40"
+    },
+    {
+      "number": "12.7",
+      "title": "Introduction to pointers",
+      "slug": "introduction-to-pointers",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-pointers/",
+      "modified": "2025-02-07T18:15:10"
+    },
+    {
+      "number": "12.8",
+      "title": "Null pointers",
+      "slug": "null-pointers",
+      "source": "https://www.learncpp.com/cpp-tutorial/null-pointers/",
+      "modified": "2025-02-05T12:57:21"
+    },
+    {
+      "number": "12.9",
+      "title": "Pointers and const",
+      "slug": "pointers-and-const",
+      "source": "https://www.learncpp.com/cpp-tutorial/pointers-and-const/",
+      "modified": "2025-02-12T11:41:28"
+    },
+    {
+      "number": "12.10",
+      "title": "Pass by address",
+      "slug": "pass-by-address",
+      "source": "https://www.learncpp.com/cpp-tutorial/pass-by-address/",
+      "modified": "2025-02-13T13:38:07"
+    },
+    {
+      "number": "12.11",
+      "title": "Pass by address (part 2)",
+      "slug": "pass-by-address-part-2",
+      "source": "https://www.learncpp.com/cpp-tutorial/pass-by-address-part-2/",
+      "modified": "2024-04-25T14:03:15"
+    },
+    {
+      "number": "12.12",
+      "title": "Return by reference and return by address",
+      "slug": "return-by-reference-and-return-by-address",
+      "source": "https://www.learncpp.com/cpp-tutorial/return-by-reference-and-return-by-address/",
+      "modified": "2025-01-03T16:20:20"
+    },
+    {
+      "number": "12.13",
+      "title": "In and out parameters",
+      "slug": "in-and-out-parameters",
+      "source": "https://www.learncpp.com/cpp-tutorial/in-and-out-parameters/",
+      "modified": "2024-12-09T21:06:39"
+    },
+    {
+      "number": "12.14",
+      "title": "Type deduction with pointers, references, and const",
+      "slug": "type-deduction-with-pointers-references-and-const",
+      "source": "https://www.learncpp.com/cpp-tutorial/type-deduction-with-pointers-references-and-const/",
+      "modified": "2025-01-21T20:06:19"
+    },
+    {
+      "number": "12.15",
+      "title": "std::optional",
+      "slug": "stdoptional",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdoptional/",
+      "modified": "2025-02-08T20:44:07"
+    },
+    {
+      "number": "12.x",
+      "title": "Chapter 12 summary and quiz",
+      "slug": "chapter-12-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-12-summary-and-quiz/",
+      "modified": "2025-01-04T23:26:42"
+    },
+    {
+      "number": "13.1",
+      "title": "Introduction to program-defined (user-defined) types",
+      "slug": "introduction-to-program-defined-user-defined-types",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-program-defined-user-defined-types/",
+      "modified": "2025-02-24T00:11:06"
+    },
+    {
+      "number": "13.2",
+      "title": "Unscoped enumerations",
+      "slug": "unscoped-enumerations",
+      "source": "https://www.learncpp.com/cpp-tutorial/unscoped-enumerations/",
+      "modified": "2024-10-28T16:43:38"
+    },
+    {
+      "number": "13.3",
+      "title": "Unscoped enumerator integral conversions",
+      "slug": "unscoped-enumerator-integral-conversions",
+      "source": "https://www.learncpp.com/cpp-tutorial/unscoped-enumerator-integral-conversions/",
+      "modified": "2024-07-31T16:18:42"
+    },
+    {
+      "number": "13.4",
+      "title": "Converting an enumeration to and from a string",
+      "slug": "converting-an-enumeration-to-and-from-a-string",
+      "source": "https://www.learncpp.com/cpp-tutorial/converting-an-enumeration-to-and-from-a-string/",
+      "modified": "2025-02-13T21:42:48"
+    },
+    {
+      "number": "13.5",
+      "title": "Introduction to overloading the I/O operators",
+      "slug": "introduction-to-overloading-the-i-o-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-overloading-the-i-o-operators/",
+      "modified": "2024-10-28T14:09:20"
+    },
+    {
+      "number": "13.6",
+      "title": "Scoped enumerations (enum classes)",
+      "slug": "scoped-enumerations-enum-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/scoped-enumerations-enum-classes/",
+      "modified": "2025-02-11T19:01:58"
+    },
+    {
+      "number": "13.7",
+      "title": "Introduction to structs, members, and member selection",
+      "slug": "introduction-to-structs-members-and-member-selection",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-structs-members-and-member-selection/",
+      "modified": "2024-10-04T15:58:23"
+    },
+    {
+      "number": "13.8",
+      "title": "Struct aggregate initialization",
+      "slug": "struct-aggregate-initialization",
+      "source": "https://www.learncpp.com/cpp-tutorial/struct-aggregate-initialization/",
+      "modified": "2025-01-06T15:43:36"
+    },
+    {
+      "number": "13.9",
+      "title": "Default member initialization",
+      "slug": "default-member-initialization",
+      "source": "https://www.learncpp.com/cpp-tutorial/default-member-initialization/",
+      "modified": "2024-09-16T16:15:13"
+    },
+    {
+      "number": "13.10",
+      "title": "Passing and returning structs",
+      "slug": "passing-and-returning-structs",
+      "source": "https://www.learncpp.com/cpp-tutorial/passing-and-returning-structs/",
+      "modified": "2024-11-29T14:37:53"
+    },
+    {
+      "number": "13.11",
+      "title": "Struct miscellany",
+      "slug": "struct-miscellany",
+      "source": "https://www.learncpp.com/cpp-tutorial/struct-miscellany/",
+      "modified": "2024-09-25T13:54:52"
+    },
+    {
+      "number": "13.12",
+      "title": "Member selection with pointers and references",
+      "slug": "member-selection-with-pointers-and-references",
+      "source": "https://www.learncpp.com/cpp-tutorial/member-selection-with-pointers-and-references/",
+      "modified": "2024-07-02T13:17:20"
+    },
+    {
+      "number": "13.13",
+      "title": "Class templates",
+      "slug": "class-templates",
+      "source": "https://www.learncpp.com/cpp-tutorial/class-templates/",
+      "modified": "2024-12-30T20:09:52"
+    },
+    {
+      "number": "13.14",
+      "title": "Class template argument deduction (CTAD) and deduction guides",
+      "slug": "class-template-argument-deduction-ctad-and-deduction-guides",
+      "source": "https://www.learncpp.com/cpp-tutorial/class-template-argument-deduction-ctad-and-deduction-guides/",
+      "modified": "2024-03-25T14:48:52"
+    },
+    {
+      "number": "13.15",
+      "title": "Alias templates",
+      "slug": "alias-templates",
+      "source": "https://www.learncpp.com/cpp-tutorial/alias-templates/",
+      "modified": "2024-06-11T12:48:43"
+    },
+    {
+      "number": "13.x",
+      "title": "Chapter 13 summary and quiz",
+      "slug": "chapter-13-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-13-summary-and-quiz/",
+      "modified": "2024-11-04T12:03:58"
+    },
+    {
+      "number": "13.y",
+      "title": "Using a language reference",
+      "slug": "using-a-language-reference",
+      "source": "https://www.learncpp.com/cpp-tutorial/using-a-language-reference/",
+      "modified": "2024-01-02T15:05:39"
+    },
+    {
+      "number": "14.1",
+      "title": "Introduction to object-oriented programming",
+      "slug": "introduction-to-object-oriented-programming",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-object-oriented-programming/",
+      "modified": "2023-09-15T12:13:04"
+    },
+    {
+      "number": "14.2",
+      "title": "Introduction to classes",
+      "slug": "introduction-to-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-classes/",
+      "modified": "2024-06-26T11:00:13"
+    },
+    {
+      "number": "14.3",
+      "title": "Member functions",
+      "slug": "member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/member-functions/",
+      "modified": "2025-02-10T14:56:45"
+    },
+    {
+      "number": "14.4",
+      "title": "Const class objects and const member functions",
+      "slug": "const-class-objects-and-const-member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/const-class-objects-and-const-member-functions/",
+      "modified": "2025-02-12T11:31:57"
+    },
+    {
+      "number": "14.5",
+      "title": "Public and private members and access specifiers",
+      "slug": "public-and-private-members-and-access-specifiers",
+      "source": "https://www.learncpp.com/cpp-tutorial/public-and-private-members-and-access-specifiers/",
+      "modified": "2024-07-03T19:03:29"
+    },
+    {
+      "number": "14.6",
+      "title": "Access functions",
+      "slug": "access-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/access-functions/",
+      "modified": "2024-12-29T18:16:07"
+    },
+    {
+      "number": "14.7",
+      "title": "Member functions returning references to data members",
+      "slug": "member-functions-returning-references-to-data-members",
+      "source": "https://www.learncpp.com/cpp-tutorial/member-functions-returning-references-to-data-members/",
+      "modified": "2024-03-29T16:50:43"
+    },
+    {
+      "number": "14.8",
+      "title": "The benefits of data hiding (encapsulation)",
+      "slug": "the-benefits-of-data-hiding-encapsulation",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-benefits-of-data-hiding-encapsulation/",
+      "modified": "2025-02-20T16:22:00"
+    },
+    {
+      "number": "14.9",
+      "title": "Introduction to constructors",
+      "slug": "introduction-to-constructors",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-constructors/",
+      "modified": "2024-12-29T23:43:24"
+    },
+    {
+      "number": "14.10",
+      "title": "Constructor member initializer lists",
+      "slug": "constructor-member-initializer-lists",
+      "source": "https://www.learncpp.com/cpp-tutorial/constructor-member-initializer-lists/",
+      "modified": "2025-02-05T18:26:23"
+    },
+    {
+      "number": "14.11",
+      "title": "Default constructors and default arguments",
+      "slug": "default-constructors-and-default-arguments",
+      "source": "https://www.learncpp.com/cpp-tutorial/default-constructors-and-default-arguments/",
+      "modified": "2024-09-16T16:14:22"
+    },
+    {
+      "number": "14.12",
+      "title": "Delegating constructors",
+      "slug": "delegating-constructors",
+      "source": "https://www.learncpp.com/cpp-tutorial/delegating-constructors/",
+      "modified": "2025-01-21T20:19:17"
+    },
+    {
+      "number": "14.13",
+      "title": "Temporary class objects",
+      "slug": "temporary-class-objects",
+      "source": "https://www.learncpp.com/cpp-tutorial/temporary-class-objects/",
+      "modified": "2024-12-20T01:35:37"
+    },
+    {
+      "number": "14.14",
+      "title": "Introduction to the copy constructor",
+      "slug": "introduction-to-the-copy-constructor",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-the-copy-constructor/",
+      "modified": "2024-12-19T22:09:06"
+    },
+    {
+      "number": "14.15",
+      "title": "Class initialization and copy elision",
+      "slug": "class-initialization-and-copy-elision",
+      "source": "https://www.learncpp.com/cpp-tutorial/class-initialization-and-copy-elision/",
+      "modified": "2024-11-14T14:28:07"
+    },
+    {
+      "number": "14.16",
+      "title": "Converting constructors and the explicit keyword",
+      "slug": "converting-constructors-and-the-explicit-keyword",
+      "source": "https://www.learncpp.com/cpp-tutorial/converting-constructors-and-the-explicit-keyword/",
+      "modified": "2025-02-01T15:25:25"
+    },
+    {
+      "number": "14.17",
+      "title": "Constexpr aggregates and classes",
+      "slug": "constexpr-aggregates-and-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/constexpr-aggregates-and-classes/",
+      "modified": "2025-01-29T23:45:58"
+    },
+    {
+      "number": "14.x",
+      "title": "Chapter 14 summary and quiz",
+      "slug": "chapter-14-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-14-summary-and-quiz/",
+      "modified": "2024-08-17T21:21:19"
+    },
+    {
+      "number": "15.1",
+      "title": "The hidden “this” pointer and member function chaining",
+      "slug": "the-hidden-this-pointer-and-member-function-chaining",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-hidden-this-pointer-and-member-function-chaining/",
+      "modified": "2024-12-29T16:50:36"
+    },
+    {
+      "number": "15.2",
+      "title": "Classes and header files",
+      "slug": "classes-and-header-files",
+      "source": "https://www.learncpp.com/cpp-tutorial/classes-and-header-files/",
+      "modified": "2025-01-03T17:14:17"
+    },
+    {
+      "number": "15.3",
+      "title": "Nested types (member types)",
+      "slug": "nested-types-member-types",
+      "source": "https://www.learncpp.com/cpp-tutorial/nested-types-member-types/",
+      "modified": "2025-02-27T00:54:55"
+    },
+    {
+      "number": "15.4",
+      "title": "Introduction to destructors",
+      "slug": "introduction-to-destructors",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-destructors/",
+      "modified": "2024-09-23T18:23:44"
+    },
+    {
+      "number": "15.5",
+      "title": "Class templates with member functions",
+      "slug": "class-templates-with-member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/class-templates-with-member-functions/",
+      "modified": "2024-08-06T16:57:17"
+    },
+    {
+      "number": "15.6",
+      "title": "Static member variables",
+      "slug": "static-member-variables",
+      "source": "https://www.learncpp.com/cpp-tutorial/static-member-variables/",
+      "modified": "2024-12-02T20:15:40"
+    },
+    {
+      "number": "15.7",
+      "title": "Static member functions",
+      "slug": "static-member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/static-member-functions/",
+      "modified": "2024-10-18T10:08:26"
+    },
+    {
+      "number": "15.8",
+      "title": "Friend non-member functions",
+      "slug": "friend-non-member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/friend-non-member-functions/",
+      "modified": "2024-05-08T10:47:28"
+    },
+    {
+      "number": "15.9",
+      "title": "Friend classes and friend member functions",
+      "slug": "friend-classes-and-friend-member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/friend-classes-and-friend-member-functions/",
+      "modified": "2024-04-30T21:18:02"
+    },
+    {
+      "number": "15.10",
+      "title": "Ref qualifiers",
+      "slug": "ref-qualifiers",
+      "source": "https://www.learncpp.com/cpp-tutorial/ref-qualifiers/",
+      "modified": "2024-09-25T14:09:11"
+    },
+    {
+      "number": "15.x",
+      "title": "Chapter 15 summary and quiz",
+      "slug": "chapter-15-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-15-summary-and-quiz/",
+      "modified": "2024-05-03T12:27:51"
+    },
+    {
+      "number": "16.1",
+      "title": "Introduction to containers and arrays",
+      "slug": "introduction-to-containers-and-arrays",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-containers-and-arrays/",
+      "modified": "2024-08-13T00:36:15"
+    },
+    {
+      "number": "16.2",
+      "title": "Introduction to std::vector and list constructors",
+      "slug": "introduction-to-stdvector-and-list-constructors",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-stdvector-and-list-constructors/",
+      "modified": "2024-12-26T17:39:52"
+    },
+    {
+      "number": "16.3",
+      "title": "std::vector and the unsigned length and subscript problem",
+      "slug": "stdvector-and-the-unsigned-length-and-subscript-problem",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdvector-and-the-unsigned-length-and-subscript-problem/",
+      "modified": "2024-11-11T13:51:29"
+    },
+    {
+      "number": "16.4",
+      "title": "Passing std::vector",
+      "slug": "passing-stdvector",
+      "source": "https://www.learncpp.com/cpp-tutorial/passing-stdvector/",
+      "modified": "2024-03-21T15:34:34"
+    },
+    {
+      "number": "16.5",
+      "title": "Returning std::vector, and an introduction to move semantics",
+      "slug": "returning-stdvector-and-an-introduction-to-move-semantics",
+      "source": "https://www.learncpp.com/cpp-tutorial/returning-stdvector-and-an-introduction-to-move-semantics/",
+      "modified": "2024-12-16T12:27:29"
+    },
+    {
+      "number": "16.6",
+      "title": "Arrays and loops",
+      "slug": "arrays-and-loops",
+      "source": "https://www.learncpp.com/cpp-tutorial/arrays-and-loops/",
+      "modified": "2024-12-14T16:26:27"
+    },
+    {
+      "number": "16.7",
+      "title": "Arrays, loops, and sign challenge solutions",
+      "slug": "arrays-loops-and-sign-challenge-solutions",
+      "source": "https://www.learncpp.com/cpp-tutorial/arrays-loops-and-sign-challenge-solutions/",
+      "modified": "2024-10-19T18:04:58"
+    },
+    {
+      "number": "16.8",
+      "title": "Range-based for loops (for-each)",
+      "slug": "range-based-for-loops-for-each",
+      "source": "https://www.learncpp.com/cpp-tutorial/range-based-for-loops-for-each/",
+      "modified": "2024-12-28T17:47:44"
+    },
+    {
+      "number": "16.9",
+      "title": "Array indexing and length using enumerators",
+      "slug": "array-indexing-and-length-using-enumerators",
+      "source": "https://www.learncpp.com/cpp-tutorial/array-indexing-and-length-using-enumerators/",
+      "modified": "2024-05-08T15:42:16"
+    },
+    {
+      "number": "16.10",
+      "title": "std::vector resizing and capacity",
+      "slug": "stdvector-resizing-and-capacity",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdvector-resizing-and-capacity/",
+      "modified": "2024-01-10T19:22:56"
+    },
+    {
+      "number": "16.11",
+      "title": "std::vector and stack behavior",
+      "slug": "stdvector-and-stack-behavior",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdvector-and-stack-behavior/",
+      "modified": "2024-10-06T16:33:32"
+    },
+    {
+      "number": "16.12",
+      "title": "std::vector<bool>",
+      "slug": "stdvector-bool",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdvector-bool/",
+      "modified": "2024-01-10T19:23:12"
+    },
+    {
+      "number": "16.x",
+      "title": "Chapter 16 summary and quiz",
+      "slug": "chapter-16-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-16-summary-and-quiz/",
+      "modified": "2025-02-04T21:23:18"
+    },
+    {
+      "number": "17.1",
+      "title": "Introduction to std::array",
+      "slug": "introduction-to-stdarray",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-stdarray/",
+      "modified": "2024-07-22T14:17:52"
+    },
+    {
+      "number": "17.2",
+      "title": "std::array length and indexing",
+      "slug": "stdarray-length-and-indexing",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdarray-length-and-indexing/",
+      "modified": "2024-08-15T09:25:19"
+    },
+    {
+      "number": "17.3",
+      "title": "Passing and returning std::array",
+      "slug": "passing-and-returning-stdarray",
+      "source": "https://www.learncpp.com/cpp-tutorial/passing-and-returning-stdarray/",
+      "modified": "2024-12-02T13:10:35"
+    },
+    {
+      "number": "17.4",
+      "title": "std::array of class types, and brace elision",
+      "slug": "stdarray-of-class-types-and-brace-elision",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdarray-of-class-types-and-brace-elision/",
+      "modified": "2024-09-29T18:17:05"
+    },
+    {
+      "number": "17.5",
+      "title": "Arrays of references via std::reference_wrapper",
+      "slug": "arrays-of-references-via-stdreference_wrapper",
+      "source": "https://www.learncpp.com/cpp-tutorial/arrays-of-references-via-stdreference_wrapper/",
+      "modified": "2023-10-14T13:25:09"
+    },
+    {
+      "number": "17.6",
+      "title": "std::array and enumerations",
+      "slug": "stdarray-and-enumerations",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdarray-and-enumerations/",
+      "modified": "2025-02-01T15:01:56"
+    },
+    {
+      "number": "17.7",
+      "title": "Introduction to C-style arrays",
+      "slug": "introduction-to-c-style-arrays",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-c-style-arrays/",
+      "modified": "2024-10-13T20:31:30"
+    },
+    {
+      "number": "17.8",
+      "title": "C-style array decay",
+      "slug": "c-style-array-decay",
+      "source": "https://www.learncpp.com/cpp-tutorial/c-style-array-decay/",
+      "modified": "2025-01-17T22:29:48"
+    },
+    {
+      "number": "17.9",
+      "title": "Pointer arithmetic and subscripting",
+      "slug": "pointer-arithmetic-and-subscripting",
+      "source": "https://www.learncpp.com/cpp-tutorial/pointer-arithmetic-and-subscripting/",
+      "modified": "2024-08-10T16:19:16"
+    },
+    {
+      "number": "17.10",
+      "title": "C-style strings",
+      "slug": "c-style-strings",
+      "source": "https://www.learncpp.com/cpp-tutorial/c-style-strings/",
+      "modified": "2024-05-25T16:20:02"
+    },
+    {
+      "number": "17.11",
+      "title": "C-style string symbolic constants",
+      "slug": "c-style-string-symbolic-constants",
+      "source": "https://www.learncpp.com/cpp-tutorial/c-style-string-symbolic-constants/",
+      "modified": "2023-10-25T14:50:53"
+    },
+    {
+      "number": "17.12",
+      "title": "Multidimensional C-style Arrays",
+      "slug": "multidimensional-c-style-arrays",
+      "source": "https://www.learncpp.com/cpp-tutorial/multidimensional-c-style-arrays/",
+      "modified": "2023-11-24T09:59:18"
+    },
+    {
+      "number": "17.13",
+      "title": "Multidimensional std::array",
+      "slug": "multidimensional-stdarray",
+      "source": "https://www.learncpp.com/cpp-tutorial/multidimensional-stdarray/",
+      "modified": "2024-06-26T14:23:50"
+    },
+    {
+      "number": "17.x",
+      "title": "Chapter 17 summary and quiz",
+      "slug": "chapter-17-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-17-summary-and-quiz/",
+      "modified": "2025-01-06T14:06:38"
+    },
+    {
+      "number": "18.1",
+      "title": "Sorting an array using selection sort",
+      "slug": "sorting-an-array-using-selection-sort",
+      "source": "https://www.learncpp.com/cpp-tutorial/sorting-an-array-using-selection-sort/",
+      "modified": "2023-09-11T12:00:33"
+    },
+    {
+      "number": "18.2",
+      "title": "Introduction to iterators",
+      "slug": "introduction-to-iterators",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-iterators/",
+      "modified": "2025-02-11T19:06:56"
+    },
+    {
+      "number": "18.3",
+      "title": "Introduction to standard library algorithms",
+      "slug": "introduction-to-standard-library-algorithms",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-standard-library-algorithms/",
+      "modified": "2024-09-04T13:09:11"
+    },
+    {
+      "number": "18.4",
+      "title": "Timing your code",
+      "slug": "timing-your-code",
+      "source": "https://www.learncpp.com/cpp-tutorial/timing-your-code/",
+      "modified": "2023-10-31T13:08:59"
+    },
+    {
+      "number": "19.1",
+      "title": "Dynamic memory allocation with new and delete",
+      "slug": "dynamic-memory-allocation-with-new-and-delete",
+      "source": "https://www.learncpp.com/cpp-tutorial/dynamic-memory-allocation-with-new-and-delete/",
+      "modified": "2025-01-01T22:05:56"
+    },
+    {
+      "number": "19.2",
+      "title": "Dynamically allocating arrays",
+      "slug": "dynamically-allocating-arrays",
+      "source": "https://www.learncpp.com/cpp-tutorial/dynamically-allocating-arrays/",
+      "modified": "2023-11-20T10:30:58"
+    },
+    {
+      "number": "19.3",
+      "title": "Destructors",
+      "slug": "destructors",
+      "source": "https://www.learncpp.com/cpp-tutorial/destructors/",
+      "modified": "2023-11-30T12:46:45"
+    },
+    {
+      "number": "19.4",
+      "title": "Pointers to pointers and dynamic multidimensional arrays",
+      "slug": "pointers-to-pointers",
+      "source": "https://www.learncpp.com/cpp-tutorial/pointers-to-pointers/",
+      "modified": "2024-09-09T21:42:25"
+    },
+    {
+      "number": "19.5",
+      "title": "Void pointers",
+      "slug": "void-pointers",
+      "source": "https://www.learncpp.com/cpp-tutorial/void-pointers/",
+      "modified": "2023-09-29T12:12:21"
+    },
+    {
+      "number": "20.1",
+      "title": "Function Pointers",
+      "slug": "function-pointers",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-pointers/",
+      "modified": "2024-12-14T23:17:57"
+    },
+    {
+      "number": "20.2",
+      "title": "The stack and the heap",
+      "slug": "the-stack-and-the-heap",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-stack-and-the-heap/",
+      "modified": "2024-06-25T22:14:08"
+    },
+    {
+      "number": "20.3",
+      "title": "Recursion",
+      "slug": "recursion",
+      "source": "https://www.learncpp.com/cpp-tutorial/recursion/",
+      "modified": "2024-02-05T14:27:06"
+    },
+    {
+      "number": "20.4",
+      "title": "Command line arguments",
+      "slug": "command-line-arguments",
+      "source": "https://www.learncpp.com/cpp-tutorial/command-line-arguments/",
+      "modified": "2024-06-25T13:18:06"
+    },
+    {
+      "number": "20.5",
+      "title": "Ellipsis (and why to avoid them)",
+      "slug": "ellipsis-and-why-to-avoid-them",
+      "source": "https://www.learncpp.com/cpp-tutorial/ellipsis-and-why-to-avoid-them/",
+      "modified": "2023-09-11T16:44:06"
+    },
+    {
+      "number": "20.6",
+      "title": "Introduction to lambdas (anonymous functions)",
+      "slug": "introduction-to-lambdas-anonymous-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/",
+      "modified": "2024-06-14T14:42:02"
+    },
+    {
+      "number": "20.7",
+      "title": "Lambda captures",
+      "slug": "lambda-captures",
+      "source": "https://www.learncpp.com/cpp-tutorial/lambda-captures/",
+      "modified": "2024-12-04T19:00:02"
+    },
+    {
+      "number": "20.x",
+      "title": "Chapter 20 summary and quiz",
+      "slug": "chapter-20-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-20-summary-and-quiz/",
+      "modified": "2025-02-08T21:01:02"
+    },
+    {
+      "number": "21.1",
+      "title": "Introduction to operator overloading",
+      "slug": "introduction-to-operator-overloading",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-operator-overloading/",
+      "modified": "2023-09-11T11:24:59"
+    },
+    {
+      "number": "21.2",
+      "title": "Overloading the arithmetic operators using friend functions",
+      "slug": "overloading-the-arithmetic-operators-using-friend-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-arithmetic-operators-using-friend-functions/",
+      "modified": "2024-10-21T13:47:48"
+    },
+    {
+      "number": "21.3",
+      "title": "Overloading operators using normal functions",
+      "slug": "overloading-operators-using-normal-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-operators-using-normal-functions/",
+      "modified": "2023-09-11T11:25:06"
+    },
+    {
+      "number": "21.4",
+      "title": "Overloading the I/O operators",
+      "slug": "overloading-the-io-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-io-operators/",
+      "modified": "2025-01-29T14:55:59"
+    },
+    {
+      "number": "21.5",
+      "title": "Overloading operators using member functions",
+      "slug": "overloading-operators-using-member-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-operators-using-member-functions/",
+      "modified": "2023-10-30T13:06:36"
+    },
+    {
+      "number": "21.6",
+      "title": "Overloading unary operators +, -, and !",
+      "slug": "overloading-unary-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-unary-operators/",
+      "modified": "2023-11-25T16:59:34"
+    },
+    {
+      "number": "21.7",
+      "title": "Overloading the comparison operators",
+      "slug": "overloading-the-comparison-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-comparison-operators/",
+      "modified": "2024-02-07T09:23:55"
+    },
+    {
+      "number": "21.8",
+      "title": "Overloading the increment and decrement operators",
+      "slug": "overloading-the-increment-and-decrement-operators",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-increment-and-decrement-operators/",
+      "modified": "2023-11-25T17:01:36"
+    },
+    {
+      "number": "21.9",
+      "title": "Overloading the subscript operator",
+      "slug": "overloading-the-subscript-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-subscript-operator/",
+      "modified": "2025-02-02T22:17:52"
+    },
+    {
+      "number": "21.10",
+      "title": "Overloading the parenthesis operator",
+      "slug": "overloading-the-parenthesis-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-parenthesis-operator/",
+      "modified": "2024-11-14T13:51:55"
+    },
+    {
+      "number": "21.11",
+      "title": "Overloading typecasts",
+      "slug": "overloading-typecasts",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-typecasts/",
+      "modified": "2025-03-14T12:09:44"
+    },
+    {
+      "number": "21.12",
+      "title": "Overloading the assignment operator",
+      "slug": "overloading-the-assignment-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-the-assignment-operator/",
+      "modified": "2024-07-22T14:42:30"
+    },
+    {
+      "number": "21.13",
+      "title": "Shallow vs. deep copying",
+      "slug": "shallow-vs-deep-copying",
+      "source": "https://www.learncpp.com/cpp-tutorial/shallow-vs-deep-copying/",
+      "modified": "2023-09-11T12:40:40"
+    },
+    {
+      "number": "21.14",
+      "title": "Overloading operators and function templates",
+      "slug": "overloading-operators-and-function-templates",
+      "source": "https://www.learncpp.com/cpp-tutorial/overloading-operators-and-function-templates/",
+      "modified": "2023-09-11T12:40:44"
+    },
+    {
+      "number": "21.x",
+      "title": "Chapter 21 summary and quiz",
+      "slug": "chapter-21-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-21-summary-and-quiz/",
+      "modified": "2024-12-28T19:11:02"
+    },
+    {
+      "number": "21.y",
+      "title": "Chapter 21 project",
+      "slug": "chapter-21-project",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-21-project/",
+      "modified": "2024-09-13T10:30:17"
+    },
+    {
+      "number": "22.1",
+      "title": "Introduction to smart pointers and move semantics",
+      "slug": "introduction-to-smart-pointers-move-semantics",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-smart-pointers-move-semantics/",
+      "modified": "2025-02-04T20:44:02"
+    },
+    {
+      "number": "22.2",
+      "title": "R-value references",
+      "slug": "rvalue-references",
+      "source": "https://www.learncpp.com/cpp-tutorial/rvalue-references/",
+      "modified": "2024-05-15T14:32:09"
+    },
+    {
+      "number": "22.3",
+      "title": "Move constructors and move assignment",
+      "slug": "move-constructors-and-move-assignment",
+      "source": "https://www.learncpp.com/cpp-tutorial/move-constructors-and-move-assignment/",
+      "modified": "2025-02-18T20:16:46"
+    },
+    {
+      "number": "22.4",
+      "title": "std::move",
+      "slug": "stdmove",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdmove/",
+      "modified": "2024-05-08T17:12:04"
+    },
+    {
+      "number": "22.5",
+      "title": "std::unique_ptr",
+      "slug": "stdunique_ptr",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdunique_ptr/",
+      "modified": "2024-08-20T09:16:30"
+    },
+    {
+      "number": "22.6",
+      "title": "std::shared_ptr",
+      "slug": "stdshared_ptr",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdshared_ptr/",
+      "modified": "2024-06-02T16:11:45"
+    },
+    {
+      "number": "22.7",
+      "title": "Circular dependency issues with std::shared_ptr, and std::weak_ptr",
+      "slug": "circular-dependency-issues-with-stdshared_ptr-and-stdweak_ptr",
+      "source": "https://www.learncpp.com/cpp-tutorial/circular-dependency-issues-with-stdshared_ptr-and-stdweak_ptr/",
+      "modified": "2024-07-22T14:20:57"
+    },
+    {
+      "number": "22.x",
+      "title": "Chapter 22 summary and quiz",
+      "slug": "chapter-22-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-22-summary-and-quiz/",
+      "modified": "2025-01-06T16:12:59"
+    },
+    {
+      "number": "23.1",
+      "title": "Object relationships",
+      "slug": "object-relationships",
+      "source": "https://www.learncpp.com/cpp-tutorial/object-relationships/",
+      "modified": "2023-09-11T11:13:20"
+    },
+    {
+      "number": "23.2",
+      "title": "Composition",
+      "slug": "composition",
+      "source": "https://www.learncpp.com/cpp-tutorial/composition/",
+      "modified": "2023-09-11T11:13:23"
+    },
+    {
+      "number": "23.3",
+      "title": "Aggregation",
+      "slug": "aggregation",
+      "source": "https://www.learncpp.com/cpp-tutorial/aggregation/",
+      "modified": "2024-04-16T16:50:49"
+    },
+    {
+      "number": "23.4",
+      "title": "Association",
+      "slug": "association",
+      "source": "https://www.learncpp.com/cpp-tutorial/association/",
+      "modified": "2023-12-07T12:03:29"
+    },
+    {
+      "number": "23.5",
+      "title": "Dependencies",
+      "slug": "dependencies",
+      "source": "https://www.learncpp.com/cpp-tutorial/dependencies/",
+      "modified": "2023-09-11T11:13:34"
+    },
+    {
+      "number": "23.6",
+      "title": "Container classes",
+      "slug": "container-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/container-classes/",
+      "modified": "2024-12-30T00:51:39"
+    },
+    {
+      "number": "23.7",
+      "title": "std::initializer_list",
+      "slug": "stdinitializer_list",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdinitializer_list/",
+      "modified": "2024-06-05T14:34:53"
+    },
+    {
+      "number": "23.x",
+      "title": "Chapter 23 summary and quiz",
+      "slug": "chapter-23-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-23-summary-and-quiz/",
+      "modified": "2024-08-29T13:43:12"
+    },
+    {
+      "number": "24.1",
+      "title": "Introduction to inheritance",
+      "slug": "introduction-to-inheritance",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-inheritance/",
+      "modified": "2024-06-05T14:35:20"
+    },
+    {
+      "number": "24.2",
+      "title": "Basic inheritance in C++",
+      "slug": "basic-inheritance-in-c",
+      "source": "https://www.learncpp.com/cpp-tutorial/basic-inheritance-in-c/",
+      "modified": "2023-09-11T11:08:30"
+    },
+    {
+      "number": "24.3",
+      "title": "Order of construction of derived classes",
+      "slug": "order-of-construction-of-derived-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/order-of-construction-of-derived-classes/",
+      "modified": "2024-04-30T12:16:59"
+    },
+    {
+      "number": "24.4",
+      "title": "Constructors and initialization of derived classes",
+      "slug": "constructors-and-initialization-of-derived-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/constructors-and-initialization-of-derived-classes/",
+      "modified": "2023-09-11T11:08:40"
+    },
+    {
+      "number": "24.5",
+      "title": "Inheritance and access specifiers",
+      "slug": "inheritance-and-access-specifiers",
+      "source": "https://www.learncpp.com/cpp-tutorial/inheritance-and-access-specifiers/",
+      "modified": "2023-09-11T11:08:42"
+    },
+    {
+      "number": "24.6",
+      "title": "Adding new functionality to a derived class",
+      "slug": "adding-new-functionality-to-a-derived-class",
+      "source": "https://www.learncpp.com/cpp-tutorial/adding-new-functionality-to-a-derived-class/",
+      "modified": "2023-09-11T11:08:46"
+    },
+    {
+      "number": "24.7",
+      "title": "Calling inherited functions and overriding behavior",
+      "slug": "calling-inherited-functions-and-overriding-behavior",
+      "source": "https://www.learncpp.com/cpp-tutorial/calling-inherited-functions-and-overriding-behavior/",
+      "modified": "2024-06-09T20:05:38"
+    },
+    {
+      "number": "24.8",
+      "title": "Hiding inherited functionality",
+      "slug": "hiding-inherited-functionality",
+      "source": "https://www.learncpp.com/cpp-tutorial/hiding-inherited-functionality/",
+      "modified": "2024-07-17T20:36:42"
+    },
+    {
+      "number": "24.9",
+      "title": "Multiple inheritance",
+      "slug": "multiple-inheritance",
+      "source": "https://www.learncpp.com/cpp-tutorial/multiple-inheritance/",
+      "modified": "2024-07-11T22:09:55"
+    },
+    {
+      "number": "24.x",
+      "title": "Chapter 24 summary and quiz",
+      "slug": "chapter-24-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-24-summary-and-quiz/",
+      "modified": "2024-01-31T23:20:47"
+    },
+    {
+      "number": "25.1",
+      "title": "Pointers and references to the base class of derived objects",
+      "slug": "pointers-and-references-to-the-base-class-of-derived-objects",
+      "source": "https://www.learncpp.com/cpp-tutorial/pointers-and-references-to-the-base-class-of-derived-objects/",
+      "modified": "2024-11-25T16:38:20"
+    },
+    {
+      "number": "25.2",
+      "title": "Virtual functions and polymorphism",
+      "slug": "virtual-functions",
+      "source": "https://www.learncpp.com/cpp-tutorial/virtual-functions/",
+      "modified": "2024-12-11T20:07:26"
+    },
+    {
+      "number": "25.3",
+      "title": "The override and final specifiers, and covariant return types",
+      "slug": "the-override-and-final-specifiers-and-covariant-return-types",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-override-and-final-specifiers-and-covariant-return-types/",
+      "modified": "2024-12-29T17:51:22"
+    },
+    {
+      "number": "25.4",
+      "title": "Virtual destructors, virtual assignment, and overriding virtualization",
+      "slug": "virtual-destructors-virtual-assignment-and-overriding-virtualization",
+      "source": "https://www.learncpp.com/cpp-tutorial/virtual-destructors-virtual-assignment-and-overriding-virtualization/",
+      "modified": "2024-10-18T17:01:10"
+    },
+    {
+      "number": "25.5",
+      "title": "Early binding and late binding",
+      "slug": "early-binding-and-late-binding",
+      "source": "https://www.learncpp.com/cpp-tutorial/early-binding-and-late-binding/",
+      "modified": "2024-10-20T15:18:11"
+    },
+    {
+      "number": "25.6",
+      "title": "The virtual table",
+      "slug": "the-virtual-table",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-virtual-table/",
+      "modified": "2024-12-07T03:18:51"
+    },
+    {
+      "number": "25.7",
+      "title": "Pure virtual functions, abstract base classes, and interface classes",
+      "slug": "pure-virtual-functions-abstract-base-classes-and-interface-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/pure-virtual-functions-abstract-base-classes-and-interface-classes/",
+      "modified": "2024-10-01T15:43:20"
+    },
+    {
+      "number": "25.8",
+      "title": "Virtual base classes",
+      "slug": "virtual-base-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/virtual-base-classes/",
+      "modified": "2023-09-11T11:05:41"
+    },
+    {
+      "number": "25.9",
+      "title": "Object slicing",
+      "slug": "object-slicing",
+      "source": "https://www.learncpp.com/cpp-tutorial/object-slicing/",
+      "modified": "2024-10-28T22:02:45"
+    },
+    {
+      "number": "25.10",
+      "title": "Dynamic casting",
+      "slug": "dynamic-casting",
+      "source": "https://www.learncpp.com/cpp-tutorial/dynamic-casting/",
+      "modified": "2024-12-29T17:43:16"
+    },
+    {
+      "number": "25.11",
+      "title": "Printing inherited classes using operator<<",
+      "slug": "printing-inherited-classes-using-operator",
+      "source": "https://www.learncpp.com/cpp-tutorial/printing-inherited-classes-using-operator/",
+      "modified": "2024-02-18T21:22:42"
+    },
+    {
+      "number": "25.x",
+      "title": "Chapter 25 summary and quiz",
+      "slug": "chapter-25-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-25-summary-and-quiz/",
+      "modified": "2025-02-19T16:58:35"
+    },
+    {
+      "number": "26.1",
+      "title": "Template classes",
+      "slug": "template-classes",
+      "source": "https://www.learncpp.com/cpp-tutorial/template-classes/",
+      "modified": "2024-07-23T13:00:40"
+    },
+    {
+      "number": "26.2",
+      "title": "Template non-type parameters",
+      "slug": "template-non-type-parameters",
+      "source": "https://www.learncpp.com/cpp-tutorial/template-non-type-parameters/",
+      "modified": "2023-09-11T11:00:48"
+    },
+    {
+      "number": "26.3",
+      "title": "Function template specialization",
+      "slug": "function-template-specialization",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-template-specialization/",
+      "modified": "2024-07-30T14:45:37"
+    },
+    {
+      "number": "26.4",
+      "title": "Class template specialization",
+      "slug": "class-template-specialization",
+      "source": "https://www.learncpp.com/cpp-tutorial/class-template-specialization/",
+      "modified": "2024-07-05T17:15:33"
+    },
+    {
+      "number": "26.5",
+      "title": "Partial template specialization",
+      "slug": "partial-template-specialization",
+      "source": "https://www.learncpp.com/cpp-tutorial/partial-template-specialization/",
+      "modified": "2024-03-16T15:53:05"
+    },
+    {
+      "number": "26.6",
+      "title": "Partial template specialization for pointers",
+      "slug": "partial-template-specialization-for-pointers",
+      "source": "https://www.learncpp.com/cpp-tutorial/partial-template-specialization-for-pointers/",
+      "modified": "2024-03-29T10:09:26"
+    },
+    {
+      "number": "26.x",
+      "title": "Chapter 26 summary and quiz",
+      "slug": "chapter-26-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-26-summary-and-quiz/",
+      "modified": "2023-09-11T11:01:41"
+    },
+    {
+      "number": "27.1",
+      "title": "The need for exceptions",
+      "slug": "the-need-for-exceptions",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-need-for-exceptions/",
+      "modified": "2024-05-23T08:57:22"
+    },
+    {
+      "number": "27.2",
+      "title": "Basic exception handling",
+      "slug": "basic-exception-handling",
+      "source": "https://www.learncpp.com/cpp-tutorial/basic-exception-handling/",
+      "modified": "2025-01-06T14:25:19"
+    },
+    {
+      "number": "27.3",
+      "title": "Exceptions, functions, and stack unwinding",
+      "slug": "exceptions-functions-and-stack-unwinding",
+      "source": "https://www.learncpp.com/cpp-tutorial/exceptions-functions-and-stack-unwinding/",
+      "modified": "2024-09-29T18:12:01"
+    },
+    {
+      "number": "27.4",
+      "title": "Uncaught exceptions and catch-all handlers",
+      "slug": "uncaught-exceptions-catch-all-handlers",
+      "source": "https://www.learncpp.com/cpp-tutorial/uncaught-exceptions-catch-all-handlers/",
+      "modified": "2024-09-12T12:20:17"
+    },
+    {
+      "number": "27.5",
+      "title": "Exceptions, classes, and inheritance",
+      "slug": "exceptions-classes-and-inheritance",
+      "source": "https://www.learncpp.com/cpp-tutorial/exceptions-classes-and-inheritance/",
+      "modified": "2025-01-29T23:37:26"
+    },
+    {
+      "number": "27.6",
+      "title": "Rethrowing exceptions",
+      "slug": "rethrowing-exceptions",
+      "source": "https://www.learncpp.com/cpp-tutorial/rethrowing-exceptions/",
+      "modified": "2024-08-15T09:16:39"
+    },
+    {
+      "number": "27.7",
+      "title": "Function try blocks",
+      "slug": "function-try-blocks",
+      "source": "https://www.learncpp.com/cpp-tutorial/function-try-blocks/",
+      "modified": "2024-12-19T21:26:24"
+    },
+    {
+      "number": "27.8",
+      "title": "Exception dangers and downsides",
+      "slug": "exception-dangers-and-downsides",
+      "source": "https://www.learncpp.com/cpp-tutorial/exception-dangers-and-downsides/",
+      "modified": "2024-10-31T14:53:11"
+    },
+    {
+      "number": "27.9",
+      "title": "Exception specifications and noexcept",
+      "slug": "exception-specifications-and-noexcept",
+      "source": "https://www.learncpp.com/cpp-tutorial/exception-specifications-and-noexcept/",
+      "modified": "2024-10-31T15:05:12"
+    },
+    {
+      "number": "27.10",
+      "title": "std::move_if_noexcept",
+      "slug": "stdmove_if_noexcept",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdmove_if_noexcept/",
+      "modified": "2024-08-15T09:19:00"
+    },
+    {
+      "number": "27.x",
+      "title": "Chapter 27 summary and quiz",
+      "slug": "chapter-27-summary-and-quiz",
+      "source": "https://www.learncpp.com/cpp-tutorial/chapter-27-summary-and-quiz/",
+      "modified": "2023-10-07T22:03:42"
+    },
+    {
+      "number": "28.1",
+      "title": "Input and output (I/O) streams",
+      "slug": "input-and-output-io-streams",
+      "source": "https://www.learncpp.com/cpp-tutorial/input-and-output-io-streams/",
+      "modified": "2023-09-11T10:43:19"
+    },
+    {
+      "number": "28.2",
+      "title": "Input with istream",
+      "slug": "input-with-istream",
+      "source": "https://www.learncpp.com/cpp-tutorial/input-with-istream/",
+      "modified": "2024-12-23T21:39:44"
+    },
+    {
+      "number": "28.3",
+      "title": "Output with ostream and ios",
+      "slug": "output-with-ostream-and-ios",
+      "source": "https://www.learncpp.com/cpp-tutorial/output-with-ostream-and-ios/",
+      "modified": "2024-03-16T16:08:51"
+    },
+    {
+      "number": "28.4",
+      "title": "Stream classes for strings",
+      "slug": "stream-classes-for-strings",
+      "source": "https://www.learncpp.com/cpp-tutorial/stream-classes-for-strings/",
+      "modified": "2024-02-27T18:33:51"
+    },
+    {
+      "number": "28.5",
+      "title": "Stream states and input validation",
+      "slug": "stream-states-and-input-validation",
+      "source": "https://www.learncpp.com/cpp-tutorial/stream-states-and-input-validation/",
+      "modified": "2024-09-09T22:06:02"
+    },
+    {
+      "number": "28.6",
+      "title": "Basic file I/O",
+      "slug": "basic-file-io",
+      "source": "https://www.learncpp.com/cpp-tutorial/basic-file-io/",
+      "modified": "2024-02-27T20:19:31"
+    },
+    {
+      "number": "28.7",
+      "title": "Random file I/O",
+      "slug": "random-file-io",
+      "source": "https://www.learncpp.com/cpp-tutorial/random-file-io/",
+      "modified": "2024-04-16T21:21:20"
+    },
+    {
+      "number": "A.1",
+      "title": "Static and dynamic libraries",
+      "slug": "a1-static-and-dynamic-libraries",
+      "source": "https://www.learncpp.com/cpp-tutorial/a1-static-and-dynamic-libraries/",
+      "modified": "2023-09-21T11:51:14"
+    },
+    {
+      "number": "A.2",
+      "title": "Using libraries with Visual Studio",
+      "slug": "a2-using-libraries-with-visual-studio-2005-express",
+      "source": "https://www.learncpp.com/cpp-tutorial/a2-using-libraries-with-visual-studio-2005-express/",
+      "modified": "2024-08-22T19:20:17"
+    },
+    {
+      "number": "A.3",
+      "title": "Using libraries with Code::Blocks",
+      "slug": "a3-using-libraries-with-codeblocks",
+      "source": "https://www.learncpp.com/cpp-tutorial/a3-using-libraries-with-codeblocks/",
+      "modified": "2024-08-22T19:05:24"
+    },
+    {
+      "number": "A.4",
+      "title": "C++ FAQ",
+      "slug": "cpp-faq",
+      "source": "https://www.learncpp.com/cpp-tutorial/cpp-faq/",
+      "modified": "2025-02-11T17:21:12"
+    },
+    {
+      "number": "B.1",
+      "title": "Introduction to C++11",
+      "slug": "introduction-to-c11",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-c11/",
+      "modified": "2025-01-17T21:58:24"
+    },
+    {
+      "number": "B.2",
+      "title": "Introduction to C++14",
+      "slug": "introduction-to-c14",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-c14/",
+      "modified": "2024-01-25T13:33:38"
+    },
+    {
+      "number": "B.3",
+      "title": "Introduction to C++17",
+      "slug": "introduction-to-c17",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-c17/",
+      "modified": "2025-01-17T21:58:53"
+    },
+    {
+      "number": "B.4",
+      "title": "Introduction to C++20",
+      "slug": "introduction-to-c20",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-c20/",
+      "modified": "2025-01-17T22:05:29"
+    },
+    {
+      "number": "B.5",
+      "title": "Introduction to C++23",
+      "slug": "introduction-to-c23",
+      "source": "https://www.learncpp.com/cpp-tutorial/introduction-to-c23/",
+      "modified": "2025-01-17T22:11:02"
+    },
+    {
+      "number": "C.1",
+      "title": "The end?",
+      "slug": "appendix-c-the-end",
+      "source": "https://www.learncpp.com/cpp-tutorial/appendix-c-the-end/",
+      "modified": "2024-07-12T22:39:39"
+    },
+    {
+      "number": "21.1",
+      "title": "The Standard Library",
+      "slug": "the-standard-library",
+      "source": "https://www.learncpp.com/cpp-tutorial/the-standard-library/",
+      "modified": "2022-07-23T10:02:01"
+    },
+    {
+      "number": "21.2",
+      "title": "STL containers overview",
+      "slug": "stl-containers-overview",
+      "source": "https://www.learncpp.com/cpp-tutorial/stl-containers-overview/",
+      "modified": "2021-09-19T10:15:47"
+    },
+    {
+      "number": "21.3",
+      "title": "STL iterators overview",
+      "slug": "stl-iterators-overview",
+      "source": "https://www.learncpp.com/cpp-tutorial/stl-iterators-overview/",
+      "modified": "2023-01-27T10:27:10"
+    },
+    {
+      "number": "21.4",
+      "title": "STL algorithms overview",
+      "slug": "stl-algorithms-overview",
+      "source": "https://www.learncpp.com/cpp-tutorial/stl-algorithms-overview/",
+      "modified": "2021-10-21T11:03:01"
+    },
+    {
+      "number": "22.1",
+      "title": "std::string and std::wstring",
+      "slug": "stdstring-and-stdwstring",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-and-stdwstring/",
+      "modified": "2023-08-12T11:57:39"
+    },
+    {
+      "number": "22.2",
+      "title": "std::string construction and destruction",
+      "slug": "stdstring-construction-and-destruction",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-construction-and-destruction/",
+      "modified": "2023-06-15T16:09:02"
+    },
+    {
+      "number": "22.3",
+      "title": "std::string length and capacity",
+      "slug": "stdstring-length-and-capacity",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-length-and-capacity/",
+      "modified": "2022-08-15T11:07:32"
+    },
+    {
+      "number": "22.4",
+      "title": "std::string character access and conversion to C-style arrays",
+      "slug": "stdstring-character-access-and-conversion-to-c-style-arrays",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-character-access-and-conversion-to-c-style-arrays/",
+      "modified": "2022-09-16T23:49:55"
+    },
+    {
+      "number": "22.5",
+      "title": "std::string assignment and swapping",
+      "slug": "stdstring-assignment-and-swapping",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-assignment-and-swapping/",
+      "modified": "2022-09-16T23:50:20"
+    },
+    {
+      "number": "22.6",
+      "title": "std::string appending",
+      "slug": "stdstring-appending",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-appending/",
+      "modified": "2022-08-24T22:58:03"
+    },
+    {
+      "number": "22.7",
+      "title": "std::string inserting",
+      "slug": "stdstring-inserting",
+      "source": "https://www.learncpp.com/cpp-tutorial/stdstring-inserting/",
+      "modified": "2021-08-26T14:47:12"
+    }
+  ]
+}

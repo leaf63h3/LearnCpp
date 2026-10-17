@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In addition to dynamically allocating single values, we can also dynamically allocate arrays of variables. Unlike a fixed array, where the array size must ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>19.2 — Dynamically allocating arrays · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/dynamically-allocating-arrays/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 19 · Dynamic Allocation (under construction)</summary><div class="sidebar-title"><small>Chapter 19</small><strong>Dynamic Allocation (under construction)</strong></div>
+<ol class="sidebar-lessons"><li><a href="dynamic-memory-allocation-with-new-and-delete.html"><span class="lesson-number">19.1</span><span>Dynamic memory allocation with new and delete</span></a></li><li><a href="dynamically-allocating-arrays.html" aria-current="page"><span class="lesson-number">19.2</span><span>Dynamically allocating arrays</span></a></li><li><a href="destructors.html"><span class="lesson-number">19.3</span><span>Destructors</span></a></li><li><a href="pointers-to-pointers.html"><span class="lesson-number">19.4</span><span>Pointers to pointers and dynamic multidimensional arrays</span></a></li><li><a href="void-pointers.html"><span class="lesson-number">19.5</span><span>Void pointers</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 19</div>
+        <h1>19.2 — Dynamically allocating arrays</h1>
+        <div class="article-meta"><span>Updated: 2023-11-20 10:30</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In addition to dynamically allocating single values, we can also dynamically allocate arrays of variables.  Unlike a fixed array, where the array size must be fixed at compile time, dynamically allocating an array allows us to choose an array length at runtime (meaning our length does not need to be constexpr).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>In these lessons, we’ll be dynamically allocating C-style arrays, which is the most common type of dynamically allocated array.</p>
+<p>While you can dynamically allocate a <code>std::array</code>, you’re usually better off using a non-dynamically allocated <code>std::vector</code> in this case.
+</p></div>
+<p>To allocate an array dynamically, we use the array form of new and delete (often called new[] and delete[]):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a positive integer: ";
+    std::size_t length{};
+    std::cin &gt;&gt; length;
+
+    int* array{ new int[length]{} }; // use array new.  Note that length does not need to be constant!
+
+    std::cout &lt;&lt; "I just allocated an array of integers of length " &lt;&lt; length &lt;&lt; '\n';
+
+    array[0] = 5; // set element 0 to value 5
+
+    delete[] array; // use array delete to deallocate array
+
+    // we don't need to set array to nullptr/0 here because it's going out of scope immediately after this anyway
+
+    return 0;
+}</code></pre>
+<p>Because we are allocating an array, C++ knows that it should use the array version of new instead of the scalar version of new.   Essentially, the new[] operator is called, even though the [] isn’t placed next to the new keyword.</p>
+<p>The length of dynamically allocated arrays has type <code>std::size_t</code>. If you are using a non-constexpr int, you’ll need to <code>static_cast</code> to <code>std::size_t</code> since that is considered a narrowing conversion and your compiler will warn otherwise.</p>
+<p>Note that because this memory is allocated from a different place than the memory used for fixed arrays, the size of the array can be quite large.  You can run the program above and allocate an array of length 1,000,000 (or probably even 100,000,000) without issue.  Try it!  Because of this, programs that need to allocate a lot of memory in C++ typically do so dynamically.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Dynamically deleting arrays</p>
+<p>When deleting a dynamically allocated array, we have to use the array version of delete, which is delete[].</p>
+<p>This tells the CPU that it needs to clean up multiple variables instead of a single variable.  One of the most common mistakes that new programmers make when dealing with dynamic memory allocation is to use delete instead of delete[] when deleting a dynamically allocated array.  Using the scalar version of delete on an array will result in undefined behavior, such as data corruption, memory leaks, crashes, or other problems.</p>
+<p>One often asked question of array delete[] is, “How does array delete know how much memory to delete?”  The answer is that array new[] keeps track of how much memory was allocated to a variable, so that array delete[] can delete the proper amount.  Unfortunately, this size/length isn’t accessible to the programmer.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Dynamic arrays are almost identical to fixed arrays</p>
+<p>In lesson <a href="c-style-array-decay.html">17.8 -- C-style array decay</a>, you learned that a fixed array holds the memory address of the first array element.  You also learned that a fixed array can decay into a pointer that points to the first element of the array.  In this decayed form, the length of the fixed array is not available (and therefore neither is the size of the array via sizeof()), but otherwise there is little difference.</p>
+<p>A dynamic array starts its life as a pointer that points to the first element of the array.  Consequently, it has the same limitations in that it doesn’t know its length or size.  A dynamic array functions identically to a decayed fixed array, with the exception that the programmer is responsible for deallocating the dynamic array via the delete[] keyword.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Initializing dynamically allocated arrays</p>
+<p>If you want to initialize a dynamically allocated array to 0, the syntax is quite simple:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* array{ new int[length]{} };</code></pre>
+<p>Prior to C++11, there was no easy way to initialize a dynamic array to a non-zero value (initializer lists only worked for fixed arrays).  This means you had to loop through the array and assign element values explicitly.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* array = new int[5];
+array[0] = 9;
+array[1] = 7;
+array[2] = 5;
+array[3] = 3;
+array[4] = 1;</code></pre>
+<p>Super annoying!</p>
+<p>However, starting with C++11, it’s now possible to initialize dynamic arrays using initializer lists!</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int fixedArray[5] = { 9, 7, 5, 3, 1 }; // initialize a fixed array before C++11
+int* array{ new int[5]{ 9, 7, 5, 3, 1 } }; // initialize a dynamic array since C++11
+// To prevent writing the type twice, we can use auto. This is often done for types with long names.
+auto* array{ new int[5]{ 9, 7, 5, 3, 1 } };</code></pre>
+<p>Note that this syntax has no operator= between the array length and the initializer list.</p>
+<p>For consistency, fixed arrays can also be initialized using uniform initialization:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int fixedArray[]{ 9, 7, 5, 3, 1 }; // initialize a fixed array in C++11
+char fixedArray[]{ "Hello, world!" }; // initialize a fixed array in C++11</code></pre>
+<p>Explicitly stating the size of the array is optional.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Resizing arrays</p>
+<p>Dynamically allocating an array allows you to set the array length at the time of allocation.  However, C++ does not provide a built-in way to resize an array that has already been allocated.  It is possible to work around this limitation by dynamically allocating a new array, copying the elements over, and deleting the old array.  However, this is error prone, especially when the element type is a class (which have special rules governing how they are created).</p>
+<p>Consequently, we recommend avoiding doing this yourself.  Use <code>std::vector</code> instead.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<div class="quiz" style="clear: both">
+<p class="quiz-header">Question #1</p>
+<p>Write a program that:</p>
+<ul>
+<li>Asks the user how many names they wish to enter.
+</li>
+<li>Dynamically allocates a <code>std::string</code> array.
+</li>
+<li>Asks the user to enter each name.
+</li>
+<li>Calls <code>std::sort</code> to sort the names (See <a href="sorting-an-array-using-selection-sort.html#stdsort">18.1 -- Sorting an array using selection sort</a> and <a href="pointer-arithmetic-and-subscripting.html">17.9 -- Pointer arithmetic and subscripting</a>)
+</li>
+<li>Prints the sorted list of names.
+</li>
+</ul>
+<p><code>std::string</code> supports comparing strings via the comparison operators &lt; and &gt;. You don’t need to implement string comparison by hand.</p>
+<p>Your output should match this:</p>
+<pre>
+How many names would you like to enter? 5
+Enter name #1: Jason
+Enter name #2: Mark
+Enter name #3: Alex
+Enter name #4: Chris
+Enter name #5: John
+
+Here is your sorted list:
+Name #1: Alex
+Name #2: Chris
+Name #3: Jason
+Name #4: John
+Name #5: Mark
+</pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>You can use <code>std::getline()</code> to read in names that contain spaces (see lesson <a href="introduction-to-stdstring.html">5.7 -- Introduction to std::string</a>).
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>To use <code>std::sort()</code> with a pointer to an array, calculate begin and end manually</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">std::sort(array, array + arrayLength);</code></pre>
+</div>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt; // std::sort
+#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+std::size_t getNameCount()
+{
+    std::cout &lt;&lt; "How many names would you like to enter? ";
+    std::size_t length{};
+    std::cin &gt;&gt; length;
+
+    return length;
+}
+
+// Asks user to enter all the names
+void getNames(std::string* names, std::size_t length)
+{
+    for (std::size_t i{ 0 }; i &lt; length; ++i)
+    {
+        std::cout &lt;&lt; "Enter name #" &lt;&lt; i + 1 &lt;&lt; ": ";
+        std::getline(std::cin &gt;&gt; std::ws, names[i]);
+    }
+}
+
+// Prints the sorted names
+void printNames(std::string* names, std::size_t length)
+{
+    std::cout &lt;&lt; "\nHere is your sorted list:\n";
+
+    for (std::size_t i{ 0 }; i &lt; length; ++i)
+        std::cout &lt;&lt; "Name #" &lt;&lt; i + 1 &lt;&lt; ": " &lt;&lt; names[i] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::size_t length{ getNameCount() };
+
+    // Allocate an array to hold the names
+    auto* names{ new std::string[length]{} };
+
+    getNames(names, length);
+
+    // Sort the array
+    std::sort(names, names + length);
+
+    printNames(names, length);
+
+    // don't forget to use array delete
+    delete[] names;
+    // we don't need to set names to nullptr/0 here because it's going to go out
+    // of scope immediately after this anyway.
+
+    return 0;
+}</code></pre>
+</div>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="dynamic-memory-allocation-with-new-and-delete.html"><span class="nav-kicker">← Previous lesson</span>19.1 · Dynamic memory allocation with new and delete</a><a class="next" href="destructors.html"><span class="nav-kicker">Next lesson →</span>19.3 · Destructors</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Life is full of recurring patterns, relationships, and hierarchies between objects. By exploring and understanding these, we can gain insight into how real">
+  <meta name="robots" content="noindex,nofollow">
+  <title>23.1 — Object relationships · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/object-relationships/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 23 · Object Relationships</summary><div class="sidebar-title"><small>Chapter 23</small><strong>Object Relationships</strong></div>
+<ol class="sidebar-lessons"><li><a href="object-relationships.html" aria-current="page"><span class="lesson-number">23.1</span><span>Object relationships</span></a></li><li><a href="composition.html"><span class="lesson-number">23.2</span><span>Composition</span></a></li><li><a href="aggregation.html"><span class="lesson-number">23.3</span><span>Aggregation</span></a></li><li><a href="association.html"><span class="lesson-number">23.4</span><span>Association</span></a></li><li><a href="dependencies.html"><span class="lesson-number">23.5</span><span>Dependencies</span></a></li><li><a href="container-classes.html"><span class="lesson-number">23.6</span><span>Container classes</span></a></li><li><a href="stdinitializer_list.html"><span class="lesson-number">23.7</span><span>std::initializer_list</span></a></li><li><a href="chapter-23-summary-and-quiz.html"><span class="lesson-number">23.x</span><span>Chapter 23 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 23</div>
+        <h1>23.1 — Object relationships</h1>
+        <div class="article-meta"><span>Updated: 2023-09-11 11:13</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Life is full of recurring patterns, relationships, and hierarchies between objects.  By exploring and understanding these, we can gain insight into how real-life objects behave, enhancing our understanding of those objects.</p>
+<p>For example, let’s say one day you’re walking down the street, and you see a bright yellow object attached to a green shrubby object.  You’d probably recognize that the bright yellow thing is a flower, and the green shrubby thing is a plant.  Even though you’d never seen this particular type of plant before, you’d know that the green things are leaves, collecting sunlight.  You’d know that the flower helps the plant propagate itself.  You’d also know that if you killed the plant, the flower would die too.</p>
+<p>But how can you know all of this without ever encountering a plant of this type before?  You know this because you understand the abstract concept of plants, and recognize that this plant is an instantiation of that abstraction.  You know that most plants are composed (in part) of leaves, and some have flowers.  You know that the leaves interact with the sunlight (even if you don’t know how, exactly), and that the flower’s existence depends on the plant.  Because you know all of these things about plants in general, you can infer a lot about this plant.</p>
+<p>Similarly, programming is also full of recurring patterns, relationships and hierarchies.  Particularly when it comes to programming objects, the same patterns that govern real-life objects are applicable to the programming objects we create ourselves.  By examining these in more detail, we can better understand how to improve code reusability and write classes that are more extensible.</p>
+<p>In previous chapters, we’ve already explored some ideas around recurring patterns: we’ve created loops and functions to allow us to do a particular task many times.  Additionally, we’ve created our own enums, structs, and classes to allow us to instantiate objects of a given type.</p>
+<p>We’ve also explored some primitive forms of hierarchy, such as arrays (which allow us to group elements into a larger structure) and recursion, where a function calls a derivative version of itself.</p>
+<p>However, we haven’t yet focused much on the relationship between objects, particularly as it relates to programming.</p>
+<p><strong>Relationships between objects</strong></p>
+<p>There are many different kinds of relationships two objects may have in real-life, and we use specific “relation type” words to describe these relationships.  For example: a square “is-a” shape.  A car “has-a” steering wheel.  A computer programmer “uses-a” keyboard.  A flower “depends-on” a bee for pollination.  A student is a “member-of” a class.  And your brain exists as “part-of” you (at least, we can reasonably assume so if you’ve gotten this far).</p>
+<p>All of these relation types have useful analogies in C++.</p>
+<p>In this chapter, we’ll explore the nuances of the relation types “part-of”, “has-a”, “uses-a”, “depends-on”, and “member-of”, and show how they can be useful in the context of C++ classes.  We’ll also explore a couple of related topics that don’t fit nicely anywhere else.</p>
+<p>Then we’ll devote the following two chapters to exploring “is-a” relationships, via C++’s inheritance model and virtual functions.  Yup, it’s a biggie.</p>
+<p>Alright, enough context setting.  Let’s get to it.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="chapter-22-summary-and-quiz.html"><span class="nav-kicker">← Previous lesson</span>22.x · Chapter 22 summary and quiz</a><a class="next" href="composition.html"><span class="nav-kicker">Next lesson →</span>23.2 · Composition</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

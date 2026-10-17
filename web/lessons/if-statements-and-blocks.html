@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The first category of control flow statements we’ll talk about is conditional statements. A conditional statement is a statement that specifies whether som">
+  <meta name="robots" content="noindex,nofollow">
+  <title>8.2 — If statements and blocks · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/if-statements-and-blocks/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 8 · Control Flow</summary><div class="sidebar-title"><small>Chapter 8</small><strong>Control Flow</strong></div>
+<ol class="sidebar-lessons"><li><a href="control-flow-introduction.html"><span class="lesson-number">8.1</span><span>Control flow introduction</span></a></li><li><a href="if-statements-and-blocks.html" aria-current="page"><span class="lesson-number">8.2</span><span>If statements and blocks</span></a></li><li><a href="common-if-statement-problems.html"><span class="lesson-number">8.3</span><span>Common if statement problems</span></a></li><li><a href="constexpr-if-statements.html"><span class="lesson-number">8.4</span><span>Constexpr if statements</span></a></li><li><a href="switch-statement-basics.html"><span class="lesson-number">8.5</span><span>Switch statement basics</span></a></li><li><a href="switch-fallthrough-and-scoping.html"><span class="lesson-number">8.6</span><span>Switch fallthrough and scoping</span></a></li><li><a href="goto-statements.html"><span class="lesson-number">8.7</span><span>Goto statements</span></a></li><li><a href="introduction-to-loops-and-while-statements.html"><span class="lesson-number">8.8</span><span>Introduction to loops and while statements</span></a></li><li><a href="do-while-statements.html"><span class="lesson-number">8.9</span><span>Do while statements</span></a></li><li><a href="for-statements.html"><span class="lesson-number">8.10</span><span>For statements</span></a></li><li><a href="break-and-continue.html"><span class="lesson-number">8.11</span><span>Break and continue</span></a></li><li><a href="halts-exiting-your-program-early.html"><span class="lesson-number">8.12</span><span>Halts (exiting your program early)</span></a></li><li><a href="introduction-to-random-number-generation.html"><span class="lesson-number">8.13</span><span>Introduction to random number generation</span></a></li><li><a href="generating-random-numbers-using-mersenne-twister.html"><span class="lesson-number">8.14</span><span>Generating random numbers using Mersenne Twister</span></a></li><li><a href="global-random-numbers-random-h.html"><span class="lesson-number">8.15</span><span>Global random numbers (Random.h)</span></a></li><li><a href="chapter-8-summary-and-quiz.html"><span class="lesson-number">8.x</span><span>Chapter 8 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 8</div>
+        <h1>8.2 — If statements and blocks</h1>
+        <div class="article-meta"><span>Updated: 2025-03-05 15:29</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>The first category of control flow statements we’ll talk about is conditional statements.  A <strong>conditional statement</strong> is a statement that specifies whether some associated statement(s) should be executed or not.</p>
+<p>C++ supports two basic kinds of conditionals: <code>if statements</code> (which we introduced in lesson <a href="introduction-to-if-statements.html">4.10 -- Introduction to if statements</a>, and will talk about further here) and <code>switch statements</code> (which we’ll cover in a couple of lessons).</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quick if-statement recap</p>
+<p>The most basic kind of conditional statement in C++ is the <code>if statement</code>.  An <code>if statement</code> takes the form:</p>
+<pre>
+if (condition)
+    true_statement;
+</pre>
+<p>or with an optional <code>else statement</code>:</p>
+<pre>
+if (condition)
+    true_statement;
+else
+    false_statement;
+</pre>
+<p>If the <code>condition</code> evaluates to <code>true</code>, the <code>true_statement</code> executes.  If the <code>condition</code> evaluates to <code>false</code> and the optional <code>else statement</code> exists, the <code>false_statement</code> executes.</p>
+<p>Here is a simple program that uses an <code>if statement</code> with the optional <code>else statement</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "Enter a number: ";
+    int x{};
+    std::cin &gt;&gt; x;
+
+    if (x &gt; 10)
+        std::cout &lt;&lt; x &lt;&lt; " is greater than 10\n";
+    else
+        std::cout &lt;&lt; x &lt;&lt; " is not greater than 10\n";
+
+    return 0;
+}</code></pre>
+<p>This program works just like you’d expect:</p>
+<pre>
+Enter a number: 15
+15 is greater than 10
+</pre>
+<pre>
+Enter a number: 4
+4 is not greater than 10
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">If or else with multiple conditional statements</p>
+<p>New programmers often try something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace constants
+{
+    constexpr int minRideHeightCM { 140 };
+}
+
+int main()
+{
+    std::cout &lt;&lt; "Enter your height (in cm): ";
+    int x{};
+    std::cin &gt;&gt; x;
+
+    if (x &gt;= constants::minRideHeightCM)
+        std::cout &lt;&lt; "You are tall enough to ride.\n";
+    else
+        std::cout &lt;&lt; "You are not tall enough to ride.\n";
+        std::cout &lt;&lt; "Too bad!\n"; // focus on this line
+
+    return 0;
+}</code></pre>
+<p>However, consider the following run of the program:</p>
+<pre>
+Enter your height (in cm): 180
+You are tall enough to ride.
+Too bad!
+</pre>
+<p>This program doesn’t work as expected because the <code>true_statement</code> and <code>false_statement</code> can only be a single statement.  The indentation is deceiving us here -- the above program executes as if it had been written as follows:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace constants
+{
+    constexpr int minRideHeightCM { 140 };
+}
+
+int main()
+{
+    std::cout &lt;&lt; "Enter your height (in cm): ";
+    int x{};
+    std::cin &gt;&gt; x;
+
+    if (x &gt;= constants::minRideHeightCM)
+        std::cout &lt;&lt; "You are tall enough to ride.\n";
+    else
+        std::cout &lt;&lt; "You are not tall enough to ride.\n";
+
+    std::cout &lt;&lt; "Too bad!\n"; // focus on this line
+
+    return 0;
+}</code></pre>
+<p>This makes it clearer that “Too bad!” will always execute.</p>
+<p>However, it’s common to want to execute multiple statements based on some condition.  To do so, we can use a compound statement (block):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace constants
+{
+    constexpr int minRideHeightCM { 140 };
+}
+
+int main()
+{
+    std::cout &lt;&lt; "Enter your height (in cm): ";
+    int x{};
+    std::cin &gt;&gt; x;
+
+    if (x &gt;= constants::minRideHeightCM)
+        std::cout &lt;&lt; "You are tall enough to ride.\n";
+    else
+    { // note addition of block here
+        std::cout &lt;&lt; "You are not tall enough to ride.\n";
+        std::cout &lt;&lt; "Too bad!\n";
+    }
+
+    return 0;
+}</code></pre>
+<p>Remember that blocks are treated as a single statement, so this now works as expected:</p>
+<pre>
+Enter your height (in cm): 180
+You are tall enough to ride.
+</pre>
+<pre>
+Enter your height (in cm): 130
+You are not tall enough to ride.
+Too bad!
+</pre>
+<p class="cpp-section cpp-topline" style="clear: both">Implicit blocks</p>
+<p>If the programmer does not declare a block in the statement portion of an <code>if statement</code> or <code>else statement</code>, the compiler will implicitly declare one.  Thus:</p>
+<pre>
+if (condition)
+    true_statement;
+else
+    false_statement;
+</pre>
+<p>is actually the equivalent of:</p>
+<pre>
+if (condition)
+{
+    true_statement;
+}
+else
+{
+    false_statement;
+}
+</pre>
+<p>Most of the time, this doesn’t matter.  However, new programmers sometimes try to define variables in the implicit block, like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    if (true)
+        int x{ 5 };
+    else
+        int x{ 6 };
+
+    std::cout &lt;&lt; x &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This won’t compile, with the compiler generating an error that identifier <code>x</code> isn’t defined.  This is because the above example is the equivalent of:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    if (true)
+    {
+        int x{ 5 };
+    } // x destroyed here
+    else
+    {
+        int x{ 6 };
+    } // x destroyed here
+
+    std::cout &lt;&lt; x &lt;&lt; '\n'; // x isn't in scope here
+
+    return 0;
+}</code></pre>
+<p>In this context, it’s clearer that variable <code>x</code> has block scope and is destroyed at the end of the block.  By the time we get to the <code>std::cout</code> line, <code>x</code> doesn’t exist.</p>
+<p class="cpp-section cpp-topline" style="clear: both">To block or not to block single statements</p>
+<p>There is debate within the programmer community as to whether single statements following an <code>if</code> or <code>else</code> should be explicitly enclosed in blocks or not.</p>
+<p>There are many reasons given as rationale for using blocks.</p>
+<ol start="1">
+<li>Not using blocks makes it easier to inadvertently add statements that look like they are conditional but aren’t.  Consider:
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (age &gt;= minDrinkingAge)
+    purchaseBeer();</code></pre>
+<p>Now let’s say we’re in a hurry and modify this program to add another ability:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (age &gt;= minDrinkingAge)
+    purchaseBeer();
+    gamble(); // will always execute</code></pre>
+<p>Oops, we’ve just allowed minors to gamble.  Have fun in jail!</p>
+<ol start="2">
+<li>Not using blocks can make programs more difficult to debug.  Let’s say we have the following snippet:
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (age &gt;= minDrinkingAge)
+    addBeerToCart(); // conditionally executes
+
+checkout(); // always executes</code></pre>
+<p>Let’s say we suspect something is wrong with the <code>addBeerToCart()</code> function, so we comment it out:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (age &gt;= minDrinkingAge)
+//    addBeerToCart();
+
+checkout(); // conditionally executes now</code></pre>
+<p>Now we’ve made <code>checkout()</code> conditional, which we certainly didn’t intend.</p>
+<p>Neither of the above occur if you always use blocks after an <code>if</code> or <code>else</code>.</p>
+<ol start="3">
+<li><code>if constexpr</code> (a variant of the if-statement added in C++23) requires the use of blocks.  Thus using blocks ensures consistency between <code>if</code> and <code>if constexpr</code>.
+</li>
+</ol>
+<p>The best argument for not using blocks around single statements is that adding blocks makes you able to see less of your code at one time by spacing it out vertically, which makes your code less readable and can lead to other, more serious mistakes.</p>
+<p>The community seems to be more in favor of always using blocks than not, though this recommendation certainly isn’t ubiquitous.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Consider putting single statements associated with an <code>if</code> or <code>else</code> in blocks (particularly while you are learning).  More experienced C++ developers sometimes disregard this practice in favor of tighter vertical spacing.
+</p></div>
+<p>A reasonable middle-ground alternative is to put single-lines on the same line as the <code>if</code> or <code>else</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (age &gt;= minDrinkingAge) purchaseBeer();
+else std::cout &lt;&lt; "No drinky for you\n".</code></pre>
+<p>This avoids both of the above downsides mentioned above at some minor cost to readability.</p>
+<p>One fair criticism of the single-line method is that it produces code that is harder to debug:</p>
+<ul>
+<li>Because the conditional and associated statement will execute as part of the same step, it is more difficult to tell whether the statement actually executed or was skipped.
+</li>
+<li>Because the conditional and associated statement are on the same line, you can’t breakpoint just the associated statement (to stop execution only when the statement actually executes).
+</li>
+</ul>
+<p>However, if either of the above points are hindering when debugging, you can insert a newline between the conditional and the statement (so they are on separate lines), do your debugging, then remove the newline afterward.</p>
+<p class="cpp-section cpp-topline" style="clear: both">If-else vs if-if</p>
+<p>New programmers sometimes wonder when they should use if-else (if followed by one or more else-statements) or if-if (if followed by one or more additional if-statements).</p>
+<ul>
+<li>Use if-else when you only want to execute the code after the first <code>true</code> condition.
+</li>
+<li>Use if-if when you want to execute the code after all <code>true</code> conditions.
+</li>
+</ul>
+<p>Here’s a program that demonstrates this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void ifelse(bool a, bool b, bool c)
+{
+    if (a)      // always evaluates
+        std::cout &lt;&lt; "a";
+    else if (b) // only evaluates when prior if-statement condition is false
+        std::cout &lt;&lt; "b";
+    else if (c) // only evaluates when prior if-statement condition is false
+        std::cout &lt;&lt; "c";
+    std::cout &lt;&lt; '\n';
+}
+
+void ifif(bool a, bool b, bool c)
+{
+    if (a) // always evaluates
+        std::cout &lt;&lt; "a";
+    if (b) // always evaluates
+        std::cout &lt;&lt; "b";
+    if (c) // always evaluates
+        std::cout &lt;&lt; "c";
+    std::cout &lt;&lt; '\n';
+}
+
+int main()
+{
+    ifelse(false, true, true);
+    ifif(false, true, true);
+
+    return 0;
+}</code></pre>
+<p>In the call to <code>ifelse(false, true, true)</code>, <code>a</code> is <code>false</code>, so we do not execute the associated statement, and the associated <code>else</code> is executed instead.  <code>b</code> is true, so we print <code>b</code>.  Since this <code>if</code> condition was true, the associated <code>else</code> will not execute (and neither would any other <code>else</code> statements immediately following that one).  Note that we only executed the code immediately after the first <code>true</code> condition (<code>b</code>).</p>
+<p>In the call to <code>ifif(false, true, true)</code>, <code>a</code> is false, so we do not execute the associated statement, and move to the next <code>if</code>.  <code>b</code> is true, so we print <code>b</code> and move to the next <code>if</code>.  <code>c</code> is true, so we print <code>c</code>.  Note that we executed the code after all <code>true</code> conditions (<code>b</code> and <code>c</code>).</p>
+<p>Now look at this somewhat similar function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">char getFirstMatchingChar(bool a, bool b, bool c)
+{
+    if (a) // always evaluates
+        return 'a';
+    else if (b) // only evaluates when prior if-statement condition is false
+        return 'b';
+    else if (c) // only evaluates when prior if-statement condition is false
+        return 'c';
+
+    return 0;
+}</code></pre>
+<p>Since we’re using if-else, it’s clear we only want to execute the code after the first <code>true</code> condition.  But when every associated statement returns a value, we can write this instead:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">char getFirstMatchingChar(bool a, bool b, bool c)
+{
+    if (a) // always evaluates
+        return 'a'; // returns when if-statement is true
+    if (b) // only evaluates when prior if-statement condition is false
+        return 'b'; // returns when if-statement is true
+    if (c) // only evaluates when prior if-statement condition is false
+        return 'c'; // returns when if-statement is true
+
+    return 0;
+}</code></pre>
+<p>While this might superficially look like we want to execute the code after every <code>true</code> condition, as soon as we find the first <code>true</code> condition, the associated statement will cause the function to return.  The remaining if-statements never have a chance to evaluate.  Therefore, this behaves equivalently to the prior version.  When every associated statement returns a value, many programmers prefer to omit the <code>else</code> keywords, as doing so avoids unnecessary clutter and the conditions line up better.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>When all associated statements return a value, you can always just use if-if since <code>else</code> provides no value.
+</p></div>
+<p>We’ll continue our exploration of if-statements in the next lesson.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="control-flow-introduction.html"><span class="nav-kicker">← Previous lesson</span>8.1 · Control flow introduction</a><a class="next" href="common-if-statement-problems.html"><span class="nav-kicker">Next lesson →</span>8.3 · Common if statement problems</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

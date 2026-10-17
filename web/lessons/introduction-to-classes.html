@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous chapter, we covered structs (13.7 -- Introduction to structs, members, and member selection), and discussed how they are great for bundling">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.2 — Introduction to classes · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-classes/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html" aria-current="page"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.2 — Introduction to classes</h1>
+        <div class="article-meta"><span>Updated: 2024-06-26 11:00</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous chapter, we covered structs (<a href="introduction-to-structs-members-and-member-selection.html">13.7 -- Introduction to structs, members, and member selection</a>), and discussed how they are great for bundling multiple member variables into a single object that can be initialized and passed around as a unit.  In other words, structs provide a convenient package for storing and moving related data values.</p>
+<p>Consider the following struct:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Date
+{
+    int day{};
+    int month{};
+    int year{};
+};
+
+void printDate(const Date&amp; date)
+{
+    std::cout &lt;&lt; date.day &lt;&lt; '/' &lt;&lt; date.month &lt;&lt; '/' &lt;&lt; date.year; // assume DMY format
+}
+
+int main()
+{
+    Date date{ 4, 10, 21 }; // initialize using aggregate initialization
+    printDate(date);        // can pass entire struct to function
+
+    return 0;
+}</code></pre>
+<p>In the above example, we create a <code>Date</code> object and then pass it to a function that prints the date.  This program prints:</p>
+<pre>
+4/10/21
+</pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">A reminder</p>
+<p>In these tutorials, all of our structs are aggregates.  We discuss aggregates in lesson <a href="struct-aggregate-initialization.html">13.8 -- Struct aggregate initialization</a>.
+</p></div>
+<p>As useful as structs are, structs have a number of deficiencies that can present challenges when trying to build large, complex programs (especially those worked on by multiple developers).</p>
+<p class="cpp-section cpp-topline" style="clear: both">The class invariant problem</p>
+<p>Perhaps the biggest difficulty with structs is that they do not provide an effective way to document and enforce class invariants.  In lesson <a href="assert-and-static_assert.html">9.6 -- Assert and static_assert</a>, we defined an invariant as, “a condition that must be true while some component is executing”.</p>
+<p>In the context of class types (which include structs, classes, and unions), a <strong>class invariant</strong> is a condition that must be true throughout the lifetime of an object in order for the object to remain in a valid state.  An object that has a violated class invariant is said to be in an <strong>invalid state</strong>, and unexpected or undefined behavior may result from further use of that object.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Using an object whose class invariant has been violated may result in unexpected or undefined behavior.
+</p></div>
+<p>First, consider the following struct:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct Pair
+{
+    int first {};
+    int second {};
+};</code></pre>
+<p>The <code>first</code> and <code>second</code> members can be independently set to any value, so <code>Pair</code> struct has no invariant.</p>
+<p>Now consider the following almost-identical struct:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct Fraction
+{
+    int numerator { 0 };
+    int denominator { 1 };
+};</code></pre>
+<p>We know from mathematics that a fraction with a denominator of <code>0</code> is mathematically undefined (because the value of a fraction is its numerator divided by its denominator -- and division by <code>0</code> is mathematically undefined).  Therefore, we want to ensure the <code>denominator</code> member of a Fraction object is never set to <code>0</code>.  If it is, then that Fraction object is in an invalid state, and undefined behavior may result from further use of that object.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Fraction
+{
+    int numerator { 0 };
+    int denominator { 1 }; // class invariant: should never be 0
+};
+
+void printFractionValue(const Fraction&amp; f)
+{
+     std::cout &lt;&lt; f.numerator / f.denominator &lt;&lt; '\n';
+}
+
+int main()
+{
+    Fraction f { 5, 0 };   // create a Fraction with a zero denominator
+    printFractionValue(f); // cause divide by zero error
+
+    return 0;
+}</code></pre>
+<p>In the above example, we use a comment to document the invariant of Fraction.  We also provide a default member initializer to ensure that denominator is set to <code>1</code> if the user does not provide an initialization value.  This ensures our Fraction object will be valid if the user decides to value initialize a Fraction object.  That’s an okay start.</p>
+<p>But nothing prevents us from explicitly violating this class invariant: When we create <code>Fraction f</code>, we use aggregate initialization to explicitly initialize the denominator to <code>0</code>.  While this does not cause an immediate issue, our object is now in an invalid state, and further use of the object may cause unexpected or undefined behavior.</p>
+<p>And that is exactly what we see later, when we call <code>printFractionValue(f)</code>: the program terminates due to a divide-by-zero error.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>A small improvement would be to <code>assert(f.denominator != 0);</code> at the top of the body of <code>printFractionValue</code>.  This adds documentation value to the code, and makes it more obvious what precondition is being violated.  However, behaviorally, this doesn’t really change anything.  We really want to catch these problems at the source of the problem (when the member is initialized or assigned a bad value), not somewhere downstream (when the bad value is used).
+</p></div>
+<p>Given the relative simplicitly of the Fraction example, it shouldn’t be too difficult to simply avoid creating invalid Fraction objects.  However, in a more complex code base that uses many structs, structs with many members, or structs whose members have complex relationships, understanding what combination of values might violate some class invariant may not be so obvious.</p>
+<p class="cpp-section cpp-topline" style="clear: both">A more complex class invariant</p>
+<p>The class invariant for Fraction is a simple one -- the <code>denominator</code> member cannot be <code>0</code>.  That’s conceptually easy to understand and not overly difficult to avoid.</p>
+<p>Class invariants become more of a challenge when the members of a struct must have correlated values.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;string&gt;
+
+struct Employee
+{
+    std::string name { };
+    char firstInitial { }; // should always hold first character of `name` (or `0`)
+};</code></pre>
+<p>In the above (poorly designed) struct, the character value stored in member <code>firstInitial</code> should always match the first character of <code>name</code>.</p>
+<p>When an <code>Employee</code> object is initialized, the user is responsible for making sure the class invariant is maintained.  And if <code>name</code> is ever assigned a new value, the user is also responsible for ensuring <code>firstInitial</code> is updated as well.  This correlation may not be obvious to a developer using an Employee object, and even if it is, they may forget to do it.</p>
+<p>Even if we write functions to help us create and update Employee objects (ensuring that <code>firstInitial</code> is always set from the first character of <code>name</code>), we’re still relying on the user to be aware of and use these functions.</p>
+<p>In short, relying on the user of an object to maintain class invariants is likely to result in problematic code.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Relying on the user of an object to maintain class invariants is likely to result in problems.
+</p></div>
+<p>Ideally, we’d love to bulletproof our class types so that an object either can’t be put into an invalid state, or can signal immediately if it is (rather than letting undefined behavior occur at some random point in the future).</p>
+<p>Structs (as aggregates) just don’t have the mechanics required to solve this problem in an elegant way.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Introduction to classes</p>
+<p>When developing C++, Bjarne Stroustrup wanted to introduce capabilities that would allow developers to create program-defined types that could be used more intuitively.  He was also interested in finding elegant solutions to some of the frequent pitfalls and maintenance challenges that plague large, complex programs (such as the previously mentioned class invariant issue).</p>
+<p>Drawing upon his experience with other programming languages (particularly Simula, the first object-oriented programming language), Bjarne was convinced that it was possible to develop a program-defined type that was general and powerful enough to be used for almost anything.  In a nod to Simula, he called this type a <em>class</em>.</p>
+<p>Just like structs, a <strong>class</strong> is a program-defined compound type that can have many member variables with different types.  </p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>From a technical standpoint, structs and classes are almost identical -- therefore, any example that is implemented using a struct could be implemented using a class, or vice-versa.  However, from a practical standpoint, we use structs and classes differently.</p>
+<p>We cover both the technical and practical differences between structs and classes in lesson <a href="public-and-private-members-and-access-specifiers.html">14.5 -- Public and private members and access specifiers</a>
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover how classes solve the invariant problem in lesson <a href="the-benefits-of-data-hiding-encapsulation.html">14.8 -- The benefits of data hiding (encapsulation)</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Defining a class</p>
+<p>Because a class is a program-defined data type, it must be defined before it can be used.  Classes are defined similarly to structs, except we use the <code>class</code> keyword instead of <code>struct</code>.  For example, here is a definition for a simple employee class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Employee
+{
+    int m_id {};
+    int m_age {};
+    double m_wage {};
+};</code></pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We discuss why member variables of a class are often prefixed with an “m_” in upcoming lesson <a href="public-and-private-members-and-access-specifiers.html">14.5 -- Public and private members and access specifiers</a>
+</p></div>
+<p>To demonstrate how similar classes and structs can be, the following program is equivalent to the one we presented at the top of the lesson, but <code>Date</code> is now a class instead of a struct:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Date       // we changed struct to class
+{
+public:          // and added this line, which is called an access specifier
+    int m_day{}; // and added "m_" prefixes to each of the member names
+    int m_month{};
+    int m_year{};
+};
+
+void printDate(const Date&amp; date)
+{
+    std::cout &lt;&lt; date.m_day &lt;&lt; '/' &lt;&lt; date.m_month &lt;&lt; '/' &lt;&lt; date.m_year;
+}
+
+int main()
+{
+    Date date{ 4, 10, 21 };
+    printDate(date);
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+4/10/21
+</pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover what an access specifier is in upcoming lesson <a href="public-and-private-members-and-access-specifiers.html">14.5 -- Public and private members and access specifiers</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Most of the C++ standard library is classes</p>
+<p>You have already been using class objects, perhaps without knowing it.  Both <code>std::string</code> and <code>std::string_view</code> are defined as classes.  In fact, most of the non-aliased types in the standard library are defined as classes!</p>
+<p>Classes are really the heart and soul of C++ -- they are so foundational that C++ was originally named “C with classes”!  Once you are familiar with classes, much of your time in C++ will be spent writing, testing, and using them.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Given some set of values (ages, address numbers, etc…), we might want to know what the minimum and maximum values are in that set.  Since the minimum and maximum values are related, we can organize them in a struct, like so:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">struct minMax
+{
+    int min; // holds the minimum value seen so far
+    int max; // holds the maximum value seen so far
+};</code></pre>
+<p>However, as written, this struct has an unspecified class invariant.  What is the invariant?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<p>The invariant is that <code>min &lt;= max</code>.  If <code>min</code> is ever greater than <code>max</code>, any code that uses this struct may malfunction.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-object-oriented-programming.html"><span class="nav-kicker">← Previous lesson</span>14.1 · Introduction to object-oriented programming</a><a class="next" href="member-functions.html"><span class="nav-kicker">Next lesson →</span>14.3 · Member functions</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Now that we’ve covered std::vector and std::array, we’ll complete our coverage of arrays by covering the last array type: C-style arrays. As mentioned in l">
+  <meta name="robots" content="noindex,nofollow">
+  <title>17.7 — Introduction to C-style arrays · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-c-style-arrays/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 17 · Fixed-size arrays: std::array and C-style arrays</summary><div class="sidebar-title"><small>Chapter 17</small><strong>Fixed-size arrays: std::array and C-style arrays</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-stdarray.html"><span class="lesson-number">17.1</span><span>Introduction to std::array</span></a></li><li><a href="stdarray-length-and-indexing.html"><span class="lesson-number">17.2</span><span>std::array length and indexing</span></a></li><li><a href="passing-and-returning-stdarray.html"><span class="lesson-number">17.3</span><span>Passing and returning std::array</span></a></li><li><a href="stdarray-of-class-types-and-brace-elision.html"><span class="lesson-number">17.4</span><span>std::array of class types, and brace elision</span></a></li><li><a href="arrays-of-references-via-stdreference_wrapper.html"><span class="lesson-number">17.5</span><span>Arrays of references via std::reference_wrapper</span></a></li><li><a href="stdarray-and-enumerations.html"><span class="lesson-number">17.6</span><span>std::array and enumerations</span></a></li><li><a href="introduction-to-c-style-arrays.html" aria-current="page"><span class="lesson-number">17.7</span><span>Introduction to C-style arrays</span></a></li><li><a href="c-style-array-decay.html"><span class="lesson-number">17.8</span><span>C-style array decay</span></a></li><li><a href="pointer-arithmetic-and-subscripting.html"><span class="lesson-number">17.9</span><span>Pointer arithmetic and subscripting</span></a></li><li><a href="c-style-strings.html"><span class="lesson-number">17.10</span><span>C-style strings</span></a></li><li><a href="c-style-string-symbolic-constants.html"><span class="lesson-number">17.11</span><span>C-style string symbolic constants</span></a></li><li><a href="multidimensional-c-style-arrays.html"><span class="lesson-number">17.12</span><span>Multidimensional C-style Arrays</span></a></li><li><a href="multidimensional-stdarray.html"><span class="lesson-number">17.13</span><span>Multidimensional std::array</span></a></li><li><a href="chapter-17-summary-and-quiz.html"><span class="lesson-number">17.x</span><span>Chapter 17 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 17</div>
+        <h1>17.7 — Introduction to C-style arrays</h1>
+        <div class="article-meta"><span>Updated: 2024-10-13 20:31</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Now that we’ve covered <code>std::vector</code> and <code>std::array</code>, we’ll complete our coverage of arrays by covering the last array type: C-style arrays.</p>
+<p>As mentioned in lesson <a href="introduction-to-containers-and-arrays.html">16.1 -- Introduction to containers and arrays</a>, C-style arrays were inherited from the C language, and are built-in to the core language of C++ (unlike the rest of the array types, which are standard library container classes).  This means we don’t need to #include a header file to use them.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>Because they are the only array type natively supported by the language, the standard library array container types (e.g. <code>std::array</code> and <code>std::vector</code>) are typically implemented using a C-style array.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Declaring a C-style array</p>
+<p>Because they are part of the core language, C-style arrays have their own special declaration syntax.  In an C-style array declaration, we use square brackets (<code>[]</code>) to tell the compiler that a declared object is a C-style array.  Inside the square brackets, we can optionally provide the length of the array, which is an integral value of type <code>std::size_t</code> that tells the compiler how many elements are in the array.</p>
+<p>The following definition creates a C-style array variable named <code>testScore</code> which contains 30 elements of type <code>int</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int testScore[30] {};      // Defines a C-style array named testScore that contains 30 value-initialized int elements (no include required)
+
+//  std::array&lt;int, 30&gt; arr{}; // For comparison, here's a std::array of 30 value-initialized int elements (requires #including &lt;array&gt;)
+
+    return 0;
+}</code></pre>
+<p>The length of a C-style array must be at least 1.  The compiler will error if the array length is zero, negative, or a non-integral value.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>C-style arrays dynamically allocated on the heap are allowed to have length 0.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">The array length of a c-style array must be a constant expression</p>
+<p>Just like <code>std::array</code>, when declaring a C-style array, the length of the array must be a constant expression (of type <code>std::size_t</code>, though this typically doesn’t matter).</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>Some compilers may allow creation of arrays with non-constexpr lengths, for compatibility with a C99 feature called variable-length arrays (VLAs).</p>
+<p>Variable-length arrays are not valid C++, and should not be used in C++ programs.  If your compiler allows these arrays, you probably forgot to disable compiler extensions (see <a href="configuring-your-compiler-compiler-extensions.html">0.10 -- Configuring your compiler: Compiler extensions</a>).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Subscripting a C-style array</p>
+<p>Just like with a <code>std::array</code>, C-style arrays can be indexed using the subscript operator (<code>operator[]</code>):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int arr[5]; // define an array of 5 int values
+
+    arr[1] = 7; // use subscript operator to index array element 1
+    std::cout &lt;&lt; arr[1]; // prints 7
+
+    return 0;
+}</code></pre>
+<p>Unlike the standard library container classes (which use unsigned indices of type <code>std::size_t</code> only), the index of a C-style array can be a value of any integral type (signed or unsigned) or an unscoped enumeration.  This means that C-style arrays are not subject to all of the sign conversion indexing issues that the standard library container classes have!</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    const int arr[] { 9, 8, 7, 6, 5 };
+
+    int s { 2 };
+    std::cout &lt;&lt; arr[s] &lt;&lt; '\n'; // okay to use signed index
+
+    unsigned int u { 2 };
+    std::cout &lt;&lt; arr[u] &lt;&lt; '\n'; // okay to use unsigned index
+
+    return 0;
+}   </code></pre>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>C-style arrays will accept signed or unsigned indexes (or unscoped enumerations).
+</p></div>
+<p><code>operator[]</code> does not do any bounds checking, and passing in an out-of-bounds index will result in undefined behavior.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">As an aside…</p>
+<p>When declaring an array (e.g. <code>int arr[5]</code>), the use of <code>[]</code> is part of the declaration syntax, not an invocation of the subscript operator <code>operator[]</code>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Aggregate initialization of C-style arrays</p>
+<p>Just like <code>std::array</code>, C-style arrays are aggregates, which means they can be initialized using aggregate initialization.</p>
+<p>As a quick recap, aggregate initialization allows us to directly initialize the members of aggregates. To do this, we provide an initializer list, which is a brace-enclosed list of comma-separated initialization values.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int fibonnaci[6] = { 0, 1, 1, 2, 3, 5 }; // copy-list initialization using braced list
+    int prime[5] { 2, 3, 5, 7, 11 };         // list initialization using braced list (preferred)
+
+    return 0;
+}</code></pre>
+<p>Each of these initialization forms initializes the array members in sequence, starting with element 0.</p>
+<p>If you do not provide an initializer for a C-style array, the elements will be default initialized.  In most cases, this will result in elements being left uninitialized.  Because we generally want our elements to be initialized, C-style arrays should be value initialized (using empty braces) when defined with no initializers.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int arr1[5];    // Members default initialized int elements are left uninitialized)
+    int arr2[5] {}; // Members value initialized (int elements are zero uninitialized) (preferred)
+
+    return 0;
+}</code></pre>
+<p>If more initializers are provided in an initializer list than the defined array length, the compiler will error.  If fewer initializers are provided in an initializer list than the defined array length, the remaining elements without initializers are value initialized:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int a[4] { 1, 2, 3, 4, 5 }; // compile error: too many initializers
+    int b[4] { 1, 2 };          // arr[2] and arr[3] are value initialized
+
+    return 0;
+}</code></pre>
+<p>One downside of using a C-style array is that the element’s type must be explicitly specified.  CTAD doesn’t work because C-style arrays aren’t class templates.  And using <code>auto</code> to try to deduce the element type of an array from the list of initializers doesn’t work either:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    auto squares[5] { 1, 4, 9, 16, 25 }; // compile error: can't use type deduction on C-style arrays
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Omitted length</p>
+<p>There’s a subtle redundancy in the following array definition.  See it?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    const int prime[5] { 2, 3, 5, 7, 11 }; // prime has length 5
+
+    return 0;
+}</code></pre>
+<p>We’re explicitly telling the compiler the array has length 5, and then we’re also initializing it with 5 elements.  When we initialize a C-style array with an initializer list, we can omit the length (in the array definition) and let the compiler deduce the length of the array from the number of initializers.</p>
+<p>The following array definitions behave identically:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    const int prime1[5] { 2, 3, 5, 7, 11 }; // prime1 explicitly defined to have length 5
+    const int prime2[] { 2, 3, 5, 7, 11 };  // prime2 deduced by compiler to have length 5
+
+    return 0;
+}</code></pre>
+<p>This only works when initializers are explicitly provided for all array members.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int bad[] {}; // error: the compiler will deduce this to be a zero-length array, which is disallowed!
+
+    return 0;
+}</code></pre>
+<p>When using an initializer list to initialize all elements of a C-style array, it’s preferable to omit the length and let the compiler calculate the length of the array.  That way, if initializers are added or removed, the length of the array will automatically adjust, and we are not at risk for a mismatch between the defined array length and number of initializers provided.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer omitting the length of a C-style array when explicitly initializing every array element with a value.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Const and constexpr C-style arrays</p>
+<p>Just like <code>std::array</code>, C-style arrays can be <code>const</code> or <code>constexpr</code>.  Just like other const variables, const arrays must be initialized, and the value of the elements cannot be changed afterward.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace ProgramData
+{
+    constexpr int squares[5] { 1, 4, 9, 16, 25 }; // an array of constexpr int
+}
+
+int main()
+{
+    const int prime[5] { 2, 3, 5, 7, 11 }; // an array of const int
+    prime[0] = 17; // compile error: can't change const int
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">The sizeof a C-style array</p>
+<p>In previous lessons, we used the <code>sizeof()</code> operator to get the size of an object or type in bytes.  Applied to a C-style array, <code>sizeof()</code> returns the number of bytes used by the entire array:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    const int prime[] { 2, 3, 5, 7, 11 }; // the compiler will deduce prime to have length 5
+    
+    std::cout &lt;&lt; sizeof(prime); // prints 20 (assuming 4 byte ints)
+
+    return 0;
+}</code></pre>
+<p>Assuming 4 byte ints, the above program prints <code>20</code>.  The <code>prime</code> array contains 5 <code>int</code> elements that are 4 bytes each, so 5 * 4 = 20 bytes.</p>
+<p>Note that there is no overhead here.  An C-style array object contains its elements and nothing more.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Getting the length of a C-style array</p>
+<p>In C++17, we can use <code>std::size()</code> (defined in the &lt;iterator&gt; header), which returns the array length as an unsigned integral value (of type <code>std::size_t</code>).  In C++20, we can also use <code>std::ssize()</code>, which returns the array length as a signed integral value (of a large signed integral type, probably <code>std::ptrdiff_t</code>).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;iterator&gt; // for std::size and std::ssize
+
+int main()
+{
+    const int prime[] { 2, 3, 5, 7, 11 };   // the compiler will deduce prime to have length 5
+
+    std::cout &lt;&lt; std::size(prime) &lt;&lt; '\n';  // C++17, returns unsigned integral value 5
+    std::cout &lt;&lt; std::ssize(prime) &lt;&lt; '\n'; // C++20, returns signed integral value 5
+
+    return 0;
+}</code></pre>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>The canonical header for the definition of <code>std::size()</code> and <code>std::ssize()</code> is &lt;iterator&gt;.  However, because these functions are so useful, many other headers also make them available, including &lt;array&gt; and &lt;vector&gt;.  When using <code>std::size()</code> or <code>std::ssize()</code> on a C-style array, we may not have already included one of the other headers.  In such a case, the &lt;iterator&gt; header is the one that’s conventionally included.</p>
+<p>You can see the full list of headers that define these functions in the <a href="https://en.cppreference.com/w/cpp/iterator/size" target="_blank" rel="noopener noreferrer">cppreference documentation for the size functions</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Getting the length of a C-style array (C++14 or older)</p>
+<p>Prior to C++17, there was no standard library function to get the length of a C-style array.</p>
+<p>If you’re using C++11 or C++14, you can use this function instead:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cstddef&gt; // for std::size_t
+#include &lt;iostream&gt;
+
+template &lt;typename T, std::size_t N&gt;
+constexpr std::size_t length(const T(&amp;)[N]) noexcept
+{
+	return N;
+}
+
+int main() {
+
+	int array[]{ 1, 1, 2, 3, 5, 8, 13, 21 };
+	std::cout &lt;&lt; "The array has: " &lt;&lt; length(array) &lt;&lt; " elements\n";
+
+	return 0;
+}</code></pre>
+<p>This uses a function template that takes a C-style array by reference and then returns the non-type template parameter representing the array’s length.</p>
+<p>In much older codebases, you may see the length of a C-style array determined by dividing the size of the entire array by the size of an array element:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int array[8] {};
+    std::cout &lt;&lt; "The array has: " &lt;&lt; sizeof(array) / sizeof(array[0]) &lt;&lt; " elements\n";
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+The array has: 8 elements
+</pre>
+<p>How does this work?  First, note that the size of the entire array is equal to the array’s length multiplied by the size of an element.  Put more compactly: <code>array size = length * element size</code>.</p>
+<p>Using algebra, we can rearrange this equation: <code>length = array size / element size</code>.  We typically use <code>sizeof(array[0])</code> for the element size.  Therefore, length = <code>sizeof(array) / sizeof(array[0])</code>.  You may also occasionally see this written as <code>sizeof(array) / sizeof(*array)</code>, which does the same thing.  </p>
+<p>However, as we will show you in the next lesson, this formula can fail quite easily (when passed a decayed array), leaving the program unexpectedly broken.  C++17’s <code>std::size()</code> and the <code>length()</code> function template shown above will both cause compilation errors in this case, so they are safe to use.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover array decay in the next lesson <a href="c-style-array-decay.html">17.8 -- C-style array decay</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">C-style arrays don’t support assignment</p>
+<p>Perhaps surprisingly, C++ arrays don’t support assignment:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int arr[] { 1, 2, 3 }; // okay: initialization is fine
+    arr[0] = 4;            // assignment to individual elements is fine
+    arr = { 5, 6, 7 };     // compile error: array assignment not valid
+
+    return 0;
+}</code></pre>
+<p>Technically, this doesn’t work because assignment requires the left-operand to be a modifiable lvalue, and C-style arrays are not considered to be modifiable lvalues.</p>
+<p>If you need to assign a new list of values to an C-style array, it’s best to use a <code>std::vector</code> instead.  Alternatively, you can assign new values to a C-style array element-by-element, or use <code>std::copy</code> to copy an existing C-style array:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt; // for std::copy
+
+int main()
+{
+    int arr[] { 1, 2, 3 };
+    int src[] { 5, 6, 7 };
+
+    // Copy src into arr
+    std::copy(std::begin(src), std::end(src), std::begin(arr));
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Convert the following <code>std::array</code> definition to an equivalent constexpr C-style array definition:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">constexpr std::array&lt;int, 3&gt; a{}; // allocate 3 ints</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">	constexpr int a[3] {}; // allocate 3 ints</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>What three things are wrong with the following program?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int length{ 5 };
+    const int arr[length] { 9, 7, 5, 3, 1 };
+    
+    std::cout &lt;&lt; arr[length];
+    arr[0] = 4;
+    
+    return 0;
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<ol start="1">
+<li>When defining an array, the length must be a compile-time constant.  In the above program, <code>length</code> is non-const, so the definition <code>const int arr[length]</code> is not allowed.
+</li>
+<li>Arrays are indexed from 0 to length-1.  Therefore, <code>arr[length]</code> is an out-of-bounds index, and will lead to undefined behavior.
+</li>
+<li>The array elements have type “const int”, and thus <code>arr[0]</code> cannot be modified by assignment.
+</li>
+</ol>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>A “perfect square” is a natural number whose square root is an integer.  We can make perfect squares by multiplying a natural number (including zero) by itself.  The first 4 perfect squares are: 0, 1, 4, 9.</p>
+<p>Use a global constexpr C-style array to hold the perfect squares between 0 and 9 (inclusive).  Repeatedly ask the user to enter a single digit integer, or -1 to quit.  Print whether the digit the user entered is a perfect square.</p>
+<p>The output should match the following:</p>
+<pre>
+Enter a single digit integer, or -1 to quit: 4
+4 is a perfect square
+
+Enter a single digit integer, or -1 to quit: 5
+5 is not a perfect square
+
+Enter a single digit integer, or -1 to quit: -1
+Bye
+</pre>
+<p>Hints: Use a range-based for loop to traverse the C-style array to look for a match.</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+namespace ProgramData
+{
+    constexpr int squares[] { 0, 1, 4, 9 };
+}
+
+bool matchSquare(int input)
+{
+    for (const auto&amp; e : ProgramData::squares)
+    {
+        if (input == e)
+            return true;
+    }
+
+    return false;
+}
+
+int main()
+{
+    while (true)
+    {
+        std::cout &lt;&lt; "Enter a single digit integer, or -1 to quit: ";
+        int input{};
+        std::cin &gt;&gt; input;
+
+        if (input == -1)
+            break;
+
+        if (matchSquare(input))
+            std::cout &lt;&lt; input &lt;&lt; " is a perfect square\n";
+        else
+            std::cout &lt;&lt; input &lt;&lt; " is not a perfect square\n";
+    }
+
+    std::cout &lt;&lt; "Bye\n";
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdarray-and-enumerations.html"><span class="nav-kicker">← Previous lesson</span>17.6 · std::array and enumerations</a><a class="next" href="c-style-array-decay.html"><span class="nav-kicker">Next lesson →</span>17.8 · C-style array decay</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

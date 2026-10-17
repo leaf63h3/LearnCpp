@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In this chapter, we explored the meat of C++ -- classes! This is the most important chapter in the tutorial series, as it sets the stage for much of what’s">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.x — Chapter 14 summary and quiz · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/chapter-14-summary-and-quiz/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html" aria-current="page"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.x — Chapter 14 summary and quiz</h1>
+        <div class="article-meta"><span>Updated: 2024-08-17 21:21</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In this chapter, we explored the meat of C++ -- classes!  This is the most important chapter in the tutorial series, as it sets the stage for much of what’s left to come.</p>
+<p class="cpp-section">Chapter Review</p>
+<p>In <strong>procedural programming</strong>, the focus is on creating “procedures” (which in C++ are called functions) that implement our program logic.  We pass data objects to these functions, those functions perform operations on the data, and then potentially return a result to be used by the caller.</p>
+<p>With <strong>Object-oriented programming</strong> (often abbreviated as OOP), the focus is on creating program-defined data types that contain both properties and a set of well-defined behaviors.</p>
+<p>A <strong>class invariant</strong> is a condition that must be true throughout the lifetime of an object in order for the object to remain in a valid state. An object that has a violated class invariant is said to be in an <strong>invalid state</strong>, and unexpected or undefined behavior may result from further use of that object.</p>
+<p>A <strong>class</strong> is a program-defined compound type that bundles both data and functions that work on that data.</p>
+<p>Functions that belong to a class type are called <strong>member functions</strong>.  The object that a member function is called on is often called the <strong>implicit object</strong>.  Functions that are not member functions are called <strong>non-member functions</strong> to distinguish them from member functions.  If your class type has no data members, prefer using a namespace instead.</p>
+<p>A <strong>const member function</strong> is a member function that guarantees it will not modify the object or call any non-const member functions (as they may modify the object).  A member function that does not (and will not ever) modify the state of the object should be made const, so that it can be called on both non-const and const objects.</p>
+<p>Each member of a class type has a property called an <strong>access level</strong> that determines who can access that member.  The access level system is sometimes informally called <strong>access controls</strong>.  Access levels are defined on a per-class basis, not on a per-object basis.</p>
+<p><strong>Public members</strong> are members of a class type that do not have any restrictions on how they can be accessed. Public members can be accessed by anyone (as long as they are in scope).  This includes other members of the same class.  Public members can also be accessed by <strong>the public</strong>, which is what we call code that exists outside the members of a given class type.  Examples of the public include non-member functions, as well as the members of other class types.</p>
+<p>By default, all members of a struct are public members.</p>
+<p><strong>Private members</strong> are members of a class type that can only be accessed by other members of the same class.</p>
+<p>By default, the members of a class are private.  A class with private members is no longer an aggregate, and therefore can no longer use aggregate initialization.  Consider naming your private members starting with an “m_” prefix to help distinguish them from the names of local variables, function parameters, and member functions.</p>
+<p>We can explicitly set the access level of our members by using an <strong>access specifier</strong>.  Structs should generally avoid using access specifiers so all members default to public.</p>
+<p>An <strong>access function</strong> is a trivial public member function whose job is to retrieve or change the value of a private member variable.  Access functions come in two flavors: getters and setters. <strong>Getters</strong> (also sometimes called <strong>accessors</strong>) are public member functions that return the value of a private member variable.  <strong>Setters</strong> (also sometimes called <strong>mutators</strong>) are public member functions that set the value of a private member variable.</p>
+<p>The <strong>interface</strong> of a class type defines how a user of the class type will interact with objects of the class type. Because only public members can be accessed from outside of the class type, the public members of a class type form its interface. For this reason, an interface composed of public members is sometimes called a <strong>public interface</strong>.</p>
+<p>The <strong>implementation</strong> of a class type consists of the code that actually makes the class behave as intended. This includes both the member variables that store data, and the bodies of the member functions that contain the program logic and manipulate the member variables.</p>
+<p>In programming, <strong>data hiding</strong> (also called <strong>information hiding</strong> or <strong>data abstraction</strong>) is a technique used to enforce the separation of interface and implementation by hiding the implementation of a program-defined data type from users.</p>
+<p>The term <strong>encapsulation</strong> is also sometimes used to refer to data hiding. However, this term is also used to refer to the bundling of data and functions together (without regard for access controls), so its use can be ambiguous.</p>
+<p>When defining a class, prefer to declare your public members first and your private members last. This spotlights the public interface and de-emphasizes implementation details.</p>
+<p>A <strong>constructor</strong> is a special member function that is used to initialize class type objects.  A matching constructor must be found in order to create a non-aggregate class type object.</p>
+<p>A <strong>Member initializer list</strong> allows you to initialize your member variables from within a constructor.  Member variables in a member initializer list should be listed in order that they are defined in the class.  Prefer using the member initializer list to initialize your members over assigning values in the body of the constructor.</p>
+<p>A constructor that takes no parameters (or has all default parameters) is called a <strong>default constructor</strong>.  The default constructor is used if no initialization values are provided by the user.  If a non-aggregate class type object has no user-declared constructors, the compiler will generate a default constructor (so that the class can be value or default initialized). This constructor is called an <strong>implicit default constructor</strong>.</p>
+<p>Constructors are allowed to delegate initialization to another constructor from the same class type. This process is sometimes called <strong>constructor chaining</strong> and such constructors are called <strong>delegating constructors</strong>.  Constructors can delegate or initialize, but not both.</p>
+<p>A <strong>temporary object</strong> (sometimes called an <strong>anonymous object</strong> or an <strong>unnamed object</strong>) is an object that has no name and exists only for the duration of a single expression.</p>
+<p>A <strong>copy constructor</strong> is a constructor that is used to initialize an object with an existing object of the same type.  If you do not provide a copy constructor for your classes, C++ will create a public <strong>implicit copy constructor</strong> for you that does memberwise initialization.</p>
+<p>The <strong>as-if rule</strong> says that the compiler can modify a program however it likes in order to produce more optimized code, so long as those modifications do not affect a program’s “observable behavior”.  One exception to the as-if rule is copy elision.  <strong>Copy elision</strong> is a compiler optimization technique that allows the compiler to remove unnecessary copying of objects.  When the compiler optimizes away a call to the copy constructor, we say the constructor has been <strong>elided</strong>.</p>
+<p>A function that we’ve written to convert a value to or from a program-defined type is called a <strong>user-defined conversion</strong>.  A constructor that can be used to perform an implicit conversion is called a <strong>converting constructor</strong>. By default, all constructors are converting constructors.</p>
+<p>We can use the <strong>explicit</strong> keyword to tell the compiler that a constructor should not be used as a converting constructor.  Such a constructor can not be used to do copy initialization or copy list initialization, nor can it be used to do implicit conversions.</p>
+<p>Make any constructor that accepts a single argument explicit by default. If an implicit conversion between types is both semantically equivalent and performant (such as a conversion from <code>std::string</code> to <code>std::string_view</code>), you can consider making the constructor non-explicit.  Do not make copy or move constructors explicit, as these do not perform conversions.</p>
+<p>Member functions (including constructors) may be constexpr.  As of C++14, constexpr member functions are not implicitly const.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>The blackjack quiz that used to be part of this lesson has been moved to lesson <a href="chapter-17-summary-and-quiz.html">17.x -- Chapter 17 summary and quiz</a>.
+</p></div>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>a) Write a class named <code>Point2d</code>.  <code>Point2d</code> should contain two member variables of type <code>double</code>: <code>m_x</code>, and <code>m_y</code>, both defaulted to <code>0.0</code>.</p>
+<p>Provide a constructor and a <code>print()</code> function.</p>
+<p>The following program should run:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    Point2d first{};
+    Point2d second{ 3.0, 4.0 };
+
+    // Point2d third{ 4.0 }; // should error if uncommented 
+
+    first.print();
+    second.print();
+
+    return 0;
+}</code></pre>
+<p>This should print:</p>
+<pre>
+Point2d(0, 0)
+Point2d(3, 4)
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Point2d
+{
+private:
+	double m_x{ 0.0 };
+	double m_y{ 0.0 };
+
+public:
+	Point2d() = default;
+
+	Point2d(double x, double y)
+		: m_x{ x }, m_y{ y }
+	{
+	}
+
+	void print() const
+	{
+		std::cout &lt;&lt; "Point2d(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ")\n";
+	}
+};
+
+int main()
+{
+    Point2d first{};
+    Point2d second{ 3.0, 4.0 };
+
+    // Point2d third{ 4.0 }; // should error if uncommented 
+
+    first.print();
+    second.print();
+
+    return 0;
+}</code></pre>
+</div>
+<p>b) Now add a member function named <code>distanceTo()</code> that takes another <code>Point2d</code> as a parameter, and calculates the distance between them.  Given two points (x1, y1) and (x2, y2), the distance between them can be calculated using the formula <code>std::sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2))</code>.  The <code>std::sqrt</code> function lives in header <code>cmath</code>.</p>
+<p>The following program should run:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+    Point2d first{};
+    Point2d second{ 3.0, 4.0 };
+
+    first.print();
+    second.print();
+
+    std::cout &lt;&lt; "Distance between two points: " &lt;&lt; first.distanceTo(second) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This should print:</p>
+<pre>
+Point2d(0, 0)
+Point2d(3, 4)
+Distance between two points: 5
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+
+class Point2d
+{
+private:
+	double m_x{ 0.0 };
+	double m_y{ 0.0 };
+
+public:
+	Point2d() = default;
+
+	Point2d(double x, double y)
+		: m_x{ x }, m_y{ y }
+	{
+	}
+
+	void print() const
+	{
+		std::cout &lt;&lt; "Point2d(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ")\n";
+	}
+
+	double distanceTo(const Point2d&amp; other) const
+	{
+		return std::sqrt(
+            (m_x - other.m_x)*(m_x - other.m_x) +
+            (m_y - other.m_y)*(m_y - other.m_y)
+            );
+	}
+};
+
+int main()
+{
+    Point2d first{};
+    Point2d second{ 3.0, 4.0 };
+
+    first.print();
+    second.print();
+
+    std::cout &lt;&lt; "Distance between two points: " &lt;&lt; first.distanceTo(second) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>In lesson <a href="passing-and-returning-structs.html">13.10 -- Passing and returning structs</a>, we wrote a short program using a <code>Fraction</code> struct.  The reference solution looks like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+struct Fraction
+{
+    int numerator{ 0 };
+    int denominator{ 1 };
+};
+
+Fraction getFraction()
+{
+    Fraction temp{};
+    std::cout &lt;&lt; "Enter a value for numerator: ";
+    std::cin &gt;&gt; temp.numerator;
+    std::cout &lt;&lt; "Enter a value for denominator: ";
+    std::cin &gt;&gt; temp.denominator;
+    std::cout &lt;&lt; '\n';
+
+    return temp;
+}
+
+Fraction multiply(const Fraction&amp; f1, const Fraction&amp; f2)
+{
+    return { f1.numerator * f2.numerator, f1.denominator * f2.denominator };
+}
+
+void printFraction(const Fraction&amp; f)
+{
+    std::cout &lt;&lt; f.numerator &lt;&lt; '/' &lt;&lt; f.denominator &lt;&lt; '\n';
+}
+
+int main()
+{
+    Fraction f1{ getFraction() };
+    Fraction f2{ getFraction() };
+
+    std::cout &lt;&lt; "Your fractions multiplied together: ";
+
+    printFraction(multiply(f1, f2));
+
+    return 0;
+}</code></pre>
+<p>Convert <code>Fraction</code> from a struct to a class.  Convert all of the functions to (non-static) member functions.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Note: This quiz does not comply with best practices for when you should use a non-member or member function.  The goal is to test whether you understand how to convert non-member functions to member functions.
+</p></div>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Fraction
+{
+private:
+    int m_numerator{ 0 };
+    int m_denominator{ 1 };
+
+public:
+    explicit Fraction(int numerator=0, int denominator=1)
+        : m_numerator { numerator }, m_denominator { denominator}
+    {
+    }
+
+    void getFraction()
+    {
+        std::cout &lt;&lt; "Enter a value for numerator: ";
+        std::cin &gt;&gt; m_numerator; // this is a member function, so we can access members directly
+        std::cout &lt;&lt; "Enter a value for denominator: ";
+        std::cin &gt;&gt; m_denominator;
+        std::cout &lt;&lt; '\n';
+    }
+
+    Fraction multiply(const Fraction&amp; f) const
+    {
+        return Fraction{ m_numerator * f.m_numerator, m_denominator * f.m_denominator };
+    }
+
+    void printFraction() const
+    {
+        std::cout &lt;&lt; m_numerator &lt;&lt; '/' &lt;&lt; m_denominator &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    Fraction f1{};
+    f1.getFraction();
+    
+    Fraction f2{};
+    f2.getFraction();
+
+    std::cout &lt;&lt; "Your fractions multiplied together: ";
+
+    f1.multiply(f2).printFraction();
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>In the prior quiz solution, why was the Fraction constructor made <code>explicit</code>?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_3" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_3" hidden="hidden">
+<p>Making the constructor explicit prevents it from being used to create a <code>Fraction</code> via an implicit conversion with a single value.  This helps prevent nonsense like <code>f1.multiply(true)</code>.</p>
+<p><code>f1.multiply(true)</code> requires that <code>true</code> be implicitly converted to a <code>Fraction</code>. Normally the compiler would use <code>Fraction(int numerator=0, int denominator=1)</code> for this, but if we make that constructor explicit, it is not eligible to be used for implicit conversions.  Since the compiler will then be unable to find a way to convert <code>true</code> into a <code>Fraction</code>, it will emit a compilation error.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #4</p>
+<p>In the prior quiz question, why might it be better to leave <code>getFraction()</code> and <code>print()</code> as non-members?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_4" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_4" hidden="hidden">
+<p>With the non-member version of <code>getFraction()</code>, we can define and initialize a Fraction in a single step.  The member version requires two steps, as we must first create an object and then call the member function on it.  It also prints application-specific text prompts for the user to follow.</p>
+<p>By moving <code>print()</code> to be a non-member (and using access functions to access the members), we remove the function from the interface of the class, making the core functionality of the class less cluttered.  It also means that if the implementation of the class is ever changed, we don’t need to consider whether <code>print()</code> needs to be updated, so long as the interface isn’t changed (since we know it can’t access any data members directly).
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="constexpr-aggregates-and-classes.html"><span class="nav-kicker">← Previous lesson</span>14.17 · Constexpr aggregates and classes</a><a class="next" href="the-hidden-this-pointer-and-member-function-chaining.html"><span class="nav-kicker">Next lesson →</span>15.1 · The hidden “this” pointer and member function chaining</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

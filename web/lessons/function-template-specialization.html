@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="When instantiating a function template for a given type, the compiler stencils out a copy of the templated function and replaces the template type paramete">
+  <meta name="robots" content="noindex,nofollow">
+  <title>26.3 — Function template specialization · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/function-template-specialization/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 26 · Templates and Classes</summary><div class="sidebar-title"><small>Chapter 26</small><strong>Templates and Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="template-classes.html"><span class="lesson-number">26.1</span><span>Template classes</span></a></li><li><a href="template-non-type-parameters.html"><span class="lesson-number">26.2</span><span>Template non-type parameters</span></a></li><li><a href="function-template-specialization.html" aria-current="page"><span class="lesson-number">26.3</span><span>Function template specialization</span></a></li><li><a href="class-template-specialization.html"><span class="lesson-number">26.4</span><span>Class template specialization</span></a></li><li><a href="partial-template-specialization.html"><span class="lesson-number">26.5</span><span>Partial template specialization</span></a></li><li><a href="partial-template-specialization-for-pointers.html"><span class="lesson-number">26.6</span><span>Partial template specialization for pointers</span></a></li><li><a href="chapter-26-summary-and-quiz.html"><span class="lesson-number">26.x</span><span>Chapter 26 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 26</div>
+        <h1>26.3 — Function template specialization</h1>
+        <div class="article-meta"><span>Updated: 2024-07-30 14:45</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>When instantiating a function template for a given type, the compiler stencils out a copy of the templated function and replaces the template type parameters with the actual types used in the variable declaration.  This means a particular function will have the same implementation details for each instanced type (just using different types).  While most of the time this is exactly what you want, occasionally there are cases where it is useful to implement a templated function slightly differently for a specific data type.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using a non-template function</p>
+<p>Consider the following example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+void print(const T&amp; t)
+{
+    std::cout &lt;&lt; t &lt;&lt; '\n';
+}
+
+int main()
+{
+    print(5);
+    print(6.7);
+    
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+5
+6.7
+</pre>
+<p>Now, let’s say we want double values (and only double values) to output in scientific notation.</p>
+<p>One way to get different behavior for a given type is to define a non-template function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+void print(const T&amp; t)
+{
+    std::cout &lt;&lt; t &lt;&lt; '\n';
+}
+
+void print(double d)
+{
+    std::cout &lt;&lt; std::scientific &lt;&lt; d &lt;&lt; '\n';
+}
+
+int main()
+{
+    print(5);
+    print(6.7);
+    
+    return 0;
+}</code></pre>
+<p>When the compiler goes to resolve <code>print(6.7)</code>, it will see that <code>print(double)</code> has already been defined by us, and use that instead of instantiating a version from <code>print(const T&amp;)</code>.</p>
+<p>This produces the result:</p>
+<pre>
+5
+6.700000e+000
+</pre>
+<p>One nice thing about defining functions this way is that the non-template function doesn’t need to have the same signature as the function template.  Note that <code>print(const T&amp;)</code> uses pass by const reference, whereas <code>print(double)</code> uses pass by value.</p>
+<p>Generally, prefer to define a non-template function if that option is available.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Function template specialization</p>
+<p>Another way to achieve a similar result is to use explicit template specialization.  <strong>Explicit template specialization</strong> (often shortened to <strong>template specialization</strong>) is a feature that allows us to explicitly define different implementations of a template for specific types or values.  When all of the template parameters are specialized, it is called a <strong>full specialization</strong>.  When only some of the template parameters are specialized, it is called a <strong>partial specialization</strong>.</p>
+<p>Let’s create a specialization of <code>print&lt;T&gt;</code> when <code>T</code> is a <code>double</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+// Here's our primary template (must come first)
+template &lt;typename T&gt;
+void print(const T&amp; t)
+{
+    std::cout &lt;&lt; t &lt;&lt; '\n';
+}
+
+// A full specialization of primary template print&lt;T&gt; for type double
+// Full specializations are not implicitly inline, so make this inline if put in header file
+template&lt;&gt;                          // template parameter declaration containing no template parameters 
+void print&lt;double&gt;(const double&amp; d) // specialized for type double
+{
+    std::cout &lt;&lt; std::scientific &lt;&lt; d &lt;&lt; '\n'; 
+}
+
+int main()
+{
+    print(5);
+    print(6.7);
+    
+    return 0;
+}</code></pre>
+<p>In order to specialize a template, the compiler first must have seen a declaration for the primary template.  The primary template in the example above is <code>print&lt;T&gt;(const T&amp;)</code>.</p>
+<p>Now, let’s take a closer look at our function template specialization:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template&lt;&gt;                          // template parameter declaration containing no template parameters 
+void print&lt;double&gt;(const double&amp; d) // specialized for type double</code></pre>
+<p>First, we need a template parameter declaration so the compiler knows we’re doing something related to templates.  However, in this case, we don’t actually need any template parameters, so we use an empty pair of angled brackets.  Since we have no template parameters in the specialization, this is a full specialization.</p>
+<p>On the next line, <code>print&lt;double&gt;</code> tells the compiler that we’re specializing the <code>print</code> primary template function for type <code>double</code>.  The specialization must have the same signature as the primary template (except the specialization substitutes <code>double</code> anywhere the primary template uses <code>T</code>).  Because the primary template has a parameter of type <code>const T&amp;</code>, the specialization must have a parameter of type <code>const double&amp;</code>.  The specialization cannot use pass-by-value when the primary template uses pass-by-reference (or vice-versa).</p>
+<p>This example prints the same result as above.</p>
+<p>Note that if a matching non-template function and a matching template function specialization both exist, the non-template function will take precedence.  Also, full specializations are not implicitly inline, so if you define one in a header file, make sure you <code>inline</code> it to avoid ODR violations.</p>
+<div class="cpp-note cpp-lightredbackground">
+<p class="cpp-note-title cpp-bottomline">Warning</p>
+<p>Full specializations are not implicitly inline (partial specializations are implicitly inline).  If you put a full specialization in a header file, it should be marked as <code>inline</code> so that it does not cause ODR violations when included into multiple translation units.
+</p></div>
+<p>Just like normal functions, function template specializations can be deleted (using <code>= delete</code>) if you want any function calls that resolve to the specialization to produce a compilation error.</p>
+<p>In general, you should avoid function template specializations in favor of non-template functions whenever possible.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Function template specialization for member functions?</p>
+<p>Now consider the following class template:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+class Storage
+{
+private:
+    T m_value {};
+public:
+    Storage(T value)
+      : m_value { value }
+    {
+    }
+
+    void print()
+    {
+        std::cout &lt;&lt; m_value &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    // Define some storage units
+    Storage i { 5 };
+    Storage d { 6.7 };
+
+    // Print out some values
+    i.print();
+    d.print();
+}</code></pre>
+<p>This prints:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">5
+6.7</code></pre>
+<p>Let’s say we again want to create a version of the <code>print()</code> function that prints doubles in scientific notation.  However, this time <code>print()</code> is a member function, so we can’t define a non-member function.  So how might we do this?</p>
+<p>Although it may seem like we need to use function template specialization here, that’s the wrong tool.  Note that <code>i.print()</code> calls <code>Storage&lt;int&gt;::print()</code> and <code>d.print()</code> calls <code>Storage&lt;double&gt;::print()</code>.  Therefore, if we want to change the behavior of this function when <code>T</code> is a double, we need to specialize <code>Storage&lt;double&gt;::print()</code>, which is a class template specialization, not a function template specialization!</p>
+<p>So how might we do that?  We’ll cover class template specialization in the next lesson.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="template-non-type-parameters.html"><span class="nav-kicker">← Previous lesson</span>26.2 · Template non-type parameters</a><a class="next" href="class-template-specialization.html"><span class="nav-kicker">Next lesson →</span>26.4 · Class template specialization</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The cleanup problem Let’s say that you are writing a program that needs to send some data over a network. However, establishing a connection to the server ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>15.4 — Introduction to destructors · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/introduction-to-destructors/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 15 · More on Classes</summary><div class="sidebar-title"><small>Chapter 15</small><strong>More on Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="the-hidden-this-pointer-and-member-function-chaining.html"><span class="lesson-number">15.1</span><span>The hidden “this” pointer and member function chaining</span></a></li><li><a href="classes-and-header-files.html"><span class="lesson-number">15.2</span><span>Classes and header files</span></a></li><li><a href="nested-types-member-types.html"><span class="lesson-number">15.3</span><span>Nested types (member types)</span></a></li><li><a href="introduction-to-destructors.html" aria-current="page"><span class="lesson-number">15.4</span><span>Introduction to destructors</span></a></li><li><a href="class-templates-with-member-functions.html"><span class="lesson-number">15.5</span><span>Class templates with member functions</span></a></li><li><a href="static-member-variables.html"><span class="lesson-number">15.6</span><span>Static member variables</span></a></li><li><a href="static-member-functions.html"><span class="lesson-number">15.7</span><span>Static member functions</span></a></li><li><a href="friend-non-member-functions.html"><span class="lesson-number">15.8</span><span>Friend non-member functions</span></a></li><li><a href="friend-classes-and-friend-member-functions.html"><span class="lesson-number">15.9</span><span>Friend classes and friend member functions</span></a></li><li><a href="ref-qualifiers.html"><span class="lesson-number">15.10</span><span>Ref qualifiers</span></a></li><li><a href="chapter-15-summary-and-quiz.html"><span class="lesson-number">15.x</span><span>Chapter 15 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 15</div>
+        <h1>15.4 — Introduction to destructors</h1>
+        <div class="article-meta"><span>Updated: 2024-09-23 18:23</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section">The cleanup problem</p>
+<p>Let’s say that you are writing a program that needs to send some data over a network.  However, establishing a connection to the server is expensive, so you want to collect a bunch of data and then send it all at once.  Such a class might be structured like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// This example won't compile because it is (intentionally) incomplete
+class NetworkData
+{
+private:
+    std::string m_serverName{};
+    DataStore m_dataQueue{};
+
+public:
+	NetworkData(std::string_view serverName)
+		: m_serverName { serverName }
+	{
+	}
+
+	void addData(std::string_view data)
+	{
+		m_dataQueue.add(data);
+	}
+
+	void sendData()
+	{
+		// connect to server
+		// send all data
+		// clear data
+	}
+};
+
+int main()
+{
+    NetworkData n("someipAddress");
+
+    n.addData("somedata1");
+    n.addData("somedata2");
+
+    n.sendData();
+
+    return 0;
+}</code></pre>
+<p>However, this <code>NetworkData</code> has a potential issue.  It relies on <code>sendData()</code> being explicitly called before the program is shut down.  If the user of <code>NetworkData</code> forgets to do this, the data will not be sent to the server, and will be lost when the program exits.  Now, you might say, “well, it’s not hard to remember to do this!”, and in this particular case, you’d be right.  But consider a slightly more complex example, like this function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool someFunction()
+{
+    NetworkData n("someipAddress");
+
+    n.addData("somedata1");
+    n.addData("somedata2");
+
+    if (someCondition)
+        return false;
+
+    n.sendData();
+    return true;
+}</code></pre>
+<p>In this case, if <code>someCondition</code> is <code>true</code>, then the function will return early, and <code>sendData()</code> will not be called.  This is an easier mistake to make, because the <code>sendData()</code> call is present, the program just isn’t pathing to it in all cases.</p>
+<p>To generalize this issue, classes that use a resource (most often memory, but sometimes files, databases, network connections, etc…) often need to be explicitly sent or closed before the class object using them is destroyed.  In other cases, we may want to do some record-keeping prior to the destruction of the object, such as writing information to a log file, or sending a piece of telemetry to a server.  The term “clean up” is often used to refer to any set of tasks that a class must perform before an object of the class is destroyed in order to behave as expected.  If we have to rely on the user of such a class to ensure that the function that performs clean up is called prior to the object being destroyed, we are likely to run into errors somewhere.</p>
+<p>But why are we even requiring the user to ensure this?  If the object is being destroyed, then we know that cleanup needs to be performed at that point.  Should that cleanup happen automatically?</p>
+<p class="cpp-section cpp-topline" style="clear: both">Destructors to the rescue</p>
+<p>In lesson <a href="introduction-to-constructors.html">14.9 -- Introduction to constructors</a> we covered constructors, which are special member functions that are called when an object of a non-aggregate class type is created.  Constructors are used to initialize members variables, and do any other set up tasks required to ensure objects of the class are ready for use.</p>
+<p>Analogously, classes have another type of special member function that is called automatically when an object of a non-aggregate class type is destroyed.  This function is called a <strong>destructor</strong>.  Destructors are designed to allow a class to do any necessary clean up before an object of the class is destroyed.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Destructor naming</p>
+<p>Like constructors, destructors have specific naming rules:</p>
+<ol start="1">
+<li>The destructor must have the same name as the class, preceded by a tilde (~).
+</li>
+<li>The destructor can not take arguments.
+</li>
+<li>The destructor has no return type.
+</li>
+</ol>
+<p>A class can only have a single destructor.</p>
+<p>Generally you should not call a destructor explicitly (as it will be called automatically when the object is destroyed), since there are rarely cases where you’d want to clean up an object more than once.</p>
+<p>Destructors may safely call other member functions since the object isn’t destroyed until after the destructor executes.</p>
+<p class="cpp-section cpp-topline" style="clear: both">A destructor example</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Simple
+{
+private:
+    int m_id {};
+
+public:
+    Simple(int id)
+        : m_id { id }
+    {
+        std::cout &lt;&lt; "Constructing Simple " &lt;&lt; m_id &lt;&lt; '\n';
+    }
+
+    ~Simple() // here's our destructor
+    {
+        std::cout &lt;&lt; "Destructing Simple " &lt;&lt; m_id &lt;&lt; '\n';
+    }
+
+    int getID() const { return m_id; }
+};
+
+int main()
+{
+    // Allocate a Simple
+    Simple simple1{ 1 };
+    {
+        Simple simple2{ 2 };
+    } // simple2 dies here
+
+    return 0;
+} // simple1 dies here</code></pre>
+<p>This program produces the following result:</p>
+<pre>
+Constructing Simple 1
+Constructing Simple 2
+Destructing Simple 2
+Destructing Simple 1
+</pre>
+<p>Note that when each <code>Simple</code> object is destroyed, the destructor is called, which prints a message.  “Destructing Simple 1” is printed after “Destructing Simple 2” because <code>simple2</code> was destroyed before the end of the function, whereas <code>simple1</code> was not destroyed until the end of <code>main()</code>.</p>
+<p>Remember that static variables (including global variables and static local variables) are constructed at program startup and destroyed at program shutdown.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Improving the NetworkData program</p>
+<p>Back to our example at the top of the lesson, we can remove the need for the user to explicitly call <code>sendData()</code> by having a destructor call that function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class NetworkData
+{
+private:
+    std::string m_serverName{};
+    DataStore m_dataQueue{};
+
+public:
+	NetworkData(std::string_view serverName)
+		: m_serverName { serverName }
+	{
+	}
+
+	~NetworkData()
+	{
+		sendData(); // make sure all data is sent before object is destroyed
+	}
+
+	void addData(std::string_view data)
+	{
+		m_dataQueue.add(data);
+	}
+
+	void sendData()
+	{
+		// connect to server
+		// send all data
+		// clear data
+	}
+};
+
+int main()
+{
+    NetworkData n("someipAddress");
+
+    n.addData("somedata1");
+    n.addData("somedata2");
+
+    return 0;
+}</code></pre>
+<p>With such a destructor, our <code>NetworkData</code> object will always send whatever data it has before the object is destroyed!  The cleanup happens automatically, which means less chance for errors, and less things to think about.</p>
+<p class="cpp-section cpp-topline" style="clear: both">An implicit destructor</p>
+<p>If a non-aggregate class type object has no user-declared destructor, the compiler will generate a destructor with an empty body.  This destructor is called an implicit destructor, and it is effectively just a placeholder.</p>
+<p>If your class does not need to do any cleanup on destruction, it’s fine to not define a destructor at all, and let the compiler generate an implicit destructor for your class.</p>
+<p class="cpp-section cpp-topline" style="clear: both">A warning about the <code>std::exit()</code> function</p>
+<p>In lesson <a href="halts-exiting-your-program-early.html">8.12 -- Halts (exiting your program early)</a>, we discussed the <code>std::exit()</code> function, can be used to terminate your program immediately.  When the program is terminated immediately, the program just ends.  Local variables are not destroyed first, and because of this, no destructors will be called.  Be wary if you’re relying on your destructors to do necessary cleanup work in such a case.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Unhandled exceptions will also cause the program to terminate, and may not unwind the stack before doing so.  If stack unwinding does not happen, destructors will not be called prior to the termination of the program.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="nested-types-member-types.html"><span class="nav-kicker">← Previous lesson</span>15.3 · Nested types (member types)</a><a class="next" href="class-templates-with-member-functions.html"><span class="nav-kicker">Next lesson →</span>15.5 · Class templates with member functions</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

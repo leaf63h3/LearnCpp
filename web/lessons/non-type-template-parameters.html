@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous lessons, we discussed how to create function templates that use type template parameters. A type template parameter serves as a placeholder">
+  <meta name="robots" content="noindex,nofollow">
+  <title>11.9 — Non-type template parameters · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/non-type-template-parameters/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 11 · Function Overloading and Function Templates</summary><div class="sidebar-title"><small>Chapter 11</small><strong>Function Overloading and Function Templates</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-function-overloading.html"><span class="lesson-number">11.1</span><span>Introduction to function overloading</span></a></li><li><a href="function-overload-differentiation.html"><span class="lesson-number">11.2</span><span>Function overload differentiation</span></a></li><li><a href="function-overload-resolution-and-ambiguous-matches.html"><span class="lesson-number">11.3</span><span>Function overload resolution and ambiguous matches</span></a></li><li><a href="deleting-functions.html"><span class="lesson-number">11.4</span><span>Deleting functions</span></a></li><li><a href="default-arguments.html"><span class="lesson-number">11.5</span><span>Default arguments</span></a></li><li><a href="function-templates.html"><span class="lesson-number">11.6</span><span>Function templates</span></a></li><li><a href="function-template-instantiation.html"><span class="lesson-number">11.7</span><span>Function template instantiation</span></a></li><li><a href="function-templates-with-multiple-template-types.html"><span class="lesson-number">11.8</span><span>Function templates with multiple template types</span></a></li><li><a href="non-type-template-parameters.html" aria-current="page"><span class="lesson-number">11.9</span><span>Non-type template parameters</span></a></li><li><a href="using-function-templates-in-multiple-files.html"><span class="lesson-number">11.10</span><span>Using function templates in multiple files</span></a></li><li><a href="chapter-11-summary-and-quiz.html"><span class="lesson-number">11.x</span><span>Chapter 11 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 11</div>
+        <h1>11.9 — Non-type template parameters</h1>
+        <div class="article-meta"><span>Updated: 2024-10-20 15:39</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous lessons, we discussed how to create function templates that use type template parameters.  A type template parameter serves as a placeholder for an actual type that is passed in as a template argument.</p>
+<p>While type template parameters are by far the most common type of template parameter used, there is another kind of template parameter worth knowing about: the non-type template parameter.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Non-type template parameters</p>
+<p>A <strong>non-type template parameter</strong> is a template parameter with a fixed type that serves as a placeholder for a constexpr value passed in as a template argument.</p>
+<p>A non-type template parameter can be any of the following types:</p>
+<ul>
+<li>An integral type
+</li>
+<li>An enumeration type
+</li>
+<li><code>std::nullptr_t</code>
+</li>
+<li>A floating point type (since C++20)
+</li>
+<li>A pointer or reference to an object
+</li>
+<li>A pointer or reference to a function
+</li>
+<li>A pointer or reference to a member function
+</li>
+<li>A literal class type (since C++20)
+</li>
+</ul>
+<p>We saw our first example of a non-type template parameter when we discussed <code>std::bitset</code> in lesson <a href="bit-flags-and-bit-manipulation-via-stdbitset.html">O.1 -- Bit flags and bit manipulation via std::bitset</a>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;bitset&gt;
+
+int main()
+{
+    std::bitset&lt;8&gt; bits{ 0b0000'0101 }; // The &lt;8&gt; is a non-type template parameter
+
+    return 0;
+}</code></pre>
+<p>In the case of <code>std::bitset</code>, the non-type template parameter is used to tell the <code>std::bitset</code> how many bits we want it to store.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Defining our own non-type template parameters</p>
+<p>Here’s a simple example of a function that uses an int non-type template parameter:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;int N&gt; // declare a non-type template parameter of type int named N
+void print()
+{
+    std::cout &lt;&lt; N &lt;&lt; '\n'; // use value of N here
+}
+
+int main()
+{
+    print&lt;5&gt;(); // 5 is our non-type template argument
+
+    return 0;
+}</code></pre>
+<p>This example prints:</p>
+<pre>
+5
+</pre>
+<p>On line 3, we have our template parameter declaration.  Inside the angled brackets, we’re defining a non-type template parameter named <code>N</code> that will be a placeholder for a value of type <code>int</code>.  Inside the <code>print()</code> function, we use the value of <code>N</code>.</p>
+<p>On line 11, we have our call to function <code>print()</code>, which uses int value <code>5</code> as the non-type template argument.  When the compiler sees this call, it will instantiate a function that looks something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;&gt;
+void print&lt;5&gt;()
+{
+    std::cout &lt;&lt; 5 &lt;&lt; '\n';
+}</code></pre>
+<p>At runtime, when this function is called from <code>main()</code>, it prints <code>5</code>.</p>
+<p>Then the program ends.  Pretty simple, right?</p>
+<p>Much like <code>T</code> is typically used as the name for the first type template parameter, <code>N</code> is conventionally used as the name of an int non-type template parameter.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use <code>N</code> as the name of an int non-type template parameter.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">What are non-type template parameters useful for?</p>
+<p>As of C++20, function parameters cannot be constexpr.  This is true for normal functions, constexpr functions (which makes sense, as they must be able to be run at runtime), and perhaps surprisingly, even consteval functions.</p>
+<p>So let’s say we have some function like this one:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cassert&gt;
+#include &lt;cmath&gt; // for std::sqrt
+#include &lt;iostream&gt;
+
+double getSqrt(double d)
+{
+    assert(d &gt;= 0.0 &amp;&amp; "getSqrt(): d must be non-negative");
+
+    // The assert above will probably be compiled out in non-debug builds
+    if (d &gt;= 0)
+        return std::sqrt(d);
+
+    return 0.0;
+}
+
+int main()
+{
+    std::cout &lt;&lt; getSqrt(5.0) &lt;&lt; '\n';
+    std::cout &lt;&lt; getSqrt(-5.0) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>When run, the call to <code>getSqrt(-5.0)</code> will runtime assert out.  While this is better than nothing, because <code>-5.0</code> is a literal (and implicitly constexpr), it would be better if we could static_assert so that errors such as this one would be caught at compile-time.  However, static_assert requires a constant expression, and function parameters can’t be constexpr…</p>
+<p>However, if we change the function parameter to a non-type template parameter instead, then we can do exactly as we want:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;cmath&gt; // for std::sqrt
+#include &lt;iostream&gt;
+
+template &lt;double D&gt; // requires C++20 for floating point non-type parameters
+double getSqrt()
+{
+    static_assert(D &gt;= 0.0, "getSqrt(): D must be non-negative");
+
+    if constexpr (D &gt;= 0) // ignore the constexpr here for this example
+        return std::sqrt(D); // strangely, std::sqrt isn't a constexpr function (until C++26)
+
+    return 0.0;
+}
+
+int main()
+{
+    std::cout &lt;&lt; getSqrt&lt;5.0&gt;() &lt;&lt; '\n';
+    std::cout &lt;&lt; getSqrt&lt;-5.0&gt;() &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>This version fails to compile.  When the compiler encounters <code>getSqrt&lt;-5.0&gt;()</code>, it will instantiate and call a function that looks something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;&gt;
+double getSqrt&lt;-5.0&gt;()
+{
+    static_assert(-5.0 &gt;= 0.0, "getSqrt(): D must be non-negative");
+
+    if constexpr (-5.0 &gt;= 0) // ignore the constexpr here for this example
+        return std::sqrt(-5.0);
+
+    return 0.0;
+}</code></pre>
+<p>The static_assert condition is false, so the compiler asserts out.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Non-type template parameters are used primarily when we need to pass constexpr values to functions (or class types) so they can be used in contexts that require a constant expression.</p>
+<p>The class type <code>std::bitset</code> uses a non-type template parameter to define the number of bits to store because the number of bits must be a constexpr value.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Having to use non-type template parameters to circumvent the restriction that function parameters can’t be constexpr isn’t great.  There are quite a few different proposals being evaluated to help address situations like this.  I expect that we might see a better solution to this in a future C++ language standard.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Implicit conversions for non-type template arguments <span class="cpp-section-pill cpp-section-optional">Optional</span></p>
+<p>Certain non-type template arguments can be implicitly converted in order to match a non-type template parameter of a different type.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;int N&gt; // int non-type template parameter
+void print()
+{
+    std::cout &lt;&lt; N &lt;&lt; '\n';
+}
+
+int main()
+{
+    print&lt;5&gt;();   // no conversion necessary
+    print&lt;'c'&gt;(); // 'c' converted to type int, prints 99
+
+    return 0;
+}</code></pre>
+<p>This prints:</p>
+<pre>
+5
+99
+</pre>
+<p>In the above example, <code>'c'</code> is converted to an <code>int</code> in order to match the non-type template parameter of function template <code>print()</code>, which then prints the value as an <code>int</code>.</p>
+<p>In this context, only certain types of constexpr conversions are allowed.  The most common types of allowed conversions include:</p>
+<ul>
+<li>Integral promotions (e.g. <code>char</code> to <code>int</code>)
+</li>
+<li>Integral conversions (e.g. <code>char</code> to <code>long</code> or <code>int</code> to <code>char</code>)
+</li>
+<li>User-defined conversions (e.g. some program-defined class to <code>int</code>)
+</li>
+<li>Lvalue to rvalue conversions (e.g. some variable <code>x</code> to the value of <code>x</code>)
+</li>
+</ul>
+<p>Note that this list is less permissive than the type of implicit conversions allowed for list initialization.  For example, you can list initialize a variable of type <code>double</code> using a <code>constexpr int</code>, but a <code>constexpr int</code> non-type template argument will not convert to a <code>double</code> non-type template parameter.</p>
+<p>The full list of allowed conversions can be found <a href="https://en.cppreference.com/w/cpp/language/constant_expression" target="_blank" rel="noopener noreferrer">here</a> under the subsection “Converted constant expression”.</p>
+<p>Unlike with normal functions, the algorithm for matching function template calls to function template definitions is not sophisticated, and certain matches are not prioritized over others based on the type of conversion required (or lack thereof).  This means that if a function template is overloaded for different kinds of non-type template parameters, it can very easily result in an ambiguous match:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;int N&gt; // int non-type template parameter
+void print()
+{
+    std::cout &lt;&lt; N &lt;&lt; '\n';
+}
+
+template &lt;char N&gt; // char non-type template parameter
+void print()
+{
+    std::cout &lt;&lt; N &lt;&lt; '\n';
+}
+
+int main()
+{
+    print&lt;5&gt;();   // ambiguous match with int N = 5 and char N = 5
+    print&lt;'c'&gt;(); // ambiguous match with int N = 99 and char N = 'c'
+
+    return 0;
+}</code></pre>
+<p>Perhaps surprisingly, both of these calls to <code>print()</code> result in ambiguous matches.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Type deduction for non-type template parameters using <code>auto</code> <span class="cpp-section-pill cpp-section-standard">C++17</span></p>
+<p>As of C++17, non-type template parameters may use <code>auto</code> to have the compiler deduce the non-type template parameter from the template argument:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;auto N&gt; // deduce non-type template parameter from template argument
+void print()
+{
+    std::cout &lt;&lt; N &lt;&lt; '\n';
+}
+
+int main()
+{
+    print&lt;5&gt;();   // N deduced as int `5`
+    print&lt;'c'&gt;(); // N deduced as char `c`
+
+    return 0;
+}</code></pre>
+<p>This compiles and produces the expected result:</p>
+<pre>
+5
+c
+</pre>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>You may be wondering why this example doesn’t produce an ambiguous match like the example in the prior section.  The compiler looks for ambiguous matches first, and then instantiates the function template if no ambiguous matches exist.  In this case, there is only one function template, so there is no possible ambiguity.</p>
+<p>After instantiating the function template for the above example, the program looks something like this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;auto N&gt;
+void print()
+{
+    std::cout &lt;&lt; N &lt;&lt; '\n';
+}
+
+template &lt;&gt;
+void print&lt;5&gt;() // note that this is print&lt;5&gt; and not print&lt;int&gt;
+{
+    std::cout &lt;&lt; 5 &lt;&lt; '\n';
+}
+
+template &lt;&gt;
+void print&lt;'c'&gt;() // note that this is print&lt;`c`&gt; and not print&lt;char&gt;
+{
+    std::cout &lt;&lt; 'c' &lt;&lt; '\n';
+}
+
+int main()
+{
+    print&lt;5&gt;();   // calls print&lt;5&gt;
+    print&lt;'c'&gt;(); // calls print&lt;'c'&gt;
+
+    return 0;
+}</code></pre>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Write a constexpr function template with a non-type template parameter that returns the factorial of the template argument.  The following program should fail to compile when it reaches <code>factorial&lt;-3&gt;()</code>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// define your factorial() function template here
+
+int main()
+{
+    static_assert(factorial&lt;0&gt;() == 1);
+    static_assert(factorial&lt;3&gt;() == 6);
+    static_assert(factorial&lt;5&gt;() == 120);
+
+    factorial&lt;-3&gt;(); // should fail to compile
+
+    return 0;
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;int N&gt;
+constexpr int factorial()
+{
+    static_assert(N &gt;= 0);
+
+    int product { 1 };
+    for (int i { 2 }; i &lt;= N; ++i)
+        product *= i;
+
+    return product;
+}
+
+int main()
+{
+    static_assert(factorial&lt;0&gt;() == 1);
+    static_assert(factorial&lt;3&gt;() == 6);
+    static_assert(factorial&lt;5&gt;() == 120);
+
+    factorial&lt;-3&gt;(); // should fail to compile
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="function-templates-with-multiple-template-types.html"><span class="nav-kicker">← Previous lesson</span>11.8 · Function templates with multiple template types</a><a class="next" href="using-function-templates-in-multiple-files.html"><span class="nav-kicker">Next lesson →</span>11.10 · Using function templates in multiple files</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

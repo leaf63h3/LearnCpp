@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 4.5 -- Unsigned integers, and why to avoid them, we noted how we generally prefer to use signed values to hold quantities, because unsigned value">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.7 — Arrays, loops, and sign challenge solutions · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/arrays-loops-and-sign-challenge-solutions/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html" aria-current="page"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.7 — Arrays, loops, and sign challenge solutions</h1>
+        <div class="article-meta"><span>Updated: 2024-10-19 18:04</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="unsigned-integers-and-why-to-avoid-them.html">4.5 -- Unsigned integers, and why to avoid them</a>, we noted how we generally prefer to use signed values to hold quantities, because unsigned values can act in surprising ways.  However, in lesson <a href="stdvector-and-the-unsigned-length-and-subscript-problem.html">16.3 -- std::vector and the unsigned length and subscript problem</a>, we discussed how <code>std::vector</code> (and other container classes) uses unsigned integral type <code>std::size_t</code> for length and indices.</p>
+<p>This can lead to problems such as this one:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printReverse(const std::vector&lt;T&gt;&amp; arr)
+{
+    for (std::size_t index{ arr.size() - 1 }; index &gt;= 0; --index) // index is unsigned
+    {
+        std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    printReverse(arr);
+
+    return 0;
+}</code></pre>
+<p>This code begins by printing the array in reverse:</p>
+<pre>
+9 1 2 8 3 7 6 4
+</pre>
+<p>And then exhibits undefined behavior.  It might print garbage values, or crash the application.</p>
+<p>There are two problems here.  First, our loop executes as long as <code>index &gt;= 0</code> (or in other words, as long as <code>index</code> is positive), which is always true when <code>index</code> is unsigned.  Therefore, the loop never terminates.</p>
+<p>Second, when we decrement <code>index</code> when it has value <code>0</code>, it will wrap around to a large positive value, which we then use to index the array on the next iteration.  This is an out-of-bounds index, and will cause undefined behavior.  We run into the same problem if our vector is empty.</p>
+<p>And while there are plenty of ways to work around these specific issues, these kinds of issues are magnets for bugs.</p>
+<p>Using a signed type for a loop variable more easily avoids such problems, but has its own challenges.  Here’s a version of the above problem that uses a signed index:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printReverse(const std::vector&lt;T&gt;&amp; arr)
+{
+    for (int index{ static_cast&lt;int&gt;(arr.size()) - 1}; index &gt;= 0; --index) // index is signed
+    {
+        std::cout &lt;&lt; arr[static_cast&lt;std::size_t&gt;(index)] &lt;&lt; ' ';
+    }
+
+    std::cout &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+
+    printReverse(arr);
+
+    return 0;
+}</code></pre>
+<p>While this version functions as intended, the code is also a cluttered due to the addition two static casts.  <code>arr[static_cast&lt;std::size_t&gt;(index)]</code> is particularly hard to read.  In this case, we’ve improved safety at a significant cost to readability.</p>
+<p>Here’s another example of using a signed index:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// Function template to calculate the average value in a std::vector
+template &lt;typename T&gt;
+T calculateAverage(const std::vector&lt;T&gt;&amp; arr)
+{
+    int length{ static_cast&lt;int&gt;(arr.size()) };
+
+    T average{ 0 };
+    for (int index{ 0 }; index &lt; length; ++index)
+        average += arr[static_cast&lt;std::size_t&gt;(index)];
+    average /= length;
+
+    return average;
+}
+
+int main()
+{
+    std::vector testScore1 { 84, 92, 76, 81, 56 };
+    std::cout &lt;&lt; "The class 1 average is: " &lt;&lt; calculateAverage(testScore1) &lt;&lt; '\n';
+
+    return 0;
+}</code></pre>
+<p>The cluttering of our code with static casts is pretty terrible.</p>
+<p>So what should we do?  This is an area where there is no ideal solution.</p>
+<p>There are many viable options here, which we’ll present in order from what we believe is worst to best.  You will likely encounter all of these in code written by others.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>Although we’ll be discussing this in the context of <code>std::vector</code>, all of the standard library containers (e.g. <code>std::array</code>) work similarly and have the same challenges.  The discussion that follows is applicable to any of them.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Leave signed/unsigned conversion warnings off</p>
+<p>If you were wondering why signed/unsigned conversion warnings are often disabled by default, this topic is one of the key reasons.  Every time we subscript a standard library container using a signed index, a sign conversion warning will be generated.  This will quickly fill up your compilation log with spurious warnings, drowning out warnings that may actually be legitimate.</p>
+<p>So one way to avoid having to deal with lots of signed/unsigned conversion warnings is to simply leave those warnings turned off.</p>
+<p>This is the simplest solution, but not one we recommend, as this will also suppress generation of legitimate sign conversion warnings that may cause bugs if not addressed.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using an unsigned loop variable</p>
+<p>Many developers believe that since the standard library array types were designed to use unsigned indices, then we should use unsigned indices!  This is a completely reasonable position.  We just need to be extra careful that we do not run into signed/unsigned mismatches when doing so.  If possible, avoid using the index loop variable for anything but indexing.</p>
+<p>If we decide to use this approach, which unsigned type should we actually use?</p>
+<p>In lesson <a href="stdvector-and-the-unsigned-length-and-subscript-problem.html#size_type">16.3 -- std::vector and the unsigned length and subscript problem</a>, we noted that the standard library container classes define nested typedef <code>size_type</code>, which is an unsigned integral type used for array lengths and indices.  The <code>size()</code> member function returns <code>size_type</code>, and <code>operator[]</code> uses <code>size_type</code> as an index, so using <code>size_type</code> as the type of your index is technically the most consistent and safe unsigned type to use (as it will work in all cases, even in the extremely rare case where <code>size_type</code> is something other than <code>size_t</code>.).  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+	std::vector arr { 1, 2, 3, 4, 5 };
+
+	for (std::vector&lt;int&gt;::size_type index { 0 }; index &lt; arr.size(); ++index)
+		std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+
+	return 0;
+}</code></pre>
+<p>However, using <code>size_type</code> has a major downside: because it is a nested type, to use it we have to explicitly prefix the name with the fully templated name of the container (meaning we have to type <code>std::vector&lt;int&gt;::size_type</code> rather than just <code>std::size_type</code>).  This requires a lot of typing, is hard to read, and varies depending on the container and element type.</p>
+<p>When used inside a function template, we can use <code>T</code> for the template arguments.  But we also need to prefix the type with the <code>typename</code> keyword:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printArray(const std::vector&lt;T&gt;&amp; arr)
+{
+	// typename keyword prefix required for dependent type
+	for (typename std::vector&lt;T&gt;::size_type index { 0 }; index &lt; arr.size(); ++index)
+		std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+}
+
+int main()
+{
+	std::vector arr { 9, 7, 5, 3, 1 };
+
+	printArray(arr);
+
+	return 0;
+}</code></pre>
+<p>If you forget the <code>typename</code> keyword, your compiler will probably remind you to add it.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>Any name that depends on a type containing a template parameter is called a <strong>dependent name</strong>.  Dependent names must be prefixed with the keyword <code>typename</code> in order to be used as a type.</p>
+<p>In the above example, <code>std::vector&lt;T&gt;</code> is a type with a template parameter, so nested type <code>std::vector&lt;T&gt;::size_type</code> is a dependent name, and must be prefixed with <code>typename</code> to be used as a type.
+</p></div>
+<p>You may occasionally see the array type aliased to make the loop easier to read:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    using arrayi = std::vector&lt;int&gt;;
+    for (arrayi::size_type index { 0 }; index &lt; arr.size(); ++index)</code></pre>
+<p>A more general solution is to have the compiler fetch the type of the array type object for us, so that we don’t have to explicitly specify the container type or template arguments.  To do so, we can use the <strong>decltype</strong> keyword, which returns the type of its parameter.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    // arr is some non-reference type
+    for (decltype(arr)::size_type index { 0 }; index &lt; arr.size(); ++index) // decltype(arr) resolves to std::vector&lt;int&gt;</code></pre>
+<p>However, if <code>arr</code> is a reference type (e.g. an array passed by reference), the above doesn’t work.  We need to first remove the reference from <code>arr</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">template &lt;typename T&gt;
+void printArray(const std::vector&lt;T&gt;&amp; arr)
+{
+	// arr can be a reference or non-reference type
+	for (typename std::remove_reference_t&lt;decltype(arr)&gt;::size_type index { 0 }; index &lt; arr.size(); ++index)
+		std::cout &lt;&lt; arr[index] &lt;&lt; ' ';
+}</code></pre>
+<p>Unfortunately, this is no longer very concise or easy to remember.</p>
+<p>Because <code>size_type</code> is almost always a typedef for <code>size_t</code>, many programmers just skip using <code>size_type</code> altogether and use the easier to remember and type <code>std::size_t</code> directly:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    for (std::size_t index { 0 }; index &lt; arr.size(); ++index)</code></pre>
+<p>Unless you’re using custom allocators (and you probably aren’t), we believe this is a reasonable approach.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Using a signed loop variable</p>
+<p>Although it makes working with the standard library container types a bit more difficult, using a signed loop variable is consistent with the best practices employed in the rest of our code (to favor signed values for quantities).  And the more we can consistently apply our best practices, the fewer errors we will have overall.</p>
+<p>If we are going to use signed loop variables, there are three issues we need to address:</p>
+<ul>
+<li>What signed type should we use?
+</li>
+<li>Getting the length of the array as a signed value
+</li>
+<li>Converting the signed loop variable to an unsigned index
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">What signed type should we use?</p>
+<p>There are three (sometimes four) good options here.</p>
+<ol start="1">
+<li>Unless you are working with a very large array, using <code>int</code> should be fine (particularly on architectures where int is 4 bytes).  <code>int</code> is the default signed integral type we use for everything when we don’t really care about the type otherwise, and there’s little reason to do otherwise here.
+</li>
+<li>If you are dealing with very large arrays, or if you want to be a bit more defensive, you can use the strangely named <code>std::ptrdiff_t</code>.  This typedef is often used as the signed counterpart to <code>std::size_t</code>.
+</li>
+<li>Because <code>std::ptrdiff_t</code> has a weird name, another good approach is to define your own type alias for indices:
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">using Index = std::ptrdiff_t;
+
+// Sample loop using index
+for (Index index{ 0 }; index &lt; static_cast&lt;Index&gt;(arr.size()); ++index)</code></pre>
+<p>We’ll show a full example of this in the next section.</p>
+<p>Defining your own type alias also has a potential future benefit: if the C++ standard library ever releases a type designed to be used as a signed index, it will be easy to either modify <code>Index</code> to alias that type, or to find/replace <code>Index</code> with whatever that type is named.</p>
+<ol start="4">
+<li>In cases where you can derive the type of your loop variable from the initializer, you can use <code>auto</code> to have the compiler deduce the type:
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    for (auto index{ static_cast&lt;std::ptrdiff_t&gt;(arr.size())-1 }; index &gt;= 0; --index)</code></pre>
+<p>In C++23, the <code>Z</code> suffix can be used to define a literal of the type that is the signed counterpart to <code>std::size_t</code> (probably <code>std::ptrdiff_t</code>):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    for (auto index{ 0Z }; index &lt; static_cast&lt;std::ptrdiff_t&gt;(arr.size()); ++index)</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Getting the length of an array as a signed value</p>
+<ol start="1">
+<li>Pre-C++20, the best option is to <code>static_cast</code> the return value of the <code>size()</code> member function or <code>std::size()</code> to a signed type:
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+using Index = std::ptrdiff_t;
+
+int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+
+    for (auto index{ static_cast&lt;Index&gt;(arr.size())-1 }; index &gt;= 0; --index)
+        std::cout &lt;&lt; arr[static_cast&lt;std::size_t&gt;(index)] &lt;&lt; ' ';
+
+    return 0;
+}</code></pre>
+<p>That way, the unsigned value returned by <code>arr.size()</code> will be converted to a signed type, so our comparison operator will have two signed operands.  And because signed indices won’t overflow when they go negative, we don’t have the wrap-around problem we ran into when using unsigned indices.</p>
+<p>The downside of this approach is that it clutters up our loop, making it harder to read.  We can address this by moving the length out of the loop:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+using Index = std::ptrdiff_t;
+
+int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+
+    auto length{ static_cast&lt;Index&gt;(arr.size()) }; 
+    for (auto index{ length-1 }; index &gt;= 0; --index)
+        std::cout &lt;&lt; arr[static_cast&lt;std::size_t&gt;(index)] &lt;&lt; ' ';
+
+    return 0;
+}</code></pre>
+<ol start="2">
+<li>In C++20, use <code>std::ssize()</code>:
+</li>
+</ol>
+<p>If you want more evidence that the designers of C++ now believe that signed indices are the way to go, consider the introduction of <code>std::ssize()</code> in C++20.  This function returns the size of an array type as a signed type (likely <code>ptrdiff_t</code>).</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+
+    for (auto index{ std::ssize(arr)-1 }; index &gt;= 0; --index) // std::ssize introduced in C++20
+        std::cout &lt;&lt; arr[static_cast&lt;std::size_t&gt;(index)] &lt;&lt; ' ';
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Converting the signed loop variable to an unsigned index</p>
+<p>Once we have a signed loop variable, we’re going to run into implicit sign conversion warnings whenever we try to use that signed loop variable as an index.  So we need some way to convert our signed loop variable to an unsigned value wherever we intend to use it as an index.</p>
+<ol start="1">
+<li>The obvious option is to static cast our signed loop variable into an unsigned index.  We show this in the prior example.  Unfortunately, we need to do this everywhere we subscript the array, and it makes our array indices hard to read.
+</li>
+<li>Use a conversion function with a short name:
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;type_traits&gt; // for std::is_integral and std::is_enum
+#include &lt;vector&gt;
+
+using Index = std::ptrdiff_t;
+
+// Helper function to convert `value` into an object of type std::size_t
+// UZ is the suffix for literals of type std::size_t.
+template &lt;typename T&gt;
+constexpr std::size_t toUZ(T value)
+{
+    // make sure T is an integral type
+    static_assert(std::is_integral&lt;T&gt;() || std::is_enum&lt;T&gt;());
+    
+    return static_cast&lt;std::size_t&gt;(value);
+}
+
+int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+
+    auto length { static_cast&lt;Index&gt;(arr.size()) };  // in C++20, prefer std::ssize()
+    for (auto index{ length-1 }; index &gt;= 0; --index)
+        std::cout &lt;&lt; arr[toUZ(index)] &lt;&lt; ' '; // use toUZ() to avoid sign conversion warning
+
+    return 0;
+}</code></pre>
+<p>In the above example, we’ve created a function named <code>toUZ()</code> that is designed to convert integral values to values of type <code>std::size_t</code>.  This allows us to index our array as <code>arr[toUZ(index)]</code>, which is pretty readable.</p>
+<ol start="3">
+<li>Use a custom view
+</li>
+</ol>
+<p>In prior lessons, we discussed how <code>std::string</code> owns a string, whereas <code>std::string_view</code> is a view into a string that exists elsewhere.  One of the neat things about <code>std::string_view</code> is how it can view different types of strings (C-style string literals, <code>std::string</code>, and other <code>std::string_view</code>) but keeps a consistent interface for us to use.</p>
+<p>While we can’t modify the standard library containers to accept a signed integral index, we can create our own custom view class to “view” a standard library container class.  And in doing so, we can define our own interface to work however we want.</p>
+<p>In the following example, we define a custom view class that can view any standard library container that supports indexing.  Our interface will do two things:</p>
+<ul>
+<li>Allow us to access elements using <code>operator[]</code> with a signed integral type.
+</li>
+<li>Get the length of the container as a signed integral type (since <code>std::ssize()</code> is only available on C++20).
+</li>
+</ul>
+<p>This uses operator overloading (which we briefly introduced in lesson <a href="introduction-to-overloading-the-i-o-operators.html">13.5 -- Introduction to overloading the I/O operators</a>) to implement <code>operator[]</code>.  You don’t need to know how <code>SignedArrayView</code> is implemented in order to use it.</p>
+<p>SignedArrayView.h:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#ifndef SIGNED_ARRAY_VIEW_H
+#define SIGNED_ARRAY_VIEW_H
+
+#include &lt;cstddef&gt; // for std::size_t and std::ptrdiff_t
+
+// SignedArrayView provides a view into a container that supports indexing
+// allowing us to work with these types using signed indices
+template &lt;typename T&gt;
+class SignedArrayView // requires C++17
+{
+private:
+    T&amp; m_array;
+
+public:
+    using Index = std::ptrdiff_t;
+
+    SignedArrayView(T&amp; array)
+        : m_array{ array } {}
+
+    // Overload operator[] to take a signed index
+    constexpr auto&amp; operator[](Index index) { return m_array[static_cast&lt;typename T::size_type&gt;(index)]; }
+    constexpr const auto&amp; operator[](Index index) const { return m_array[static_cast&lt;typename T::size_type&gt;(index)]; }
+    constexpr auto ssize() const { return static_cast&lt;Index&gt;(m_array.size()); }
+};
+
+#endif</code></pre>
+<p>main.cpp:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include "SignedArrayView.h"
+
+int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+    SignedArrayView sarr{ arr }; // Create a signed view of our std::vector
+
+    for (auto index{ sarr.ssize() - 1 }; index &gt;= 0; --index)
+        std::cout &lt;&lt; sarr[index] &lt;&lt; ' '; // index using a signed type
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Index the underlying C-style array instead</p>
+<p>In lesson <a href="stdvector-and-the-unsigned-length-and-subscript-problem.html">16.3 -- std::vector and the unsigned length and subscript problem</a>, we noted that instead of indexing the standard library container, we can instead call the <code>data()</code> member function and index that instead.  Since <code>data()</code> returns the array data as a C-style array, and C-style arrays allow indexing with both signed and unsigned values, this avoids sign conversion issues.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+
+    auto length { static_cast&lt;Index&gt;(arr.size()) };  // in C++20, prefer std::ssize()
+    for (auto index{ length - 1 }; index &gt;= 0; --index)
+        std::cout &lt;&lt; arr.data()[index] &lt;&lt; ' ';       // use data() to avoid sign conversion warning
+
+    return 0;
+}</code></pre>
+<p>We believe that this method is the best of the indexing options:</p>
+<ul>
+<li>We can use signed loop variables and indices.
+</li>
+<li>We don’t have to define any custom types or type aliases.
+</li>
+<li>The hit to readability from using <code>data()</code> isn’t very big.
+</li>
+<li>There should be no performance hit in optimized code.
+</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">The only sane choice: avoid indexing altogether!</p>
+<p>All of the options presented above have their own downsides, so it’s hard to recommend one approach over the other.  However, there is a choice that is far more sane than the others: avoid indexing with integral values altogether.</p>
+<p>C++ provides several other methods for traversing through arrays that do not use indices at all.  And if we don’t have indices, then we don’t run into all of these signed/unsigned conversion issues.</p>
+<p>Two common methods for array traversal without indices include range-based for loops, and iterators.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover ranged-for loops in the next lesson (<a href="range-based-for-loops-for-each.html">16.8 -- Range-based for loops (for-each)</a>).<br>
+We cover iterators in upcoming lesson <a href="introduction-to-iterators.html">18.2 -- Introduction to iterators</a>.
+</p></div>
+<p>If you’re only using the index variable to traverse the array, then prefer a method that does not use indices.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Avoid array indexing with integral values whenever possible.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="arrays-and-loops.html"><span class="nav-kicker">← Previous lesson</span>16.6 · Arrays and loops</a><a class="next" href="range-based-for-loops-for-each.html"><span class="nav-kicker">Next lesson →</span>16.8 · Range-based for loops (for-each)</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

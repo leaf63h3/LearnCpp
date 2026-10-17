@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An object of type std::vector can be passed to a function just like any other object. That means if we pass a std::vector by value, an expensive copy will ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>16.4 — Passing std::vector · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/passing-stdvector/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 16 · Dynamic arrays: std::vector</summary><div class="sidebar-title"><small>Chapter 16</small><strong>Dynamic arrays: std::vector</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-containers-and-arrays.html"><span class="lesson-number">16.1</span><span>Introduction to containers and arrays</span></a></li><li><a href="introduction-to-stdvector-and-list-constructors.html"><span class="lesson-number">16.2</span><span>Introduction to std::vector and list constructors</span></a></li><li><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="lesson-number">16.3</span><span>std::vector and the unsigned length and subscript problem</span></a></li><li><a href="passing-stdvector.html" aria-current="page"><span class="lesson-number">16.4</span><span>Passing std::vector</span></a></li><li><a href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="lesson-number">16.5</span><span>Returning std::vector, and an introduction to move semantics</span></a></li><li><a href="arrays-and-loops.html"><span class="lesson-number">16.6</span><span>Arrays and loops</span></a></li><li><a href="arrays-loops-and-sign-challenge-solutions.html"><span class="lesson-number">16.7</span><span>Arrays, loops, and sign challenge solutions</span></a></li><li><a href="range-based-for-loops-for-each.html"><span class="lesson-number">16.8</span><span>Range-based for loops (for-each)</span></a></li><li><a href="array-indexing-and-length-using-enumerators.html"><span class="lesson-number">16.9</span><span>Array indexing and length using enumerators</span></a></li><li><a href="stdvector-resizing-and-capacity.html"><span class="lesson-number">16.10</span><span>std::vector resizing and capacity</span></a></li><li><a href="stdvector-and-stack-behavior.html"><span class="lesson-number">16.11</span><span>std::vector and stack behavior</span></a></li><li><a href="stdvector-bool.html"><span class="lesson-number">16.12</span><span>std::vector&lt;bool&gt;</span></a></li><li><a href="chapter-16-summary-and-quiz.html"><span class="lesson-number">16.x</span><span>Chapter 16 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 16</div>
+        <h1>16.4 — Passing std::vector</h1>
+        <div class="article-meta"><span>Updated: 2024-03-21 15:34</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>An object of type <code>std::vector</code> can be passed to a function just like any other object.  That means if we pass a <code>std::vector</code> by value, an expensive copy will be made.  Therefore, we typically pass <code>std::vector</code> by (const) reference to avoid such copies.</p>
+<p>With a <code>std::vector</code>, the element type is part of the type information of the object.  Therefore, when we use a <code>std::vector</code> as a function parameter, we have to explicitly specify the element type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+void passByRef(const std::vector&lt;int&gt;&amp; arr) // we must explicitly specify &lt;int&gt; here
+{
+    std::cout &lt;&lt; arr[0] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector primes{ 2, 3, 5, 7, 11 };
+    passByRef(primes);
+
+    return 0;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Passing <code>std::vector</code> of different element types</p>
+<p>Because our <code>passByRef()</code> function expects a <code>std::vector&lt;int&gt;</code>, we are unable to pass vectors with different element types:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+void passByRef(const std::vector&lt;int&gt;&amp; arr)
+{
+    std::cout &lt;&lt; arr[0] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector primes{ 2, 3, 5, 7, 11 };
+    passByRef(primes);  // ok: this is a std::vector&lt;int&gt;
+
+    std::vector dbl{ 1.1, 2.2, 3.3 };
+    passByRef(dbl); // compile error: std::vector&lt;double&gt; is not convertible to std::vector&lt;int&gt;
+
+    return 0;
+}</code></pre>
+<p>In C++17 or newer, you might try to use CTAD to solve this problem:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+void passByRef(const std::vector&amp; arr) // compile error: CTAD can't be used to infer function parameters
+{
+    std::cout &lt;&lt; arr[0] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector primes{ 2, 3, 5, 7, 11 }; // okay: use CTAD to infer std::vector&lt;int&gt;
+    passByRef(primes);
+
+    return 0;
+}</code></pre>
+<p>Although CTAD will work to deduce an vector’s element type from initializers when it is defined, CTAD doesn’t (currently) work with function parameters.</p>
+<p>We’ve seen this kind of problem before, where we have overloaded functions that only differ by the parameter type.  This is a great place to make use of function templates!  We can create a function template that parameterizes the element type, and then C++ will use that function template to instantiate functions with actual types.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We cover function templates in lesson <a href="function-templates.html">11.6 -- Function templates</a>.
+</p></div>
+<p>We can create a function template that uses the same template parameter declaration:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void passByRef(const std::vector&lt;T&gt;&amp; arr)
+{
+    std::cout &lt;&lt; arr[0] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector primes{ 2, 3, 5, 7, 11 };
+    passByRef(primes); // ok: compiler will instantiate passByRef(const std::vector&lt;int&gt;&amp;)
+
+    std::vector dbl{ 1.1, 2.2, 3.3 };
+    passByRef(dbl);    // ok: compiler will instantiate passByRef(const std::vector&lt;double&gt;&amp;)
+
+    return 0;
+}</code></pre>
+<p>In the above example, we’ve created a single function template named <code>passByRef()</code> that has a parameter of type <code>const std::vector&lt;T&gt;&amp;</code>.   <code>T</code> is defined in the template parameter declaration on the previous line: <code>template &lt;typename T</code>.  <code>T</code> is a standard type template parameter that allows the caller to specify the element type.</p>
+<p>Therefore, when we call <code>passByRef(primes)</code> from <code>main()</code> (where <code>primes</code> is defined as a <code>std::vector&lt;int&gt;</code>), the compiler will instantiate and call <code>void passByRef(const std::vector&lt;int&gt;&amp; arr)</code>.</p>
+<p>When we call <code>passByRef(dbl)</code> from <code>main()</code> (where <code>dbl</code> is defined as a <code>std::vector&lt;double&gt;</code>), the compiler will instantiate and call <code>void passByRef(const std::vector&lt;double&gt;&amp; arr)</code>.</p>
+<p>Thus, we’ve created a single function template that can instantiate functions to handle <code>std::vector</code> arguments of any element type and length!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Passing a <code>std::vector</code> using a generic template or abbreviated function template</p>
+<p>We can also create a function template that will accept any type of object:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void passByRef(const T&amp; arr) // will accept any type of object that has an overloaded operator[]
+{
+    std::cout &lt;&lt; arr[0] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector primes{ 2, 3, 5, 7, 11 };
+    passByRef(primes); // ok: compiler will instantiate passByRef(const std::vector&lt;int&gt;&amp;)
+
+    std::vector dbl{ 1.1, 2.2, 3.3 };
+    passByRef(dbl);    // ok: compiler will instantiate passByRef(const std::vector&lt;double&gt;&amp;)
+
+    return 0;
+}</code></pre>
+<p>In C++20, we can use an abbreviated function template (via an <code>auto</code> parameter) to do the same thing:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+void passByRef(const auto&amp; arr) // abbreviated function template
+{
+    std::cout &lt;&lt; arr[0] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector primes{ 2, 3, 5, 7, 11 };
+    passByRef(primes); // ok: compiler will instantiate passByRef(const std::vector&lt;int&gt;&amp;)
+
+    std::vector dbl{ 1.1, 2.2, 3.3 };
+    passByRef(dbl);    // ok: compiler will instantiate passByRef(const std::vector&lt;double&gt;&amp;)
+
+    return 0;
+}</code></pre>
+<p>Both of these will accept an argument of <em>any</em> type that will compile.  This can be desirable when writing functions that we might want to operate on more than just a <code>std::vector</code>.  For example, the above functions will also work on a <code>std::array</code>, a <code>std::string</code>, or some other type we may not have even considered.</p>
+<p>The potential downside of this method is that it may lead to bugs if the function is passed an object of a type that compiles but doesn’t make sense semantically.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Asserting on array length</p>
+<p>Consider the following template function, which is similar to the one presented above:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printElement3(const std::vector&lt;T&gt;&amp; arr)
+{
+    std::cout &lt;&lt; arr[3] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector arr{ 9, 7, 5, 3, 1 };
+    printElement3(arr);
+
+    return 0;
+}</code></pre>
+<p>While <code>printElement3(arr)</code> works fine in this case, there’s a potential bug waiting for a unwary programmer in this program.  See it?</p>
+<p>The above program prints the value of the array element with index 3.  This is fine as long as the array has a valid element with index 3.  However, the compiler will happily let you pass in arrays where index 3 is out of bounds.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+void printElement3(const std::vector&lt;T&gt;&amp; arr)
+{
+    std::cout &lt;&lt; arr[3] &lt;&lt; '\n';
+}
+
+int main()
+{
+    std::vector arr{ 9, 7 }; // a 2-element array (valid indexes 0 and 1)
+    printElement3(arr);
+
+    return 0;
+}</code></pre>
+<p>This leads to undefined behavior.</p>
+<p>One option here is to assert on <code>arr.size()</code>, which will catch such errors when run in a debug build configuration.  Because <code>std::vector::size()</code> is a non-constexpr function, we can only do a runtime assert here.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Tip</p>
+<p>A better option is to avoid using <code>std::vector</code>in cases where you need to assert on array length.  Using a type that supports <code>constexpr</code> arrays (e.g. <code>std::array</code>) is probably a better choice, as you can <code>static_assert</code> on the length of a constexpr array.  We cover this in future lesson <a href="passing-and-returning-stdarray.html">17.3 -- Passing and returning std::array</a>.
+</p></div>
+<p>The best option is to avoid writing functions that rely on the user passing in a vector with a minimum length in the first place.</p>
+<p></p><p class="cpp-section cpp-topline" style="clear: both">Quiz time</p><p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Write a function that takes two parameters: a <code>std::vector</code> and an index.  If the index is out of bounds, print an error.  If the index is in bounds, print the value of the element.</p>
+<p>The following sample program should compile:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// Write your printElement function here
+
+int main()
+{
+    std::vector v1 { 0, 1, 2, 3, 4 };
+    printElement(v1, 2);
+    printElement(v1, 5);
+
+    std::vector v2 { 1.1, 2.2, 3.3 };
+    printElement(v2, 0);
+    printElement(v2, -1);
+
+    return 0;
+}</code></pre>
+<p>and produce the following result:</p>
+<pre>
+The element has value 2
+Invalid index
+The element has value 1.1
+Invalid index
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// index needs to be an int, not a std::size_t, otherwise we won't be able to detect if the user passes in a negative index
+template &lt;typename T&gt;
+void printElement(const std::vector&lt;T&gt;&amp; arr, int index)
+{
+    if (index &lt; 0 || index &gt;= static_cast&lt;int&gt;(arr.size())) // In C++20, could use std::ssize(arr) to avoid the cast
+        std::cout &lt;&lt; "Invalid index\n";
+    else
+        std::cout &lt;&lt; "The element has value " &lt;&lt; arr[static_cast&lt;std::size_t&gt;(index)] &lt;&lt; '\n';  
+}
+
+int main()
+{
+    std::vector v1 { 0, 1, 2, 3, 4 };
+    printElement(v1, 2);
+    printElement(v1, 5);
+
+    std::vector v2 { 1.1, 2.2, 3.3 };
+    printElement(v2, 0);
+    printElement(v2, -1);
+
+    return 0;
+}</code></pre>
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="stdvector-and-the-unsigned-length-and-subscript-problem.html"><span class="nav-kicker">← Previous lesson</span>16.3 · std::vector and the unsigned length and subscript problem</a><a class="next" href="returning-stdvector-and-an-introduction-to-move-semantics.html"><span class="nav-kicker">Next lesson →</span>16.5 · Returning std::vector, and an introduction to move semantics</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

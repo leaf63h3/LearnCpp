@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In the previous lesson 9.1 -- Introduction to testing your code, we discussed how to write and preserve simple tests. In this lesson, we’ll talk about what">
+  <meta name="robots" content="noindex,nofollow">
+  <title>9.2 — Code coverage · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/code-coverage/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 9 · Error Detection and Handling</summary><div class="sidebar-title"><small>Chapter 9</small><strong>Error Detection and Handling</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-testing-your-code.html"><span class="lesson-number">9.1</span><span>Introduction to testing your code</span></a></li><li><a href="code-coverage.html" aria-current="page"><span class="lesson-number">9.2</span><span>Code coverage</span></a></li><li><a href="common-semantic-errors-in-c.html"><span class="lesson-number">9.3</span><span>Common semantic errors in C++</span></a></li><li><a href="detecting-and-handling-errors.html"><span class="lesson-number">9.4</span><span>Detecting and handling errors</span></a></li><li><a href="stdcin-and-handling-invalid-input.html"><span class="lesson-number">9.5</span><span>std::cin and handling invalid input</span></a></li><li><a href="assert-and-static_assert.html"><span class="lesson-number">9.6</span><span>Assert and static_assert</span></a></li><li><a href="chapter-9-summary-and-quiz.html"><span class="lesson-number">9.x</span><span>Chapter 9 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 9</div>
+        <h1>9.2 — Code coverage</h1>
+        <div class="article-meta"><span>Updated: 2024-12-23 21:46</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In the previous lesson <a href="introduction-to-testing-your-code.html">9.1 -- Introduction to testing your code</a>, we discussed how to write and preserve simple tests.  In this lesson, we’ll talk about what kind of tests are useful to write to ensure your code is correct.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Code coverage</p>
+<p>The term <strong>code coverage</strong> is used to describe how much of the source code of a program is executed while testing.  There are many different metrics used for code coverage.  We’ll cover a few of the more useful and popular ones in the following sections.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Statement coverage</p>
+<p>The term <strong>statement coverage</strong> refers to the percentage of statements in your code that have been exercised by your testing routines.  </p>
+<p>Consider the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int foo(int x, int y)
+{
+    int z{ y };
+    if (x &gt; y)
+    {
+        z = x;
+    }
+    return z;
+}</code></pre>
+<p>Calling this function as <code>foo(1, 0)</code> will give you complete statement coverage for this function, as every statement in the function will execute.</p>
+<p>For our <code>isLowerVowel()</code> function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool isLowerVowel(char c)
+{
+    switch (c) // statement 1
+    {
+    case 'a':
+    case 'e':
+    case 'i':
+    case 'o':
+    case 'u':
+        return true; // statement 2
+    default:
+        return false; // statement 3
+    }
+}</code></pre>
+<p>This function will require two calls to test all of the statements, as there is no way to reach statement 2 and 3 in the same function call.</p>
+<p>While aiming for 100% statement coverage is good, it’s often not enough to ensure correctness.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Branch coverage</p>
+<p><strong>Branch coverage</strong> refers to the percentage of branches that have been executed, each possible branch counted separately.  An <code>if statement</code> has two branches -- a branch that executes when the condition is <code>true</code>, and a branch that executes when the condition is <code>false</code> (even if there is no corresponding <code>else statement</code> to execute).  A switch statement can have many branches.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int foo(int x, int y)
+{
+    int z{ y };
+    if (x &gt; y)
+    {
+        z = x;
+    }
+    return z;
+}</code></pre>
+<p>The previous call to foo(1, 0) gave us 100% statement coverage and exercised the use case where <code>x &gt; y</code>, but that only gives us 50% branch coverage.  We need one more call, to <code>foo(0, 1)</code>, to test the use case where the <code>if statement</code> does not execute.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool isLowerVowel(char c)
+{
+    switch (c)
+    {
+    case 'a':
+    case 'e':
+    case 'i':
+    case 'o':
+    case 'u':
+        return true;
+    default:
+        return false;
+    }
+}</code></pre>
+<p>In the isLowerVowel() function, two calls will be needed to give you 100% branch coverage: one (such as <code>isLowerVowel('a')</code>) to test the first cases, and another (such as <code>isLowerVowel('q')</code>) to test the default case.  Multiple cases that feed into the same body don’t need to be tested separately -- if one works, they all should.</p>
+<p>Now consider the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void compare(int x, int y)
+{
+	if (x &gt; y)
+		std::cout &lt;&lt; x &lt;&lt; " is greater than " &lt;&lt; y &lt;&lt; '\n'; // case 1
+	else if (x &lt; y)
+		std::cout &lt;&lt; x &lt;&lt; " is less than " &lt;&lt; y &lt;&lt; '\n'; // case 2
+	else
+		std::cout &lt;&lt; x &lt;&lt; " is equal to " &lt;&lt; y &lt;&lt; '\n'; // case 3
+}</code></pre>
+<p>3 calls are needed to get 100% branch coverage here: <code>compare(1, 0)</code> tests the positive use case for the first <code>if statement</code>.  <code>compare(0, 1)</code> tests the negative use case for the first <code>if statement</code> and the positive use case for the second <code>if statement</code>.  <code>compare(0, 0)</code> tests the negative use case for the first and second <code>if statement</code> and executes the <code>else statement</code>.  Thus, we can say this function is reliably tested with 3 calls (which is slightly better than 18 quintillion).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Aim for 100% branch coverage of your code.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Loop coverage</p>
+<p><strong>Loop coverage</strong> (informally called <strong>the 0, 1, 2 test</strong>) says that if you have a loop in your code, you should ensure it works properly when it iterates 0 times, 1 time, and 2 times.  If it works correctly for the 2-iteration case, it should work correctly for all iterations greater than 2.  These three tests therefore cover all possibilities (since a loop can’t execute a negative number of times).</p>
+<p>Consider:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+void spam(int timesToPrint)
+{
+    for (int count{ 0 }; count &lt; timesToPrint; ++count)
+         std::cout &lt;&lt; "Spam! ";
+}</code></pre>
+<p>To test the loop within this function properly, you should call it three times: <code>spam(0)</code> to test the zero-iteration case, <code>spam(1)</code> to test the one-iteration case, and <code>spam(2)</code> to test the two-iteration case.  If <code>spam(2)</code> works, then <code>spam(n)</code> should work, where <code>n &gt; 2</code>.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Use the <code>0, 1, 2 test</code> to ensure your loops work correctly with different number of iterations.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Testing different categories of input</p>
+<p>When writing functions that accept parameters, or when accepting user input, consider what happens with different categories of input.  In this context, we’re using the term “category” to mean a set of inputs that have similar characteristics.</p>
+<p>For example, if I wrote a function to produce the square root of an integer, what values would it make sense to test it with?  You’d probably start with some normal value, like <code>4</code>.  But it would also be a good idea to test with <code>0</code>, and a negative number.</p>
+<p>Here are some basic guidelines for category testing:</p>
+<p>For integers, make sure you’ve considered how your function handles negative values, zero, and positive values.  You should also check for overflow if that’s relevant.</p>
+<p>For floating point numbers, make sure you’ve considered how your function handles values that have precision issues (values that are slightly larger or smaller than expected).  Good <code>double</code> type values to test with are <code>0.1</code> and <code>-0.1</code> (to test numbers that are slightly larger than expected) and <code>0.7</code> and <code>-0.7</code> (to test numbers that are slightly smaller than expected).</p>
+<p>For strings, make sure you’ve considered how your function handles an empty string, an alphanumeric string, strings that have whitespace (leading, trailing, and inner), and strings that are all whitespace.</p>
+<p>If your function takes a pointer, don’t forget to test <code>nullptr</code> as well (don’t worry if this doesn’t make sense, we haven’t covered it yet).</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Test different categories of input values to make sure your unit handles them properly.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<div class="quiz" style="clear: both">
+<p class="quiz-header">Question #1</p>
+<p>
+What is branch coverage?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+Branch coverage is the percentage of branches that have been executed, with the affirmative case and negative case counting separately.</div>
+
+</div>
+<div class="quiz" style="clear: both">
+<p class="quiz-header">Question #2</p>
+<p>
+How many tests would the following function need to minimally validate that it works?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool isLowerVowel(char c, bool yIsVowel)
+{
+    switch (c)
+    {
+    case 'a':
+    case 'e':
+    case 'i':
+    case 'o':
+    case 'u':
+        return true;
+    case 'y':
+        return yIsVowel;
+    default:
+        return false;
+    }
+}</code></pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+4 tests.  One to test the a/e/i/o/u case.  One to test the default case.  One to test <code>isLowerVowel('y', true)</code>.  And one to test <code>isLowerVowel('y', false)</code>.</div>
+
+</div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-testing-your-code.html"><span class="nav-kicker">← Previous lesson</span>9.1 · Introduction to testing your code</a><a class="next" href="common-semantic-errors-in-c.html"><span class="nav-kicker">Next lesson →</span>9.3 · Common semantic errors in C++</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

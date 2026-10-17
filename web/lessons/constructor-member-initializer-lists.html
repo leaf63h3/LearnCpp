@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="This lesson continues our introduction of constructors from lesson 14.9 -- Introduction to constructors. Member initialization via a member initialization ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>14.10 — Constructor member initializer lists · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/constructor-member-initializer-lists/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 14 · Introduction to Classes</summary><div class="sidebar-title"><small>Chapter 14</small><strong>Introduction to Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-object-oriented-programming.html"><span class="lesson-number">14.1</span><span>Introduction to object-oriented programming</span></a></li><li><a href="introduction-to-classes.html"><span class="lesson-number">14.2</span><span>Introduction to classes</span></a></li><li><a href="member-functions.html"><span class="lesson-number">14.3</span><span>Member functions</span></a></li><li><a href="const-class-objects-and-const-member-functions.html"><span class="lesson-number">14.4</span><span>Const class objects and const member functions</span></a></li><li><a href="public-and-private-members-and-access-specifiers.html"><span class="lesson-number">14.5</span><span>Public and private members and access specifiers</span></a></li><li><a href="access-functions.html"><span class="lesson-number">14.6</span><span>Access functions</span></a></li><li><a href="member-functions-returning-references-to-data-members.html"><span class="lesson-number">14.7</span><span>Member functions returning references to data members</span></a></li><li><a href="the-benefits-of-data-hiding-encapsulation.html"><span class="lesson-number">14.8</span><span>The benefits of data hiding (encapsulation)</span></a></li><li><a href="introduction-to-constructors.html"><span class="lesson-number">14.9</span><span>Introduction to constructors</span></a></li><li><a href="constructor-member-initializer-lists.html" aria-current="page"><span class="lesson-number">14.10</span><span>Constructor member initializer lists</span></a></li><li><a href="default-constructors-and-default-arguments.html"><span class="lesson-number">14.11</span><span>Default constructors and default arguments</span></a></li><li><a href="delegating-constructors.html"><span class="lesson-number">14.12</span><span>Delegating constructors</span></a></li><li><a href="temporary-class-objects.html"><span class="lesson-number">14.13</span><span>Temporary class objects</span></a></li><li><a href="introduction-to-the-copy-constructor.html"><span class="lesson-number">14.14</span><span>Introduction to the copy constructor</span></a></li><li><a href="class-initialization-and-copy-elision.html"><span class="lesson-number">14.15</span><span>Class initialization and copy elision</span></a></li><li><a href="converting-constructors-and-the-explicit-keyword.html"><span class="lesson-number">14.16</span><span>Converting constructors and the explicit keyword</span></a></li><li><a href="constexpr-aggregates-and-classes.html"><span class="lesson-number">14.17</span><span>Constexpr aggregates and classes</span></a></li><li><a href="chapter-14-summary-and-quiz.html"><span class="lesson-number">14.x</span><span>Chapter 14 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 14</div>
+        <h1>14.10 — Constructor member initializer lists</h1>
+        <div class="article-meta"><span>Updated: 2025-02-05 18:26</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>This lesson continues our introduction of constructors from lesson <a href="introduction-to-constructors.html">14.9 -- Introduction to constructors</a>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Member initialization via a member initialization list</p>
+<p>To have a constructor initialize members, we do so using a <strong>member initializer list</strong> (often called a “member initialization list”).  Do not confuse this with the similarly named “initializer list” that is used to initialize aggregates with a list of values.</p>
+<p>Member initialization lists are something that is best learned by example.  In the following example, our <code>Foo(int, int)</code> constructor has been updated to use a member initializer list to initialize <code>m_x</code>, and <code>m_y</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Foo
+{
+private:
+    int m_x {};
+    int m_y {};
+
+public:
+    Foo(int x, int y)
+        : m_x { x }, m_y { y } // here's our member initialization list
+    {
+        std::cout &lt;&lt; "Foo(" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ") constructed\n";
+    }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Foo(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ")\n";
+    }
+};
+
+int main()
+{
+    Foo foo{ 6, 7 };
+    foo.print();
+
+    return 0;
+}</code></pre>
+<p>The member initializer list is defined after the constructor parameters.  It begins with a colon (:), and then lists each member to initialize along with the initialization value for that variable, separated by a comma.  You must use a direct form of initialization here (preferably using braces, but parentheses works as well) -- using copy initialization (with an equals) does not work here.  Also note that the member initializer list does not end in a semicolon.</p>
+<p>This program produces the following output:</p>
+<pre>
+Foo(6, 7) constructed
+Foo(6, 7)
+</pre>
+<p>When <code>foo</code> is instantiated, the members in the initialization list are initialized with the specified initialization values.  In this case, the member initializer list initializes <code>m_x</code> to the value of <code>x</code> (which is <code>6</code>), and <code>m_y</code> to the value of <code>y</code> (which is <code>7</code>).  Then the body of the constructor runs.</p>
+<p>When the <code>print()</code> member function is called, you can see that <code>m_x</code> still has value <code>6</code> and <code>m_y</code> still has value <code>7</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Member initializer list formatting</p>
+<p>C++ provides a lot of freedom to format your member initializer lists as you prefer, as it doesn’t care where you put your colon, commas, or whitespace.</p>
+<p>The following styles are all valid (and you’re likely to see all three in practice):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    Foo(int x, int y) : m_x { x }, m_y { y }
+    {
+    }</code></pre>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    Foo(int x, int y) :
+        m_x { x },
+        m_y { y }
+    {
+    }</code></pre>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    Foo(int x, int y)
+        : m_x { x }
+        , m_y { y }
+    {
+    }</code></pre>
+<p>Our recommendation is to use the third style above:</p>
+<ul>
+<li>Put the colon on the line after the constructor name, as this cleanly separates the member initializer list from the function prototype.
+</li>
+<li>Indent your member initializer list, to make it easier to see the function names.
+</li>
+</ul>
+<p>If the member initialization list is short/trivial, all initializers can go on one line:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    Foo(int x, int y)
+        : m_x { x }, m_y { y }
+    {
+    }</code></pre>
+<p>Otherwise (or if you prefer), each member and initializer pair can be placed on a separate line (starting with a comma to maintain alignment):</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">    Foo(int x, int y)
+        : m_x { x }
+        , m_y { y }
+    {
+    }</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Member initialization order</p>
+<p>Because the C++ standard says so, the members in a member initializer list are always initialized in the order in which they are defined inside the class (not in the order they are defined in the member initializer list).</p>
+<p>In the above example, because <code>m_x</code> is defined before <code>m_y</code> in the class definition, <code>m_x</code> will be initialized first (even if it is not listed first in the member initializer list).</p>
+<p>Because we intuitively expect variables to be initialized left to right, this can cause subtle errors to occur.  Consider the following example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;algorithm&gt; // for std::max
+#include &lt;iostream&gt;
+
+class Foo
+{
+private:
+    int m_x{};
+    int m_y{};
+
+public:
+    Foo(int x, int y)
+        : m_y { std::max(x, y) }, m_x { m_y } // issue on this line
+    {
+    }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Foo(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ")\n";
+    }
+};
+
+int main()
+{
+    Foo foo { 6, 7 };
+    foo.print();
+
+    return 0;
+}</code></pre>
+<p>In the above example, our intent is to calculate the larger of the initialization values passed in (via <code>std::max(x, y)</code> and then use this value to initialize both <code>m_x</code> and <code>m_y</code>.  However, on the author’s machine, the following result is printed:</p>
+<pre>
+Foo(-858993460, 7)
+</pre>
+<p>What happened?  Even though <code>m_y</code> is listed first in the member initialization list, because <code>m_x</code> is defined first in the class, <code>m_x</code> gets initialized first.  And <code>m_x</code> gets initialized to the value of <code>m_y</code>, which hasn’t been initialized yet.  Finally, <code>m_y</code> gets initialized to the greater of the initialization values.</p>
+<p>To help prevent such errors, members in the member initializer list should be listed in the order in which they are defined in the class.  Some compilers will issue a warning if members are initialized out of order.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Member variables in a member initializer list should be listed in order that they are defined in the class.
+</p></div>
+<p>It’s also a good idea to avoid initializing members using the value of other members (if possible).  That way, even if you do make a mistake in the initialization order, it shouldn’t matter because there are no dependencies between initialization values.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Member initializer list vs default member initializers</p>
+<p>Members can be initialized in a few different ways:</p>
+<ul>
+<li>If a member is listed in the member initializer list, that initialization value is used
+</li>
+<li>Otherwise, if the member has a default member initializer, that initialization value is used
+</li>
+<li>Otherwise, the member is default-initialized.
+</li>
+</ul>
+<p>This means that if a member has both a default member initializer and is listed in the member initializer list for the constructor, the member initializer list value takes precedence.</p>
+<p>Here’s an example showing all three initialization methods:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Foo
+{
+private:
+    int m_x {};    // default member initializer (will be ignored)
+    int m_y { 2 }; // default member initializer (will be used)
+    int m_z;      // no initializer
+
+public:
+    Foo(int x)
+        : m_x { x } // member initializer list
+    {
+        std::cout &lt;&lt; "Foo constructed\n";
+    }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Foo(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ", " &lt;&lt; m_z &lt;&lt; ")\n";
+    }
+};
+
+int main()
+{
+    Foo foo { 6 };
+    foo.print();
+
+    return 0;
+}</code></pre>
+<p>On the author’s machine, this output:</p>
+<pre>
+Foo constructed
+Foo(6, 2, -858993460)
+</pre>
+<p>Here’s what’s happening.  When <code>foo</code> is constructed, only <code>m_x</code> appears in the member initializer list, so <code>m_x</code> is first initialized to <code>6</code>.  <code>m_y</code> is not in the member initialization list, but it does have a default member initializer, so it is initialized to <code>2</code>.  <code>m_z</code> is neither in the member initialization list, nor does it have a default member initializer, so it is default-initialized (which for fundamental types, means it is left uninitialized).  Thus, when we print the value of <code>m_z</code>, we get undefined behavior.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Constructor function bodies</p>
+<p>The bodies of constructors functions are most often left empty.  This is because we primarily use constructor for initialization, which is done via the member initializer list.  If that is all we need to do, then we don’t need any statements in the body of the constructor.</p>
+<p>However, because the statements in the body of the constructor execute after the member initializer list has executed, we can add statements to do any other setup tasks required.  In the above examples, we print something to the console to show that the constructor executed, but we could do other things like open a file or database, allocate memory, etc…</p>
+<p>New programmers sometimes use the body of the constructor to assign values to members:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+class Foo
+{
+private:
+    int m_x { 0 };
+    int m_y { 1 };
+
+public:
+    Foo(int x, int y)
+    {
+        m_x = x; // incorrect: this is an assignment, not an initialization
+        m_y = y; // incorrect: this is an assignment, not an initialization
+    }
+
+    void print() const
+    {
+        std::cout &lt;&lt; "Foo(" &lt;&lt; m_x &lt;&lt; ", " &lt;&lt; m_y &lt;&lt; ")\n";
+    }
+};
+
+int main()
+{
+    Foo foo { 6, 7 };
+    foo.print();
+
+    return 0;
+}</code></pre>
+<p>Although in this simple case this will produce the expected result, in case where members are required to be initialized (such as for data members that are const or references) assignment will not work.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Once the member initializer list has finished executing, the object is considered initialized.  Once the function body has finished executing, the object is considered constructed.
+</p></div>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Prefer using the member initializer list to initialize your members over assigning values in the body of the constructor.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Detecting and handling invalid arguments to constructors</p>
+<p>Consider the following Fraction class:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Fraction
+{
+private:
+    int m_numerator {};
+    int m_denominator {};
+
+public:
+    Fraction(int numerator, int denominator):
+        m_numerator { numerator }, m_denominator { denominator }
+    {
+    }
+};</code></pre>
+<p>Because a Fraction is a numerator divided by a denominator, the denominator of a fraction cannot be zero (otherwise we get a divide by zero, which is mathematically undefined).  In other words, this class has an invariant that <code>m_denominator</code> cannot be <code>0</code>.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>We discussed class invariants in lesson <a href="introduction-to-classes.html">14.2 -- Introduction to classes</a>.
+</p></div>
+<p>So what do we do when the user tries to create a Fraction with a zero denominator (e.g. <code>Fraction f { 1, 0 };</code>)?</p>
+<p>Inside a member initializer list, our tools for detecting and handling errors are quite limited.  We can use the conditional operator to detect an error, but then what?</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">class Fraction
+{
+private:
+    int m_numerator {};
+    int m_denominator {};
+
+public:
+    Fraction(int numerator, int denominator):
+        m_numerator { numerator }, m_denominator { denominator != 0.0 ? denominator : ??? } // what do we do here?
+    {
+    }
+};</code></pre>
+<p>We could change the denominator to a valid value, but then the user is going to get a <code>Fraction</code> that doesn’t contain the values they asked for, and we don’t have any way to notify them that we did something unexpected.  Thus, we typically won’t try to do any kind of validation in the member initializer list -- we’ll just initialize the members with the values passed in, and then try to deal with the situation.</p>
+<p>Inside the body of the constructor, we can use statements, so we have more options for detecting and handling errors.  This is a good place to <code>assert</code> or <code>static_assert</code> that the arguments passed in are semantically valid, but that doesn’t actually handle runtime errors in a production build.</p>
+<p>When a constructor cannot construct a semantically valid object, we say it has failed.</p>
+<p class="cpp-section cpp-topline" style="clear: both">When constructors fail (a prelude)</p>
+<p>In lesson <a href="detecting-and-handling-errors.html">9.4 -- Detecting and handling errors</a>, we introduced the topic of error handling, and discussed some options for handling cases where a function cannot proceed due to an error occurring.  Since constructors are functions, they are susceptible to the same issues.</p>
+<p>In that lesson, we suggested 4 strategies for dealing with such errors:</p>
+<ul>
+<li>Resolve the error within the function.
+</li>
+<li>Pass the error back to the caller to deal with.
+</li>
+<li>Halt the program.
+</li>
+<li>Throw an exception.
+</li>
+</ul>
+<p>In most cases, we don’t have enough information to resolve such issues entirely within the constructor.  So fixing the issue is generally not an option.</p>
+<p>With non-member and non-special member functions, we can pass an error back to the caller to deal with.  But constructors have no return value, so we don’t have a good way to do that.  In some cases, we can add an <code>isValid()</code> member function (or an overloaded conversion to <code>bool</code>) that returns whether the object is currently in a valid state or not.  For example, an <code>isValid()</code> function for <code>Fraction</code> would return <code>true</code> when <code>m_denominator != 0.0</code>.  But this means the caller has to remember to actually call the function any time a new Fraction is created.  And having semantically invalid objects that are accessible is likely to lead to bugs.  So while this is better than nothing, it’s not that great of an option.</p>
+<p>In certain types of programs, we can just halt the entire program and let the user rerun the program with the proper inputs… but in most cases, that’s just not acceptable.  So probably not.</p>
+<p>And that leaves throwing an exception.  Exceptions abort the construction process entirely, which means the user never gets access to a semantically invalid object.  So in most cases, throwing an exception is the best thing to do in these situations.  </p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>Throwing an exception is usually the best thing to do when a constructor fails (and cannot recover).  We discuss this further in lessons <a href="exceptions-classes-and-inheritance.html">27.5 -- Exceptions, classes, and inheritance</a> and <a href="function-try-blocks.html">27.7 -- Function try blocks</a>.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Author’s note</p>
+<p>For now, we’ll generally assume that construction of our class object succeeds in creating a semantically valid object.
+</p></div>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">For advanced readers</p>
+<p>If exceptions aren’t possible or desired (either because you’ve decided not to use them or because you haven’t learned about them yet), there is one other reasonable option.  Instead of letting the user create the class directly, provide a function that either returns an instance of the class or something that indicates failure.</p>
+<p>In the following example, our <code>createFraction()</code> function returns a <code>std::optional&lt;Fraction&gt;</code> that optionally contains a valid <code>Fraction</code>.  If it does, then we can use that Fraction.  If not, then the caller can detect that and deal with it.  We cover <code>std::optional</code> in lesson <a href="stdoptional.html">12.15 -- std::optional</a> and friend functions in lesson <a href="friend-non-member-functions.html">15.8 -- Friend non-member functions</a>.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;optional&gt;
+
+class Fraction
+{
+private:
+    int m_numerator { 0 };
+    int m_denominator { 1 };
+
+    // private constructor can't be called by public
+    Fraction(int numerator, int denominator):
+        m_numerator { numerator }, m_denominator { denominator }
+    {
+    }
+
+public:
+    // Allow this function to access private members
+    friend std::optional&lt;Fraction&gt; createFraction(int numerator, int denominator);
+};
+
+std::optional&lt;Fraction&gt; createFraction(int numerator, int denominator)
+{
+    if (denominator == 0)
+        return {};
+    
+    return Fraction{numerator, denominator};
+}
+
+int main()
+{
+    auto f1 { createFraction(0, 1) };
+    if (f1)
+    {
+        std::cout &lt;&lt; "Fraction created\n";
+    }
+
+    auto f2 { createFraction(0, 0) };
+    if (!f2)
+    {
+        std::cout &lt;&lt; "Bad fraction\n";
+    }   
+}</code></pre>
+</div>
+<p class="cpp-section cpp-topline" style="clear: both">Quiz time</p>
+<p class="cpp-quiz-question" style="clear: both">Question #1</p>
+<p>Write a class named Ball.  Ball should have two private member variables, one to hold a color, and one to hold a radius.  Also write a function to print out the color and radius of the ball.</p>
+<p>The following sample program should compile:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+	Ball blue { "blue", 10.0 };
+	print(blue);
+
+	Ball red { "red", 12.0 };
+	print(red);
+
+	return 0;
+}</code></pre>
+<p>and produce the result:</p>
+<pre>
+Ball(blue, 10)
+Ball(red, 12)
+</pre>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_0" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_0" hidden="hidden">
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;string_view&gt;
+
+class Ball
+{
+private:
+	std::string m_color { "none" };
+	double m_radius { 0.0 };
+
+public:
+	Ball(std::string_view color, double radius)
+		: m_color { color }
+		, m_radius { radius }
+	{
+	}
+
+	const std::string&amp; getColor() const { return m_color; }
+	double getRadius() const { return m_radius; }
+};
+
+void print(const Ball&amp; ball)
+{
+    std::cout &lt;&lt; "Ball(" &lt;&lt; ball.getColor() &lt;&lt; ", " &lt;&lt; ball.getRadius() &lt;&lt; ")\n";
+}
+
+int main()
+{
+	Ball blue { "blue", 10.0 };
+	print(blue);
+
+	Ball red { "red", 12.0 };
+	print(red);
+
+	return 0;
+}</code></pre>
+</div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #2</p>
+<p>Why did we make <code>print()</code> a non-member function instead of a member function?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_1" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_1" hidden="hidden">
+<p>The rationale for this is given in lesson <a href="the-benefits-of-data-hiding-encapsulation.html#prefer-non-member-functions">14.8 -- The benefits of data hiding (encapsulation)</a>.
+</p></div>
+<p class="cpp-quiz-question cpp-topline" style="clear: both">Question #3</p>
+<p>Why did we make <code>m_color</code> a <code>std::string</code> instead of a <code>std::string_view</code>?</p>
+<p><button type="button" class="reveal-button" data-toggle-target="cpp_solution_id_2" data-show-label="Show Solution" data-hide-label="Hide Solution" aria-expanded="false">Show Solution</button></p>
+<div class="wpsolution" id="cpp_solution_id_2" hidden="hidden">
+<p>In this particular example, it doesn’t matter (because our color arguments are C-style string literals, which doesn’t go out of scope). </p>
+<p>But conceptually, we want our <code>Ball</code> class to be an owner of the color passed in.  If <code>m_color</code> were a <code>std::string_view</code>, passing in a temporary object for the color argument (e.g. a <code>std::string</code> returned from a function) would leave <code>m_color</code> dangling when the temporary color argument was destroyed.</p>
+<p>We discuss this case in more detail (and show an example) in lesson <a href="struct-miscellany.html">13.11 -- Struct miscellany</a>.
+</p></div>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="introduction-to-constructors.html"><span class="nav-kicker">← Previous lesson</span>14.9 · Introduction to constructors</a><a class="next" href="default-constructors-and-default-arguments.html"><span class="nav-kicker">Next lesson →</span>14.11 · Default constructors and default arguments</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

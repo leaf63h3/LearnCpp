@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Once you start using move semantics more regularly, you’ll start to find cases where you want to invoke move semantics, but the objects you have to work wi">
+  <meta name="robots" content="noindex,nofollow">
+  <title>22.4 — std::move · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/stdmove/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 22 · Move Semantics and Smart Pointers</summary><div class="sidebar-title"><small>Chapter 22</small><strong>Move Semantics and Smart Pointers</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-smart-pointers-move-semantics.html"><span class="lesson-number">22.1</span><span>Introduction to smart pointers and move semantics</span></a></li><li><a href="rvalue-references.html"><span class="lesson-number">22.2</span><span>R-value references</span></a></li><li><a href="move-constructors-and-move-assignment.html"><span class="lesson-number">22.3</span><span>Move constructors and move assignment</span></a></li><li><a href="stdmove.html" aria-current="page"><span class="lesson-number">22.4</span><span>std::move</span></a></li><li><a href="stdunique_ptr.html"><span class="lesson-number">22.5</span><span>std::unique_ptr</span></a></li><li><a href="stdshared_ptr.html"><span class="lesson-number">22.6</span><span>std::shared_ptr</span></a></li><li><a href="circular-dependency-issues-with-stdshared_ptr-and-stdweak_ptr.html"><span class="lesson-number">22.7</span><span>Circular dependency issues with std::shared_ptr, and std::weak_ptr</span></a></li><li><a href="chapter-22-summary-and-quiz.html"><span class="lesson-number">22.x</span><span>Chapter 22 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 22</div>
+        <h1>22.4 — std::move</h1>
+        <div class="article-meta"><span>Updated: 2024-05-08 17:12</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>Once you start using move semantics more regularly, you’ll start to find cases where you want to invoke move semantics, but the objects you have to work with are l-values, not r-values. Consider the following swap function as an example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+template &lt;typename T&gt;
+void mySwapCopy(T&amp; a, T&amp; b) 
+{ 
+	T tmp { a }; // invokes copy constructor
+	a = b; // invokes copy assignment
+	b = tmp; // invokes copy assignment
+}
+
+int main()
+{
+	std::string x{ "abc" };
+	std::string y{ "de" };
+
+	std::cout &lt;&lt; "x: " &lt;&lt; x &lt;&lt; '\n';
+	std::cout &lt;&lt; "y: " &lt;&lt; y &lt;&lt; '\n';
+
+	mySwapCopy(x, y);
+
+	std::cout &lt;&lt; "x: " &lt;&lt; x &lt;&lt; '\n';
+	std::cout &lt;&lt; "y: " &lt;&lt; y &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>Passed in two objects of type T (in this case, std::string), this function swaps their values by making three copies.  Consequently, this program prints:</p>
+<pre>
+x: abc
+y: de
+x: de
+y: abc
+</pre>
+<p>As we showed last lesson, making copies can be inefficient.  And this version of swap makes 3 copies.  That leads to a lot of excessive string creation and destruction, which is slow.</p>
+<p>However, doing copies isn’t necessary here.  All we’re really trying to do is swap the values of a and b, which can be accomplished just as well using 3 moves instead!  So if we switch from copy semantics to move semantics, we can make our code more performant.</p>
+<p>But how?  The problem here is that parameters a and b are l-value references, not r-value references, so we don’t have a way to invoke the move constructor and move assignment operator instead of copy constructor and copy assignment.  By default, we get the copy constructor and copy assignment behaviors.  What are we to do?</p>
+<p class="cpp-section cpp-topline" style="clear: both">std::move</p>
+<p>In C++11, std::move is a standard library function that casts (using static_cast) its argument into an r-value reference, so that move semantics can be invoked.  Thus, we can use std::move to cast an l-value into a type that will prefer being moved over being copied.  std::move is defined in the utility header.</p>
+<p>Here’s the same program as above, but with a mySwapMove() function that uses std::move to convert our l-values into r-values so we can invoke move semantics:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt; // for std::move
+
+template &lt;typename T&gt;
+void mySwapMove(T&amp; a, T&amp; b) 
+{ 
+	T tmp { std::move(a) }; // invokes move constructor
+	a = std::move(b); // invokes move assignment
+	b = std::move(tmp); // invokes move assignment
+}
+
+int main()
+{
+	std::string x{ "abc" };
+	std::string y{ "de" };
+
+	std::cout &lt;&lt; "x: " &lt;&lt; x &lt;&lt; '\n';
+	std::cout &lt;&lt; "y: " &lt;&lt; y &lt;&lt; '\n';
+
+	mySwapMove(x, y);
+
+	std::cout &lt;&lt; "x: " &lt;&lt; x &lt;&lt; '\n';
+	std::cout &lt;&lt; "y: " &lt;&lt; y &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>This prints the same result as above:</p>
+<pre>
+x: abc
+y: de
+x: de
+y: abc
+</pre>
+<p>But it’s much more efficient about it.  When tmp is initialized, instead of making a copy of x, we use std::move to convert l-value variable x into an r-value.  Since the parameter is an r-value, move semantics are invoked, and x is moved into tmp.</p>
+<p>With a couple of more swaps, the value of variable x has been moved to y, and the value of y has been moved to x.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Another example</p>
+<p>We can also use std::move when filling elements of a container, such as std::vector, with l-values.</p>
+<p>In the following program, we first add an element to a vector using copy semantics.  Then we add an element to the vector using move semantics.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt; // for std::move
+#include &lt;vector&gt;
+
+int main()
+{
+	std::vector&lt;std::string&gt; v;
+
+	// We use std::string because it is movable (std::string_view is not)
+	std::string str { "Knock" };
+
+	std::cout &lt;&lt; "Copying str\n";
+	v.push_back(str); // calls l-value version of push_back, which copies str into the array element
+	
+	std::cout &lt;&lt; "str: " &lt;&lt; str &lt;&lt; '\n';
+	std::cout &lt;&lt; "vector: " &lt;&lt; v[0] &lt;&lt; '\n';
+
+	std::cout &lt;&lt; "\nMoving str\n";
+
+	v.push_back(std::move(str)); // calls r-value version of push_back, which moves str into the array element
+	
+	std::cout &lt;&lt; "str: " &lt;&lt; str &lt;&lt; '\n'; // The result of this is indeterminate
+	std::cout &lt;&lt; "vector:" &lt;&lt; v[0] &lt;&lt; ' ' &lt;&lt; v[1] &lt;&lt; '\n';
+
+	return 0;
+}</code></pre>
+<p>On the author’s machine, this program prints:</p>
+<pre>
+Copying str
+str: Knock
+vector: Knock
+
+Moving str
+str:
+vector: Knock Knock
+</pre>
+<p>In the first case, we passed push_back() an l-value, so it used copy semantics to add an element to the vector.  For this reason, the value in str is left alone.</p>
+<p>In the second case, we passed push_back() an r-value (actually an l-value converted via std::move), so it used move semantics to add an element to the vector.  This is more efficient, as the vector element can steal the string’s value rather than having to copy it.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Moved from objects will be in a valid, but possibly indeterminate state</p>
+<p>When we move the value from a temporary object, it doesn’t matter what value the moved-from object is left with, because the temporary object will be destroyed immediately anyway.  But what about lvalue objects that we’ve used std::move() on?  Because we can continue to access these objects after their values have been moved (e.g. in the example above, we print the value of <code>str</code> after it has been moved), it is useful to know what value they are left with.</p>
+<p>There are two schools of thought here.  One school believes that objects that have been moved from should be reset back to some default / zero state, where the object does not own a resource any more.  We see an example of this above, where <code>str</code> has been cleared to the empty string.</p>
+<p>The other school believes that we should do whatever is most convenient, and not constrain ourselves to having to clear the moved-from object if its not convenient to do so.</p>
+<p>So what does the standard library do in this case?  About this, the C++ standard says, “Unless otherwise specified, moved-from objects [of types defined in the C++ standard library] shall be placed in a valid but unspecified state.”</p>
+<p>In our example above, when the author printed the value of <code>str</code> after calling <code>std::move</code> on it, it printed an empty string.  However, this is not required, and it could have printed any valid string, including an empty string, the original string, or any other valid string.  Therefore, we should avoid using the value of a moved-from object, as the results will be implementation-specific.</p>
+<p>In some cases, we want to reuse an object whose value has been moved (rather than allocating a new object).  For example, in the implementation of mySwapMove() above, we first move the resource out of <code>a</code>, and then we move another resource into <code>a</code>.  This is fine because we never use the value of <code>a</code> between the time where we move it out and the time where we give <code>a</code> a new determinate value.</p>
+<p>With a moved-from object, it is safe to call any function that does not depend on the current value of the object.  This means we can set or reset the value of the moved-from object (using <code>operator=</code>, or any kind of <code>clear()</code> or <code>reset()</code> member function).  We can also test the state of the moved-from object (e.g. using <code>empty()</code> to see if the object has a value).  However, we should avoid functions like <code>operator[]</code> or <code>front()</code> (which returns the first element in a container), because these functions depend on the container having elements, and a moved-from container may or may not have elements.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p><code>std::move()</code> gives a hint to the compiler that the programmer doesn’t need the value of an object any more.  Only use <code>std::move()</code> on persistent objects whose value you want to move, and do not make any assumptions about the value of the object beyond that point.  It is okay to give a moved-from object a new value (e.g. using <code>operator=</code>) after the current value has been moved.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Where else is std::move useful?</p>
+<p>std::move can also be useful when sorting an array of elements.  Many sorting algorithms (such as selection sort and bubble sort) work by swapping pairs of elements.  In previous lessons, we’ve had to resort to copy-semantics to do the swapping.  Now we can use move semantics, which is more efficient.</p>
+<p>It can also be useful if we want to move the contents managed by one smart pointer to another.</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>There is a useful variant of <code>std::move()</code> called <code>std::move_if_noexcept()</code> that returns a movable r-value if the object has a <code>noexcept</code> move constructor, otherwise it returns a copyable l-value.  We cover this in lesson <a href="stdmove_if_noexcept.html">27.10 -- std::move_if_noexcept</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>std::move can be used whenever we want to treat an l-value like an r-value for the purpose of invoking move semantics instead of copy semantics.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="move-constructors-and-move-assignment.html"><span class="nav-kicker">← Previous lesson</span>22.3 · Move constructors and move assignment</a><a class="next" href="stdunique_ptr.html"><span class="nav-kicker">Next lesson →</span>22.5 · std::unique_ptr</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

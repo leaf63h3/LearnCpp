@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In lesson 9.3 -- Common semantic errors in C++, we covered many types of common C++ semantic errors that new C++ programmers run into with the language. If">
+  <meta name="robots" content="noindex,nofollow">
+  <title>9.4 — Detecting and handling errors · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/detecting-and-handling-errors/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 9 · Error Detection and Handling</summary><div class="sidebar-title"><small>Chapter 9</small><strong>Error Detection and Handling</strong></div>
+<ol class="sidebar-lessons"><li><a href="introduction-to-testing-your-code.html"><span class="lesson-number">9.1</span><span>Introduction to testing your code</span></a></li><li><a href="code-coverage.html"><span class="lesson-number">9.2</span><span>Code coverage</span></a></li><li><a href="common-semantic-errors-in-c.html"><span class="lesson-number">9.3</span><span>Common semantic errors in C++</span></a></li><li><a href="detecting-and-handling-errors.html" aria-current="page"><span class="lesson-number">9.4</span><span>Detecting and handling errors</span></a></li><li><a href="stdcin-and-handling-invalid-input.html"><span class="lesson-number">9.5</span><span>std::cin and handling invalid input</span></a></li><li><a href="assert-and-static_assert.html"><span class="lesson-number">9.6</span><span>Assert and static_assert</span></a></li><li><a href="chapter-9-summary-and-quiz.html"><span class="lesson-number">9.x</span><span>Chapter 9 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 9</div>
+        <h1>9.4 — Detecting and handling errors</h1>
+        <div class="article-meta"><span>Updated: 2025-01-17 20:46</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In lesson <a href="common-semantic-errors-in-c.html">9.3 -- Common semantic errors in C++</a>, we covered many types of common C++ semantic errors that new C++ programmers run into with the language.  If an error is the result of a misused language feature or logic error, the error can simply be corrected.</p>
+<p>But most errors in a program don’t occur as the result of inadvertently misusing language features -- rather, most errors occur due to faulty assumptions made by the programmer and/or a lack of proper error detection/handling.</p>
+<p>For example, in a function designed to look up a grade for a student, you might have assumed:</p>
+<ul>
+<li>The student being looked up will exist.</li>
+<li>All student names will be unique.</li>
+<li>The class uses letter grading (instead of pass/fail).</li>
+</ul>
+<p>What if any of these assumptions aren’t true?  If the programmer didn’t anticipate these cases, the program will likely malfunction or crash when such cases arise (usually at some point in the future, well after the function has been written).</p>
+<p>There are three key places where assumption errors typically occur:</p>
+<ul>
+<li>When a function returns, the programmer may have assumed the called function was successful when it was not.</li>
+<li>When a program receives input (either from the user, or a file), the programmer may have assumed the input was in the correct format and semantically valid when it was not.</li>
+<li>When a function has been called, the programmer may have assumed the arguments would be semantically valid when they were not.</li>
+</ul>
+<p>Many new programmers write code and then only test the <strong>happy path</strong>: only the cases where there are no errors.  But you should also be planning for and testing your <strong>sad paths</strong>, where things can and will go wrong.  In lesson <a href="finding-issues-before-they-become-problems.html">3.10 -- Finding issues before they become problems</a>, we defined <strong>defensive programming</strong> as the practice of trying to anticipate all of the ways software can be misused, either by end-users, or by developers (either the programmer themselves, or others).  Once you’ve anticipated (or discovered) some misuse, the next thing to do is handle it.</p>
+<p>In this lesson, we’ll talk about error handling strategies (what to do when things go wrong) inside a function.  In the subsequent lessons, we’ll talk about validating user input, and then introduce a useful tool to help document and validate assumptions.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Handling errors in functions</p>
+<p>Functions may fail for any number of reasons -- the caller may have passed in an argument with an invalid value, or something may fail within the body of the function.  For example, a function that opens a file for reading might fail if the file cannot be found.</p>
+<p>When this happens, you have quite a few options at your disposal.  There is no best way to handle an error -- it really depends on the nature of the problem and whether the problem can be fixed or not.</p>
+<p>There are 4 general strategies that can be used:</p>
+<ul>
+<li>Handle the error within the function</li>
+<li>Pass the error back to the caller to deal with</li>
+<li>Halt the program</li>
+<li>Throw an exception</li>
+</ul>
+<p class="cpp-section cpp-topline" style="clear: both">Handling the error within the function</p>
+<p>If possible, the best strategy is to recover from the error in the same function in which the error occurred, so that the error can be contained and corrected without impacting any code outside the function.  There are two options here: retry until successful, or cancel the operation being executed.</p>
+<p>If the error has occurred due to something outside of the program’s control, the program can retry until success is achieved.  For example, if the program requires an internet connection, and the user has lost their connection, the program may be able to display a warning and then use a loop to periodically recheck for internet connectivity.  Alternatively, if the user has entered invalid input, the program can ask the user to try again, and loop until the user is successful at entering valid input.  We’ll show examples of handling invalid input and using loops to retry in the next lesson (<a href="stdcin-and-handling-invalid-input.html">9.5 -- std::cin and handling invalid input</a>).</p>
+<p>An alternate strategy is just to ignore the error and/or cancel the operation.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// Silent failure if y=0
+void printIntDivision(int x, int y)
+{
+    if (y != 0)
+        std::cout &lt;&lt; x / y;
+}</code></pre>
+<p>In the above example, if the user passed in an invalid value for <code>y</code>, we just ignore the request to print the result of the division operation.  The primary challenge with doing this is that the caller or user have no way to identify that something went wrong.  In such case, printing an error message can be helpful:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void printIntDivision(int x, int y)
+{
+    if (y != 0)
+        std::cout &lt;&lt; x / y;
+    else
+        std::cout &lt;&lt; "Error: Could not divide by zero\n";
+}</code></pre>
+<p>However, if the calling function is expecting the called function to produce a return value or some useful side-effect, then just ignoring the error may not be an option.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Passing errors back to the caller</p>
+<p>In many cases, the error can’t reasonably be handled in the function that detects the error.  For example, consider the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int doIntDivision(int x, int y)
+{
+    return x / y;
+}</code></pre>
+<p>If <code>y</code> is <code>0</code>, what should we do?  We can’t just skip the program logic, because the function needs to return some value.  We shouldn’t ask the user to enter a new value for <code>y</code> because this is a calculation function, and introducing input routines into it may or may not be appropriate for the program calling this function.</p>
+<p>In such cases, the best option can be to pass the error back to the caller in hopes that the caller will be able to deal with it.</p>
+<p>How might we do that?</p>
+<p>If the function has a <code>void</code> return type, it can be changed to return a <code>bool</code> that indicates success or failure.  For example, instead of:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void printIntDivision(int x, int y)
+{
+    if (y != 0)
+        std::cout &lt;&lt; x / y;
+    else
+        std::cout &lt;&lt; "Error: Could not divide by zero\n";
+}</code></pre>
+<p>We can do this:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">bool printIntDivision(int x, int y)
+{
+    if (y == 0)
+    {
+        std::cout &lt;&lt; "Error: could not divide by zero\n";
+        return false;
+    }
+    
+    std::cout &lt;&lt; x / y;
+
+    return true;
+}</code></pre>
+<p>That way, the caller can check the return value to see if the function failed for some reason.</p>
+<p>If the function returns a normal value, things are a little more complicated.  In some cases, the full range of return values isn’t used.  In such cases, we can use a return value that wouldn’t otherwise be possible to occur normally to indicate an error.  For example, consider the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// The reciprocal of x is 1/x
+double reciprocal(double x)
+{
+    return 1.0 / x;
+}</code></pre>
+<p>The reciprocal of some number <code>x</code> is defined as <code>1/x</code>, and a number multiplied by its reciprocal equals 1.</p>
+<p>However, what happens if the user calls this function as <code>reciprocal(0.0)</code>?  We get a <code>divide by zero</code> error and a program crash, so clearly we should protect against this case.  But this function must return a double value, so what value should we return?  It turns out that this function will never produce <code>0.0</code> as a legitimate result, so we can return <code>0.0</code> to indicate an error case.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// The reciprocal of x is 1/x, returns 0.0 if x=0
+constexpr double error_no_reciprocal { 0.0 }; // could also be placed in namespace
+
+double reciprocal(double x)
+{
+    if (x == 0.0)
+       return error_no_reciprocal;
+
+    return 1.0 / x;
+}</code></pre>
+<p>A <strong>sentinel value</strong> is a value that has some special meaning in the context of a function or algorithm.  In our <code>reciprocal()</code> function above, <code>0.0</code> is a sentinel value indicating that the function failed.  The caller can test the return value to see if it matches the sentinel value -- if so, then the caller knows the function failed.  While functions often return the sentinel value directly, returning a constant that describes the sentinel value can add additional readability.</p>
+<p>However, if the full range of return values can be produced by the function, then using a sentinel value to indicate an error is problematic (because the caller would not be able to tell whether the return value is a valid value or an error value).</p>
+<div class="cpp-note cpp-lightgraybackground">
+<p class="cpp-note-title cpp-bottomline">Related content</p>
+<p>In such a case, returning a <code>std::optional</code> (or <code>std::expected</code>) would be a better choice.  We cover <code>std::optional</code> in lesson <a href="stdoptional.html">12.15 -- std::optional</a>.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Fatal errors</p>
+<p>If the error is so bad that the program can not continue to operate properly, this is called a <strong>non-recoverable</strong> error (also called a <strong>fatal error</strong>).  In such cases, the best thing to do is terminate the program.  If your code is in <code>main()</code> or a function called directly from <code>main()</code>, the best thing to do is let <code>main()</code> return a non-zero status code.  However, if you’re deep in some nested subfunction, it may not be convenient or possible to propagate the error all the way back to <code>main()</code>.  In such a case, a <code>halt statement</code> (such as <code>std::exit()</code>) can be used.</p>
+<p>For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">double doIntDivision(int x, int y)
+{
+    if (y == 0)
+    {
+        std::cout &lt;&lt; "Error: Could not divide by zero\n";
+        std::exit(1);
+    }
+    return x / y;
+}</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Exceptions</p>
+<p>Because returning an error from a function back to the caller is complicated (and the many different ways to do so leads to inconsistency, and inconsistency leads to mistakes), C++ offers an entirely separate way to pass errors back to the caller: <code>exceptions</code>.</p>
+<p>The basic idea is that when an error occurs, an exception is “thrown”. If the current function does not “catch” the error, the caller of the function has a chance to catch the error. If the caller does not catch the error, the caller’s caller has a chance to catch the error. The error progressively moves up the call stack until it is either caught and handled (at which point execution continues normally), or until main() fails to handle the error (at which point the program is terminated with an exception error).</p>
+<p>We cover exception handling in <a href="../index.html">chapter 27</a> of this tutorial series.</p>
+<p class="cpp-section cpp-topline" style="clear: both">When to use <code>std::cout</code> vs <code>std::cerr</code> vs logging</p>
+<p>In lesson <a href="basic-debugging-tactics.html">3.4 -- Basic debugging tactics</a>, we introduced <code>std::cerr</code>.  You may be wondering when (or whether) you should be using <code>std::cerr</code> vs <code>std::cout</code> vs logging to a text file.</p>
+<p>By default, both <code>std::cout</code> and <code>std::cerr</code> print text to the console.  However, modern OSes provide a way to redirect output streams to files, so that the output can be captured for review or automated processing later.</p>
+<p>For this discussion, it is useful to differentiate two types of applications:</p>
+<ul>
+<li><strong>Interactive applications</strong> are those that the user will interact with after running.  Most standalone applications, like games and music apps, fall into this category.
+</li>
+<li><strong>Non-interactive applications</strong> are applications that do not require user interaction to operate.  The output of these programs may be used as input for another application
+</li>
+</ul>
+<p>Within non-interactive applications, there are two types:</p>
+<ul>
+<li><strong>Tools</strong> are non-interactive applications that are typically launched in order to produce some immediate result, and then terminate after producing such a result.  An example of this is Unix’s grep command, which is a utility that searches text for lines that match some pattern.
+</li>
+<li><strong>Services</strong> are non-interactive applications that typically run silently in the background to perform some ongoing function.  An example of this would be a virus scanner.
+</li>
+</ul>
+<p>Here’s some rules of thumb:</p>
+<ul>
+<li>Use <code>std::cout</code> for all conventional, user-facing text.
+</li>
+<li>For an interactive program, use <code>std::cout</code> for normal user-facing error messages (e.g. “Your input was invalid”).  Use <code>std::cerr</code> or a logfile for status and diagnostic information that may be helpful for diagnosing issues but probably isn’t interesting for normal users.  This can include technical warnings and errors (e.g. bad input to function x), status updates (e.g. successfully opened file x, failed to connect to internet service x), percentage completion of long tasks (e.g. encoding 50% complete), etc…
+</li>
+<li>For a non-interactive program (tool or service), use <code>std::cerr</code> for error output only (e.g. could not open file x).  This allows errors to be displayed or parsed separately from normal output.
+</li>
+<li>For any application type that is transactional in nature (e.g. one that processes specific events, such as an interactive web browser or non-interactive web server), use a logfile to produce a transactional log of events that can be reviewed later.  This can include outputting to the logfile which file is being processed, updates on the percentage complete, timestamps of when it started certain stages of computing, warning and error messages, etc…
+</li>
+</ul>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="common-semantic-errors-in-c.html"><span class="nav-kicker">← Previous lesson</span>9.3 · Common semantic errors in C++</a><a class="next" href="stdcin-and-handling-invalid-input.html"><span class="nav-kicker">Next lesson →</span>9.5 · std::cin and handling invalid input</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

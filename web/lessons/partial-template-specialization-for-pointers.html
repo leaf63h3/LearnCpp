@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="In previous lesson 26.4 -- Class template specialization, we took a look at a simple templated Storage class, along with a specialization for type double: ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>26.6 — Partial template specialization for pointers · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/partial-template-specialization-for-pointers/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 26 · Templates and Classes</summary><div class="sidebar-title"><small>Chapter 26</small><strong>Templates and Classes</strong></div>
+<ol class="sidebar-lessons"><li><a href="template-classes.html"><span class="lesson-number">26.1</span><span>Template classes</span></a></li><li><a href="template-non-type-parameters.html"><span class="lesson-number">26.2</span><span>Template non-type parameters</span></a></li><li><a href="function-template-specialization.html"><span class="lesson-number">26.3</span><span>Function template specialization</span></a></li><li><a href="class-template-specialization.html"><span class="lesson-number">26.4</span><span>Class template specialization</span></a></li><li><a href="partial-template-specialization.html"><span class="lesson-number">26.5</span><span>Partial template specialization</span></a></li><li><a href="partial-template-specialization-for-pointers.html" aria-current="page"><span class="lesson-number">26.6</span><span>Partial template specialization for pointers</span></a></li><li><a href="chapter-26-summary-and-quiz.html"><span class="lesson-number">26.x</span><span>Chapter 26 summary and quiz</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 26</div>
+        <h1>26.6 — Partial template specialization for pointers</h1>
+        <div class="article-meta"><span>Updated: 2024-03-29 10:09</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p>In previous lesson <a href="class-template-specialization.html">26.4 -- Class template specialization</a>, we took a look at a simple templated <code>Storage</code> class, along with a specialization for type <code>double</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+class Storage
+{
+private:
+    T m_value {};
+public:
+    Storage(T value)
+      : m_value { value }
+    {
+    }
+
+    void print()
+    {
+        std::cout &lt;&lt; m_value &lt;&lt; '\n';
+    }
+};
+
+template&lt;&gt;
+void Storage&lt;double&gt;::print() // fully specialized for type double
+{
+    std::cout &lt;&lt; std::scientific &lt;&lt; m_value &lt;&lt; '\n';
+}
+
+int main()
+{
+    // Define some storage units
+    Storage i { 5 };
+    Storage d { 6.7 }; // will cause Storage&lt;double&gt; to be implicitly instantiated
+
+    // Print out some values
+    i.print(); // calls Storage&lt;int&gt;::print (instantiated from Storage&lt;T&gt;)
+    d.print(); // calls Storage&lt;double&gt;::print (called from explicit specialization of Storage&lt;double&gt;::print())
+}</code></pre>
+<p>However, as simple as this class is, it has a hidden flaw: it compiles but malfunctions when <code>T</code> is a pointer type.  For example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    double d { 1.2 };
+    double *ptr { &amp;d };
+
+    Storage s { ptr };
+    s.print();
+    
+    return 0;
+}</code></pre>
+<p>On the authors machine, this produced the result:</p>
+<pre>
+0x7ffe164e0f50
+</pre>
+<p>What happened?  Because <code>ptr</code> is a <code>double*</code>, <code>s</code> has type <code>Storage&lt;double*&gt;</code>, which means <code>m_value</code> has type <code>double*</code>.  When the constructor is invoked, <code>m_value</code> receives a copy of the address that <code>ptr</code> is holding, and it is this address that is printed when the <code>print()</code> member function is called.</p>
+<p>So how do we fix this?</p>
+<p>One option would be to add a full specialization for type <code>double*</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+class Storage
+{
+private:
+    T m_value {};
+public:
+    Storage(T value)
+      : m_value { value }
+    {
+    }
+
+    void print()
+    {
+        std::cout &lt;&lt; m_value &lt;&lt; '\n';
+    }
+};
+
+template&lt;&gt;
+void Storage&lt;double*&gt;::print() // fully specialized for type double*
+{
+    if (m_value)
+        std::cout &lt;&lt; std::scientific &lt;&lt; *m_value &lt;&lt; '\n';
+}
+
+template&lt;&gt;
+void Storage&lt;double&gt;::print() // fully specialized for type double (for comparison, not used)
+{
+    std::cout &lt;&lt; std::scientific &lt;&lt; m_value &lt;&lt; '\n';
+}
+
+int main()
+{
+    double d { 1.2 };
+    double *ptr { &amp;d };
+
+    Storage s { ptr };
+    s.print(); // calls Storage&lt;double*&gt;::print()
+    
+    return 0;
+}</code></pre>
+<p>This now prints the correct result:</p>
+<pre>
+1.200000e+00
+</pre>
+<p>But this only solves the problem when <code>T</code> is of type <code>double*</code>.  What about when <code>T</code> is <code>int*</code>, or <code>char*</code>, or any other pointer type?</p>
+<p>We really don’t want to have to create a full specialization for every pointer type.  And in fact, it’s not even possible, because the user can always pass in a pointer to a program-defined type.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Partial template specialization for pointers</p>
+<p>You might think to to try creating a template function overloaded on type <code>T*</code>:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// doesn't work
+template&lt;typename T&gt;
+void Storage&lt;T*&gt;::print()
+{
+    if (m_value)
+        std::cout &lt;&lt; std::scientific &lt;&lt; *m_value &lt;&lt; '\n';
+}</code></pre>
+<p>Such a function is a partially specialized template function because it’s restricting what type <code>T</code> can be (to a pointer type), but <code>T</code> is still a type template parameter.</p>
+<p>Unfortunately, this doesn’t work for a simple reason: as of the time of writing (C++23) functions cannot be partially specialized.  As we noted in lesson <a href="partial-template-specialization.html">26.5 -- Partial template specialization</a>, only classes can be partially specialized.</p>
+<p>So let’s partially specialize the <code>Storage</code> class instead:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+class Storage // This is our primary template class (same as previous)
+{
+private:
+    T m_value {};
+public:
+    Storage(T value)
+      : m_value { value }
+    {
+    }
+
+    void print()
+    {
+        std::cout &lt;&lt; m_value &lt;&lt; '\n';
+    }
+};
+
+template &lt;typename T&gt; // we still have a type template parameter
+class Storage&lt;T*&gt; // This is partially specialized for T*
+{
+private:
+    T* m_value {};
+public:
+    Storage(T* value)
+      : m_value { value }
+    {
+    }
+
+    void print();
+};
+
+template &lt;typename T&gt;
+void Storage&lt;T*&gt;::print() // This is a non-specialized function of partially specialized class Storage&lt;T*&gt;
+{
+    if (m_value)
+        std::cout &lt;&lt; std::scientific &lt;&lt; *m_value &lt;&lt; '\n';
+}
+
+int main()
+{
+    double d { 1.2 };
+    double *ptr { &amp;d };
+
+    Storage s { ptr }; // instantiates Storage&lt;double*&gt; from partially specialized class
+    s.print(); // calls Storage&lt;double*&gt;::print()
+    
+    return 0;
+}</code></pre>
+<p>We’ve defined <code>Storage&lt;T*&gt;::print()</code> outside the class just to show how it’s done, and to show that the definition is identical to the partially specialized function <code>Storage&lt;T*&gt;::print()</code> that did not work above.  However, now that <code>Storage&lt;T*&gt;</code> is a partially specialized class, <code>Storage&lt;T*&gt;::print()</code> is no longer partially specialized -- it is a non-specialized function, which is why it is allowed.</p>
+<p>It’s worth noting that our type template parameter is defined as <code>T</code>, not <code>T*</code>.  This means that <code>T</code> will be deduced as the non-pointer type, so we have to use <code>T*</code> anywhere we want a pointer to <code>T</code>.  It’s also worth a reminder that the partial specialization <code>Storage&lt;T*&gt;</code> needs to be defined after the primary template class <code>Storage&lt;T&gt;</code>.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Ownership and lifetime issues</p>
+<p>The above partially specialized class <code>Storage&lt;T*&gt;</code> has another potential issue.  Because <code>m_value</code> is a <code>T*</code>, it is a pointer to the object that is passed in.  If that object is then destroyed, our <code>Storage&lt;T*&gt;</code> will be left dangling.</p>
+<p>The core problem is that our implementation of <code>Storage&lt;T&gt;</code> has copy semantics (meaning it makes a copy of its initializer) but <code>Storage&lt;T*&gt;</code> has reference semantics (meaning it’s a reference to its initializer).  This inconsistency is a recipe for bugs.</p>
+<p>There are a few different ways we can deal with such issues (in order of increasing complexity):</p>
+<ol start="1">
+<li>Make it clear really clear that <code>Storage&lt;T*&gt;</code> is a view class (with reference semantics), so it’s on the caller to ensure the object being pointed to stays valid for as long as the <code>Storage&lt;T*&gt;</code> does.  Unfortunately, because this partially specialized class must have the same name as a the primary template class, we can’t give it a name like <code>StorageView</code>.  So we’re restricted to using comments or other things that might be missed.  Not a great option.
+</li>
+<li>Prevent use of <code>Storage&lt;T*&gt;</code> altogether.  We probably don’t need <code>Storage&lt;T*&gt;</code> to exist, as the caller can always dereference the pointer at the point of instantiation to use <code>Storage&lt;T&gt;</code> and make a copy of the value (which is semantically appropriate for a storage class).
+</li>
+</ol>
+<p>However, while you can delete an overloaded function, C++ (as of C++23) won’t let you delete a class.  The obvious solution is to partially specialize <code>Storage&lt;T*&gt;</code> and then do something to make it not compile (e.g. <code>static_assert</code>) when the template is instantiated, this approach has one major downside: <code>std::nullptr_t</code> is not a pointer type, so <code>Storage&lt;std::nullptr_t&gt;</code> won’t match <code>Storage&lt;T*&gt;</code>!</p>
+<p>A better solution is to avoid partial specialization altogether, and use a <code>static_assert</code> on our primary template to ensure <code>T</code> is a type that we’re okay with.  Here’s an example of that approach:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;type_traits&gt; // for std::is_pointer_v and std::is_null_pointer_v
+
+template &lt;typename T&gt;
+class Storage
+{
+    // Make sure T isn't a pointer or a std::nullptr_t
+    static_assert(!std::is_pointer_v&lt;T&gt; &amp;&amp; !std::is_null_pointer_v&lt;T&gt;, "Storage&lt;T*&gt; and Storage&lt;nullptr&gt; disallowed");
+
+private:
+    T m_value {};
+
+public:
+    Storage(T value)
+      : m_value { value }
+    {
+    }
+
+    void print()
+    {
+        std::cout &lt;&lt; m_value &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    double d { 1.2 };
+
+    Storage s1 { d }; // ok
+    s1.print();
+
+    Storage s2 { &amp;d }; // static_assert because T is a pointer
+    s2.print();
+
+    Storage s3 { nullptr }; // static_assert because T is a nullptr
+    s3.print();
+    
+    return 0;
+}</code></pre>
+<ol start="3">
+<li>Have <code>Storage&lt;T*&gt;</code> make a copy of the object on the heap.  If you do all the heap memory management yourself, this requires overloading the constructor, copy constructor, copy assignment, and destructor.  An easier alternative is to just use <code>std::unique_ptr</code> (which we cover in lesson <a href="stdunique_ptr.html">22.5 -- std::unique_ptr</a>):
+</li>
+</ol>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+#include &lt;type_traits&gt; // for std::is_pointer_v and std::is_null_pointer_v
+#include &lt;memory&gt;
+
+template &lt;typename T&gt;
+class Storage
+{
+    // Make sure T isn't a pointer or a std::nullptr_t
+    static_assert(!std::is_pointer_v&lt;T&gt; &amp;&amp; !std::is_null_pointer_v&lt;T&gt;, "Storage&lt;T*&gt; and Storage&lt;nullptr&gt; disallowed");
+
+private:
+    T m_value {};
+
+public:
+    Storage(T value)
+      : m_value { value }
+    {
+    }
+
+    void print()
+    {
+        std::cout &lt;&lt; m_value &lt;&lt; '\n';
+    }
+};
+
+template &lt;typename T&gt;
+class Storage&lt;T*&gt;
+{
+private:
+    std::unique_ptr&lt;T&gt; m_value {}; // use std::unique_ptr to automatically deallocate when Storage is destroyed
+
+public:
+    Storage(T* value)
+      : m_value { std::make_unique&lt;T&gt;(value ? *value : 0) } // or throw exception when !value
+    {
+    }
+
+    void print()
+    {
+        if (m_value)
+            std::cout &lt;&lt; *m_value &lt;&lt; '\n';
+    }
+};
+
+int main()
+{
+    double d { 1.2 };
+
+    Storage s1 { d }; // ok
+    s1.print();
+
+    Storage s2 { &amp;d }; // ok, copies d on heap
+    s2.print();
+
+    return 0;
+}</code></pre>
+<p>Using partial template class specialization to create separate pointer and non-pointer implementations of a class is extremely useful when you want a class to handle both differently, but in a way that’s completely transparent to the end-user.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="partial-template-specialization.html"><span class="nav-kicker">← Previous lesson</span>26.5 · Partial template specialization</a><a class="next" href="chapter-26-summary-and-quiz.html"><span class="nav-kicker">Next lesson →</span>26.x · Chapter 26 summary and quiz</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>

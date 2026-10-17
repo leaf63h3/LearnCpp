@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The need for dynamic memory allocation C++ supports three basic types of memory allocation, of which you’ve already seen two. Static memory allocation happ">
+  <meta name="robots" content="noindex,nofollow">
+  <title>19.1 — Dynamic memory allocation with new and delete · LearnCpp</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313233f'/%3E%3Cpath d='M9 9 4 16l5 7M23 9l5 7-5 7M19 6l-6 20' fill='none' stroke='%2365e0d2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/original-theme.css">
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+  <a class="brand" href="../index.html"><span class="brand-mark">cpp</span><span class="brand-copy"><strong>LEARN C++</strong><small>Skill up with our free tutorials</small></span></a>
+  <span class="header-spacer"></span>
+  <a class="header-link" href="../index.html#search">Table of contents</a>
+  <a class="header-link original" href="https://www.learncpp.com/cpp-tutorial/dynamic-memory-allocation-with-new-and-delete/" target="_blank" rel="noopener noreferrer">Original page ↗</a>
+</div></header>
+<div class="reader-shell">
+  <div>
+    <details class="mobile-chapter"><summary>Navigate · Chapter 19 · Dynamic Allocation (under construction)</summary><div class="sidebar-title"><small>Chapter 19</small><strong>Dynamic Allocation (under construction)</strong></div>
+<ol class="sidebar-lessons"><li><a href="dynamic-memory-allocation-with-new-and-delete.html" aria-current="page"><span class="lesson-number">19.1</span><span>Dynamic memory allocation with new and delete</span></a></li><li><a href="dynamically-allocating-arrays.html"><span class="lesson-number">19.2</span><span>Dynamically allocating arrays</span></a></li><li><a href="destructors.html"><span class="lesson-number">19.3</span><span>Destructors</span></a></li><li><a href="pointers-to-pointers.html"><span class="lesson-number">19.4</span><span>Pointers to pointers and dynamic multidimensional arrays</span></a></li><li><a href="void-pointers.html"><span class="lesson-number">19.5</span><span>Void pointers</span></a></li></ol></details>
+    <article class="article-card">
+      <header class="article-head">
+        <div class="breadcrumb"><a href="../index.html">Table of contents</a> / Chapter 19</div>
+        <h1>19.1 — Dynamic memory allocation with new and delete</h1>
+        <div class="article-meta"><span>Updated: 2025-01-01 22:05</span></div>
+      </header>
+      <div class="highlight-toolbar" data-highlight-toolbar>
+        <div class="highlight-actions" role="toolbar" aria-label="Text highlighting">
+          <button class="highlight-button primary" id="add-highlight" type="button">Highlight</button>
+          <button class="highlight-button" id="remove-highlight" type="button">Remove</button>
+        </div>
+        <span class="highlight-count" id="highlight-count">0 highlights</span>
+        <span class="highlight-status" id="highlight-status" aria-live="polite"></span>
+        <span class="folder-status" id="folder-status" role="status">Loading…</span>
+        <button class="highlight-button" id="retry-save" type="button" hidden>Retry</button>
+      </div>
+      <div class="article-content"><p class="cpp-section cpp-topline" style="clear: both">The need for dynamic memory allocation</p>
+<p>C++ supports three basic types of memory allocation, of which you’ve already seen two.</p>
+<ul>
+<li><strong>Static memory allocation</strong> happens for static and global variables.  Memory for these types of variables is allocated once when your program is run and persists throughout the life of your program.</li>
+<li><strong>Automatic memory allocation</strong> happens for function parameters and local variables.  Memory for these types of variables is allocated when the relevant block is entered, and freed when the block is exited, as many times as necessary.</li>
+<li><strong>Dynamic memory allocation</strong> is the topic of this article.</li>
+</ul>
+<p>Both static and automatic allocation have two things in common:</p>
+<ul>
+<li>The size of the variable / array must be known at compile time.</li>
+<li>Memory allocation and deallocation happens automatically (when the variable is instantiated / destroyed).</li>
+</ul>
+<p>Most of the time, this is just fine.  However, you will come across situations where one or both of these constraints cause problems, usually when dealing with external (user or file) input.</p>
+<p>For example, we may want to use a string to hold someone’s name, but we do not know how long their name is until they enter it.  Or we may want to read in a number of records from disk, but we don’t know in advance how many records there are.  Or we may be creating a game, with a variable number of monsters (that changes over time as some monsters die and new ones are spawned) trying to kill the player.</p>
+<p>If we have to declare the size of everything at compile time, the best we can do is try to make a guess the maximum size of variables we’ll need and hope that’s enough:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">char name[25]; // let's hope their name is less than 25 chars!
+Record record[500]; // let's hope there are less than 500 records!
+Monster monster[40]; // 40 monsters maximum
+Polygon rendering[30000]; // this 3d rendering better not have more than 30,000 polygons!</code></pre>
+<p>This is a poor solution for at least four reasons:</p>
+<p>First, it leads to wasted memory if the variables aren’t actually used.  For example, if we allocate 25 chars for every name, but names on average are only 12 chars long, we’re using over twice what we really need.  Or consider the rendering array above: if a rendering only uses 10,000 polygons, we have 20,000 Polygons worth of memory not being used!</p>
+<p>Second, how do we tell which bits of memory are actually used?  For strings, it’s easy: a string that starts with a \0 is clearly not being used.  But what about monster[24]?  Is it alive or dead right now?  Has it even been initialized in the first place?  That necessitates having some way to tell the status of each monster, which adds complexity and can use up additional memory.</p>
+<p>Third, most normal variables (including fixed arrays) are allocated in a portion of memory called the <strong>stack</strong>.  The amount of stack memory for a program is generally quite small -- Visual Studio defaults the stack size to 1MB.  If you exceed this number, stack overflow will result, and the operating system will probably close down the program.</p>
+<p>On Visual Studio, you can see this happen when running this program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int main()
+{
+    int array[1000000]; // allocate 1 million integers (probably 4MB of memory)
+}</code></pre>
+<p>Being limited to just 1MB of memory would be problematic for many programs, especially those that deal with graphics.</p>
+<p>Fourth, and most importantly, it can lead to artificial limitations and/or array overflows.  What happens when the user tries to read in 600 records from disk, but we’ve only allocated memory for a maximum of 500 records?  Either we have to give the user an error, only read the 500 records, or (in the worst case where we don’t handle this case at all) overflow the record array and watch something bad happen.</p>
+<p>Fortunately, these problems are easily addressed via dynamic memory allocation.  <strong>Dynamic memory allocation</strong> is a way for running programs to request memory from the operating system when needed.  This memory does not come from the program’s limited stack memory -- instead, it is allocated from a much larger pool of memory managed by the operating system called the <strong>heap</strong>.  On modern machines, the heap can be gigabytes in size.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Dynamically allocating single variables</p>
+<p>To allocate a <em>single</em> variable dynamically, we use the scalar (non-array) form of the <strong>new</strong> operator:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">new int; // dynamically allocate an integer (and discard the result)</code></pre>
+<p>In the above case, we’re requesting an integer’s worth of memory from the operating system.  The new operator creates the object using that memory, and then returns a pointer containing the <i>address</i> of the memory that has been allocated.</p>
+<p>Most often, we’ll assign the return value to our own pointer variable so we can access the allocated memory later.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* ptr{ new int }; // dynamically allocate an integer and assign the address to ptr so we can access it later</code></pre>
+<p>We can then dereference the pointer to access the memory:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">*ptr = 7; // assign value of 7 to allocated memory</code></pre>
+<p>If it wasn’t before, it should now be clear at least one case in which pointers are useful.  Without a pointer to hold the address of the memory that was just allocated, we’d have no way to access the memory that was just allocated for us!</p>
+<p>Note that accessing heap-allocated objects is generally slower than accessing stack-allocated objects.  Because the compiler knows the address of stack-allocated objects, it can go directly to that address to get a value.  Heap allocated objects are typically accessed via pointer.  This requires two steps: one to get the address of the object (from the pointer), and another to get the value.</p>
+<p class="cpp-section cpp-topline" style="clear: both">How does dynamic memory allocation work?</p>
+<p>Your computer has memory (probably lots of it) that is available for applications to use.  When you run an application, your operating system loads the application into some of that memory.  This memory used by your application is divided into different areas, each of which serves a different purpose.  One area contains your code.  Another area is used for normal operations (keeping track of which functions were called, creating and destroying global and local variables, etc…).  We’ll talk more about those later.  However, much of the memory available just sits there, waiting to be handed out to programs that request it.</p>
+<p>When you dynamically allocate memory, you’re asking the operating system to reserve some of that memory for your program’s use.  If it can fulfill this request, it will return the address of that memory to your application.  From that point forward, your application can use this memory as it wishes.  When your application is done with the memory, it can return the memory back to the operating system to be given to another program.</p>
+<p>Unlike static or automatic memory, the program itself is responsible for requesting and disposing of dynamically allocated memory.</p>
+<div class="cpp-note cpp-lightbluebackground">
+<p class="cpp-note-title cpp-bottomline">Key insight</p>
+<p>The allocation and deallocation for stack objects is done automatically. There is no need for us to deal with memory addresses -- the code the compiler writes can do this for us.</p>
+<p>The allocation and deallocation for heap objects is not done automatically. We need to be involved. That means we need some unambiguous way to refer to a specific heap allocated object, so that we can request its destruction when we’re ready. And the way we reference such objects is via memory address.</p>
+<p>When we use operator new, it returns a pointer containing the memory address of the newly allocated object. We generally want to store that in a pointer so we can use that address later to access the object (and eventually, request its destruction).
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Initializing a dynamically allocated variable</p>
+<p>When you dynamically allocate a variable, you can also initialize it via direct initialization or uniform initialization:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* ptr1{ new int (5) }; // use direct initialization
+int* ptr2{ new int { 6 } }; // use uniform initialization</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">Deleting a single variable</p>
+<p>When we are done with a dynamically allocated variable, we need to explicitly tell C++ to free the memory for reuse.  For single variables, this is done via the scalar (non-array) form of the <strong>delete</strong> operator:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// assume ptr has previously been allocated with operator new
+delete ptr; // return the memory pointed to by ptr to the operating system
+ptr = nullptr; // set ptr to be a null pointer</code></pre>
+<p class="cpp-section cpp-topline" style="clear: both">What does it mean to delete memory?</p>
+<p>The delete operator does not <em>actually</em> delete anything.  It simply returns the memory being pointed to back to the operating system.  The operating system is then free to reassign that memory to another application (or to this application again later).</p>
+<p>Although the syntax makes it look like we’re deleting a <em>variable</em>, this is not the case!  The pointer variable still has the same scope as before, and can be assigned a new value (e.g. <code>nullptr</code>) just like any other variable.</p>
+<p>Note that deleting a pointer that is not pointing to dynamically allocated memory may cause bad things to happen.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Dangling pointers</p>
+<p>C++ does not make any guarantees about what will happen to the contents of deallocated memory, or to the value of the pointer being deleted.  In most cases, the memory returned to the operating system will contain the same values it had before it was returned, and the pointer will be left pointing to the now deallocated memory.</p>
+<p>A pointer that is pointing to deallocated memory is called a <strong>dangling pointer</strong>.  Dereferencing or deleting a dangling pointer will lead to undefined behavior.  Consider the following program:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int* ptr{ new int }; // dynamically allocate an integer
+    *ptr = 7; // put a value in that memory location
+
+    delete ptr; // return the memory to the operating system.  ptr is now a dangling pointer.
+
+    std::cout &lt;&lt; *ptr; // Dereferencing a dangling pointer will cause undefined behavior
+    delete ptr; // trying to deallocate the memory again will also lead to undefined behavior.
+
+    return 0;
+}</code></pre>
+<p>In the above program, the value of 7 that was previously assigned to the allocated memory will probably still be there, but it’s possible that the value at that memory address could have changed.  It’s also possible the memory could be allocated to another application (or for the operating system’s own usage), and trying to access that memory will cause the operating system to shut the program down.</p>
+<p>Deallocating memory may create multiple dangling pointers.  Consider the following example:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">#include &lt;iostream&gt;
+
+int main()
+{
+    int* ptr{ new int{} }; // dynamically allocate an integer
+    int* otherPtr{ ptr }; // otherPtr is now pointed at that same memory location
+
+    delete ptr; // return the memory to the operating system.  ptr and otherPtr are now dangling pointers.
+    ptr = nullptr; // ptr is now a nullptr
+
+    // however, otherPtr is still a dangling pointer!
+
+    return 0;
+}</code></pre>
+<p>There are a few best practices that can help here.</p>
+<p>First, try to avoid having multiple pointers point at the same piece of dynamic memory.  If this is not possible, be clear about which pointer “owns” the memory (and is responsible for deleting it) and which pointers are just accessing it.</p>
+<p>Second, when you delete a pointer, if that pointer is not going out of scope immediately afterward, set the pointer to nullptr.  We’ll talk more about null pointers, and why they are useful in a bit.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Set deleted pointers to nullptr unless they are going out of scope immediately afterward.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Operator new can fail</p>
+<p>When requesting memory from the operating system, in rare circumstances, the operating system may not have any memory to grant the request with.</p>
+<p>By default, if new fails, a <em>bad_alloc</em> exception is thrown.  If this exception isn’t properly handled (and it won’t be, since we haven’t covered exceptions or exception handling yet), the program will simply terminate (crash) with an unhandled exception error.</p>
+<p>In many cases, having new throw an exception (or having your program crash) is undesirable, so there’s an alternate form of new that can be used instead to tell new to return a null pointer if memory can’t be allocated.  This is done by adding the constant std::nothrow between the new keyword and the allocation type:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* value { new (std::nothrow) int }; // value will be set to a null pointer if the integer allocation fails</code></pre>
+<p>In the above example, if new fails to allocate memory, it will return a null pointer instead of the address of the allocated memory.</p>
+<p>Note that if you then attempt to dereference this pointer, undefined behavior will result (most likely, your program will crash).  Consequently, the best practice is to check all memory requests to ensure they actually succeeded before using the allocated memory.</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* value { new (std::nothrow) int{} }; // ask for an integer's worth of memory
+if (!value) // handle case where new returned null
+{
+    // Do error handling here
+    std::cerr &lt;&lt; "Could not allocate memory\n";
+}</code></pre>
+<p>Because asking new for memory only fails rarely (and almost never in a dev environment), it’s common to forget to do this check!</p>
+<p class="cpp-section cpp-topline" style="clear: both">Null pointers and dynamic memory allocation</p>
+<p>Null pointers (pointers set to nullptr) are particularly useful when dealing with dynamic memory allocation.  In the context of dynamic memory allocation, a null pointer basically says “no memory has been allocated to this pointer”.  This allows us to do things like conditionally allocate memory:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">// If ptr isn't already allocated, allocate it
+if (!ptr)
+    ptr = new int;</code></pre>
+<p>Deleting a null pointer has no effect.  Thus, there is no need for the following:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">if (ptr) // if ptr is not a null pointer
+    delete ptr; // delete it
+// otherwise do nothing</code></pre>
+<p>Instead, you can just write:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">delete ptr;</code></pre>
+<p>If ptr is non-null, the dynamically allocated memory will be deleted.  If ptr is null, nothing will happen.</p>
+<div class="cpp-note cpp-lightgreenbackground">
+<p class="cpp-note-title cpp-bottomline">Best practice</p>
+<p>Deleting a null pointer is okay, and does nothing.  There is no need to conditionalize your delete statements.
+</p></div>
+<p class="cpp-section cpp-topline" style="clear: both">Memory leaks</p>
+<p>Dynamically allocated memory stays allocated until it is explicitly deallocated or until the program ends (and the operating system cleans it up, assuming your operating system does that).  However, the pointers used to hold dynamically allocated memory addresses follow the normal scoping rules for local variables.  This mismatch can create interesting problems.</p>
+<p>Consider the following function:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">void doSomething()
+{
+    int* ptr{ new int{} };
+}</code></pre>
+<p>This function allocates an integer dynamically, but never frees it using delete.  Because pointers variables are just normal variables, when the function ends, ptr will go out of scope.  And because ptr is the only variable holding the address of the dynamically allocated integer, when ptr is destroyed there are no more references to the dynamically allocated memory.  This means the program has now “lost” the address of the dynamically allocated memory.  As a result, this dynamically allocated integer can not be deleted.</p>
+<p>This is called a <strong>memory leak</strong>.  Memory leaks happen when your program loses the address of some bit of dynamically allocated memory before giving it back to the operating system.  When this happens, your program can’t delete the dynamically allocated memory, because it no longer knows where it is.  The operating system also can’t use this memory, because that memory is considered to be still in use by your program.</p>
+<p>Memory leaks eat up free memory while the program is running, making less memory available not only to this program, but to other programs as well.  Programs with severe memory leak problems can eat all the available memory, causing the entire machine to run slowly or even crash.  Only after your program terminates is the operating system able to clean up and “reclaim” all leaked memory.</p>
+<p>Although memory leaks can result from a pointer going out of scope, there are other ways that memory leaks can result.  For example, a memory leak can occur if a pointer holding the address of the dynamically allocated memory is assigned another value:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int value = 5;
+int* ptr{ new int{} }; // allocate memory
+ptr = &amp;value; // old address lost, memory leak results</code></pre>
+<p>This can be fixed by deleting the pointer before reassigning it:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int value{ 5 };
+int* ptr{ new int{} }; // allocate memory
+delete ptr; // return memory back to operating system
+ptr = &amp;value; // reassign pointer to address of value</code></pre>
+<p>Relatedly, it is also possible to get a memory leak via double-allocation:</p>
+<pre class="language-cpp line-numbers"><code class="language-cpp match-braces">int* ptr{ new int{} };
+ptr = new int{}; // old address lost, memory leak results</code></pre>
+<p>The address returned from the second allocation overwrites the address of the first allocation.  Consequently, the first allocation becomes a memory leak!</p>
+<p>Similarly, this can be avoided by ensuring you delete the pointer before reassigning.</p>
+<p class="cpp-section cpp-topline" style="clear: both">Conclusion</p>
+<p>Operators new and delete allow us to dynamically allocate single variables for our programs.</p>
+<p>Dynamically allocated memory has dynamic duration and will stay allocated until you deallocate it or the program terminates.</p>
+<p>Be careful not to perform dereference a dangling or null pointers.</p>
+<p>In the next lesson, we’ll take a look at using new and delete to allocate and delete arrays.</p>
+
+</div>
+      <nav class="lesson-nav" aria-label="Lesson navigation"><a href="timing-your-code.html"><span class="nav-kicker">← Previous lesson</span>18.4 · Timing your code</a><a class="next" href="dynamically-allocating-arrays.html"><span class="nav-kicker">Next lesson →</span>19.2 · Dynamically allocating arrays</a></nav>
+    </article>
+  </div>
+</div>
+<script src="../assets/app.js"></script>
+<script src="../assets/reader.js"></script>
+</body></html>
